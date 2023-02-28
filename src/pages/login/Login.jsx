@@ -29,7 +29,7 @@ const Login = () => {
               body,
             }
           );
-          if (response.ok) {
+          if (!response.ok) {
             const data = await response.json();
             if (data !== undefined) {
               localStorage.setItem(

@@ -18,10 +18,10 @@ const sidebarNav = [
         text: 'Uploads'
     },
     {
-        link: 'customers',
-        section: 'customers',
+        link: 'postings',
+        section: 'postings',
         icon: <i className='bx bx-user'></i>,
-        text: 'Customers'
+        text: 'Postings'
     },
     {
         link: 'stats',

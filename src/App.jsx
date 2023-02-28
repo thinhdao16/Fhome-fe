@@ -10,6 +10,7 @@ import Protected from "../src/components/context/Protected";
 import { AuthContextProvider } from "./components/context/AuthContext";
 import Login from "./pages/login/Login";
 import Upload from "./pages/Uploads/Upload";
+import Posting from "./pages/Postings/Posting";
 function App() {
   return (
     // <BrowserRouter>
@@ -39,7 +40,7 @@ function App() {
                 />
                 <Route path="users" element={<Protected><User /></Protected>} />
                 <Route path="uploads" element={<Protected><Upload /></Protected>} />
-                <Route path="customers" element={<Protected><User /></Protected>} />
+                <Route path="postings" element={<Protected><Posting /></Protected>} />
                 <Route path="settings" element={<Protected><User /></Protected>} />
                 <Route path="stats" element={<Protected><User /></Protected>} />
                 <Route path="profiles" element={<Protected><Profile /></Protected>} />

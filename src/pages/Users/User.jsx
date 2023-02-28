@@ -58,19 +58,6 @@ const User = () => {
   };
   const [selectedUsers, setSelectedUsers] = useState([]);
 
-
-  // const handleEditUser = (userId) => {
-  //   setEditUser(users.find((x) => x.id === userId));
-  // };
-
-  // const handleDeleteUser = (id) => {
-  //   setUsers((prevState) => prevState.filter((user) => user.id !== id));
-  //   toastr.error("User has been deleted successfully!", {
-  //     position: "top-right",
-  //     heading: "Done",
-  //   });
-  // };
-
   const handleSelectUser = (id) => {
     if (selectedUsers.includes(id)) {
       setSelectedUsers(selectedUsers.filter((userId) => userId !== id));
