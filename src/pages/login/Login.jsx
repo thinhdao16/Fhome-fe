@@ -32,18 +32,18 @@ const Login = () => {
           //khi nào có server thì sửa thành if(response.ok)
           if (response.ok) {
             const data = await response.json();
-            if (data !== undefined) {
+            if (data !== undefined && data.data.user.roleName !=="admin") {
               localStorage.setItem(
                 "access_token",
-                JSON.stringify(data.data.user)
+                JSON.stringify(data.data)
               );
               console.log(data);
-              // const userData = JSON.parse(localStorage.getItem("access_token"));
-              //         if(userData.role_name ==="STUDENT"){
               navigate("/home");
               //         }
             } else {
-              console.log("No data returned from server");
+              setTimeout(() => {
+                alert("Please you are admin please dont enter");
+              }, 1000);
             }
           } else {
             console.log("Response not OK");
@@ -65,18 +65,20 @@ const Login = () => {
       accessToken = JSON.parse(accessTokenString);
     }
   
-    const userDataString = localStorage.getItem("user_data");
+    const userDataString = localStorage.getItem("access_token");
     let userData = null;
     if (typeof userDataString === "string" && userDataString !== "") {
       userData = JSON.parse(userDataString);
     }
   
-    if (accessToken !== null && userData !== null && userData.role_name === "STUDENT") {
+    if (accessToken && userData && userData.user.roleName !== "") {
       navigate("/home");
     } else {
       navigate("");
     }
   }, [navigate]);
+  
+  
   
   
 

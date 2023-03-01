@@ -28,30 +28,15 @@ export function AuthContextProvider({ children }) {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       if (currentUser && currentUser.email) {
-        if (
-          currentUser.email.endsWith("thinhddse151086@fpt.edu.vn") ||
-          currentUser.email.endsWith("vinhthse151179@fpt.edu.vn") ||
-          currentUser.email.endsWith("tungdmse151168@fpt.edu.vn") ||
-          currentUser.email.endsWith("hungmnhse151102@fpt.edu.vn") ||
-          currentUser.email.endsWith("tuanndse151153@fpt.edu.vn") ||
-          currentUser.email.endsWith("taivtse151030@fpt.edu.vn")
-        ) {
-          currentUser.getIdToken().then((token) => {
-            setAccessToken(token);
-          });
-        } else {
-          logOut();
-          setTimeout(() => {
-            alert("Please you dont admin please dont enter");
-          }, 1000);
-        }
+        currentUser.getIdToken().then((token) => {
+          setAccessToken(token);
+        });
       }
     });
     return () => {
       unsubscribe();
     };
   }, [user]);
-  
   return (
     <AuthContext.Provider value={{ googleSignIn, logOut, user, accessToken }}>
       {children}

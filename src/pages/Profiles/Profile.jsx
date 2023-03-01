@@ -21,7 +21,7 @@ const Profile = () => {
           <div className="col-md-3">
             <div className="text-center">
               <img
-                src={userData.profile_img}
+                src={userData.user.img}
                 className="avatar img-circle rounded-5"
                 alt="avatar"
               />
@@ -47,7 +47,7 @@ const Profile = () => {
                   <input
                     className="form-control"
                     type="text"
-                    defaultValue={userData.fullname}
+                    defaultValue={userData.user.fullname}
                   />
                 </div>
               </div>
@@ -57,14 +57,14 @@ const Profile = () => {
                   <input
                     className="form-control"
                     type="text"
-                    defaultValue={userData.email}
+                    defaultValue={userData.user.email}
                   />
                 </div>
               </div>
               <div className="form-group">
                 <label className="col-lg-3 control-label">AdminID:</label>
                 <div className="col-lg-8">
-                  <input className="form-control" type="text" defaultValue ={userData.student_id}/>
+                  <input className="form-control" type="text" defaultValue ={userData.user.student_id}/>
                 </div>
               </div>
               <div className="form-group">

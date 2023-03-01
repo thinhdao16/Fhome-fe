@@ -3,26 +3,36 @@ import toastr from "cogo-toast";
 
 const User = () => {
   const [users, setUsers] = useState([]);
-  console.log(users)
-  useEffect(() => {
-    fetch(
-      "https://f-homes-be.vercel.app/users"
-    )
-      .then((response) => response.json())
-      .then((data) => setUsers(data.data.users));
-  }, []);
   console.log(users);
+  useEffect(() => {
+    async function fetchData() {
+      const token = localStorage.getItem("access_token");
+      const response = await fetch("https://f-homes-be.vercel.app/users", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      setUsers(data);
+    }
+    fetchData();
+  }, []);
+  
+
   const handlePutUser = (id) => {
-    fetch(`https://63fc47ff677c41587308cabf.mockapi.io/api/v1/user/user-v1/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        status: true,
-        roleName:"landlord"
-      })
-    })
+    fetch(
+      `https://63fc47ff677c41587308cabf.mockapi.io/api/v1/user/user-v1/${id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          status: true,
+          roleName: "landlord",
+        }),
+      }
+    )
       .then((res) => res.json())
       .then((result) => {
         // update state to re-render the component
@@ -42,9 +52,12 @@ const User = () => {
       });
   };
   const handleDeleteUser = (id) => {
-    fetch(`https://63fc47ff677c41587308cabf.mockapi.io/api/v1/user/user-v1/${id}`, {
-      method: "DELETE"
-    })
+    fetch(
+      `https://63fc47ff677c41587308cabf.mockapi.io/api/v1/user/user-v1/${id}`,
+      {
+        method: "DELETE",
+      }
+    )
       .then((res) => res.json())
       .then((result) => {
         // update state to re-render the component
@@ -94,7 +107,7 @@ const User = () => {
               </tr>
             </thead>
             <tbody>
-              {users.map(user => (
+              {users.map((user) => (
                 <tr key={user._id}>
                   <td>
                     <input
@@ -103,8 +116,10 @@ const User = () => {
                       checked={selectedUsers.includes(user._id)}
                     />
                   </td>
-                  <td>{user.email}</td>
-                  <td><img src={user.img} /></td>
+                  <td>{user._id}</td>
+                  <td>
+                    <img src={user.img} />
+                  </td>
                   <td>{user.phoneNumber}</td>
                   <td>
                     <button
