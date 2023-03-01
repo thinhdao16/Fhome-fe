@@ -2,15 +2,16 @@ import React, { useEffect, useState } from "react";
 import toastr from "cogo-toast";
 
 const User = () => {
-  const [data, setData] = useState([]);
+  const [users, setUsers] = useState([]);
+  console.log(users)
   useEffect(() => {
     fetch(
-      "https://63fc47ff677c41587308cabf.mockapi.io/api/v1/user/user-v1?status=false"
+      "https://f-homes-be.vercel.app/users"
     )
       .then((response) => response.json())
-      .then((data) => setData(data));
+      .then((data) => setUsers(data.data.users));
   }, []);
-  console.log(data);
+  console.log(users);
   const handlePutUser = (id) => {
     fetch(`https://63fc47ff677c41587308cabf.mockapi.io/api/v1/user/user-v1/${id}`, {
       method: "PUT",
@@ -25,7 +26,7 @@ const User = () => {
       .then((res) => res.json())
       .then((result) => {
         // update state to re-render the component
-        setData((prevData) => {
+        setUsers((prevData) => {
           const updatedData = prevData.map((item) => {
             if (item.id === result.id) {
               return result;
@@ -47,7 +48,7 @@ const User = () => {
       .then((res) => res.json())
       .then((result) => {
         // update state to re-render the component
-        setData((prevData) => {
+        setUsers((prevData) => {
           const filteredData = prevData.filter((item) => item.id !== id);
           return filteredData;
         });
@@ -93,30 +94,30 @@ const User = () => {
               </tr>
             </thead>
             <tbody>
-              {data.map((item) => (
-                <tr key={item.id}>
+              {users.map(user => (
+                <tr key={user._id}>
                   <td>
                     <input
                       type="checkbox"
-                      onChange={() => handleSelectUser(item.id)}
-                      checked={selectedUsers.includes(item.id)}
+                      onChange={() => handleSelectUser(user._id)}
+                      checked={selectedUsers.includes(user._id)}
                     />
                   </td>
-                  <td>{item.email}</td>
-                  <td>{item.img}</td>
-                  <td>{item.phoneNumber}</td>
+                  <td>{user.email}</td>
+                  <td><img src={user.img} /></td>
+                  <td>{user.phoneNumber}</td>
                   <td>
                     <button
                       type="button"
                       className="btn btn-primary btn-sm"
-                      onClick={() => handlePutUser(item.id)}
+                      onClick={() => handlePutUser(user.id)}
                     >
                       Edit
                     </button>{" "}
                     <button
                       type="button"
                       className="btn btn-danger btn-sm"
-                      onClick={() => handleDeleteUser(item.id)}
+                      onClick={() => handleDeleteUser(user.id)}
                     >
                       Delete
                     </button>

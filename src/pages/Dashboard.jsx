@@ -32,21 +32,7 @@ ChartJS.register(
   Legend
 );
 
-const Dashboard = () => {
-    const [dataUser, setDataUser] = useState([]);
-
-    useEffect(() => {
-      const fetchData = async () => {
-        const response = await fetch("http://localhost:3000/getUser");
-        const data = await response.json();
-        setDataUser(data);
-      };
-    
-      fetchData();
-    }, []);
-    
-    console.log(dataUser);
-    
+const Dashboard = () => {    
   return (
     <DashboardWrapper>
       <DashboardWrapperMain>

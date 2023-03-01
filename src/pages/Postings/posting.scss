@@ -1,37 +1,44 @@
 @use'../../scss/abstracts/'as *;
 @use 'sass:math';
-.posting-list{
-    &__color-text{
-        color: rgb(0, 0, 0);
+
+.posting-list {
+    &__color-text {
+        color: $black;
     }
-    &__feel{
+
+    &__feel {
         color: #65676b;
         font-weight: 400;
         font-size: 0.875rem;
-        &__icon{
+
+        &__icon {
             font-weight: 550;
         }
     }
-    &__hr{
+
+    &__hr {
         margin: 0.25rem;
     }
-    &__whwant{
+
+    &__whwant {
         height: 40px;
         background-color: $bodyBg;
         padding-top: 7px;
     }
-    &__titleName{
-        color:$black ;
+
+    &__titleName {
+        color: $black;
         display: block;
         font-weight: 600;
         font-size: 0.875rem;
         margin-bottom: -5px;
-        &__date{
+        &__date {
             font-weight: 400;
             font-size: 0.875rem;
         }
     }
 }
+
 .posting-img {
     background-color: $bodyBg;
 

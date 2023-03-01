@@ -20,7 +20,6 @@ export function AuthContextProvider({ children }) {
     setAccessToken(token);
     setUser(user);
   };
-  console.log(user)
   const logOut = () => {
     signOut(auth);
     localStorage.clear();

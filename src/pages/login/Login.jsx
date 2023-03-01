@@ -18,7 +18,7 @@ const Login = () => {
           const idToken = await user.getIdToken();
           const body = JSON.stringify({ accessToken: accessToken });
           const response = await fetch(
-            "http://178.128.223.115:8080/api/v1/auth/sign-in",
+            "https://f-homes-be.vercel.app/login",
             {
               method: "POST",
               headers: {
@@ -29,7 +29,8 @@ const Login = () => {
               body,
             }
           );
-          if (!response.ok) {
+          //khi nào có server thì sửa thành if(response.ok)
+          if (response.ok) {
             const data = await response.json();
             if (data !== undefined) {
               localStorage.setItem(
@@ -63,13 +64,21 @@ const Login = () => {
     if (typeof accessTokenString === "string" && accessTokenString !== "") {
       accessToken = JSON.parse(accessTokenString);
     }
-    const userData = JSON.parse(localStorage.getItem("access_token"));
-    if (accessToken !== null && userData.role_name === "STUDENT") {
+  
+    const userDataString = localStorage.getItem("user_data");
+    let userData = null;
+    if (typeof userDataString === "string" && userDataString !== "") {
+      userData = JSON.parse(userDataString);
+    }
+  
+    if (accessToken !== null && userData !== null && userData.role_name === "STUDENT") {
       navigate("/home");
     } else {
       navigate("");
     }
   }, [navigate]);
+  
+  
 
   // rest of the component code
 

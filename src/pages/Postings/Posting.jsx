@@ -135,14 +135,28 @@ function Posting() {
           </form>
         </DashboardWrapperMain>
         <DashboardWrapperRight>
-          <div className="title mb">Overall</div>
-          <div className="mb">
-            <OverallList />
-          </div>
-          <div className="title mb">Revenue by channel</div>
-          <div className="mb">
-            <RevenueList />
-          </div>
+                  <div className='card border-0'>
+                    <div className="row">
+                      <div className="col-md-2">
+                      <Avatar
+                    name="John Doe"
+                    size="55"
+                    round={true}
+                    src="https://www.example.com/image.jpg"
+                  />
+                      </div>
+                      <div className="col-md-10">
+                        <div className="mt-2  ms-2">
+                        <span className="posting-list__titleName">
+                      thịnh đào
+                    </span>
+                    <span className="posting-list__titleName__date">
+                      user
+                    </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
         </DashboardWrapperRight>
       </DashboardWrapper>
       {/* modal */}
