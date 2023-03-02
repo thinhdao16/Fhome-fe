@@ -38,7 +38,7 @@ const sidebarNav = [
     {
         link: 'profiles',
         section: 'profiles',
-        icon: <i class='bx bx-user-circle'></i>,
+        icon: <i className='bx bx-user-circle'></i>,
         text:'Profiles'
     }
 ]

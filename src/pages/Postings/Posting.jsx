@@ -1,14 +1,21 @@
 import React, { useState } from "react";
+import Box from "@mui/material/Box";
+import BottomNavigation from "@mui/material/BottomNavigation";
+import BottomNavigationAction from "@mui/material/BottomNavigationAction";
+import RestoreIcon from "@mui/icons-material/Restore";
+import ReportGmailerrorredIcon from '@mui/icons-material/ReportGmailerrorred';
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import DashboardWrapper, {
   DashboardWrapperMain,
   DashboardWrapperRight,
 } from "../../components/dashboard-wrapper/DashboardWrapper";
-import OverallList from "../../components/overall-list/OverallList";
-import RevenueList from "../../components/revenue-list/RevenueList";
 import Avatar from "react-avatar";
 import { Rating } from "react-simple-star-rating";
 import "./posting.scss";
 import { Link } from "react-router-dom";
+
 function Posting() {
   const [rating, setRating] = useState(0); // initial rating value
   const userPosting = JSON.parse(localStorage.getItem("access_token"));
@@ -18,6 +25,7 @@ function Posting() {
     setRating(rate);
     // Some logic
   };
+  const [value, setValue] = React.useState(0);
   return (
     <div className="posting-list">
       <DashboardWrapper>
@@ -35,7 +43,7 @@ function Posting() {
                 </div>
                 <div className="col-md-11">
                   <div
-                    class="btn d-block rounded-5 posting-list__whwant"
+                    className="btn d-block rounded-5 posting-list__whwant"
                     data-bs-toggle="modal"
                     href="#exampleModalToggle"
                     role="button"
@@ -45,10 +53,10 @@ function Posting() {
                 </div>
               </div>
               <hr className="mx-1" />
-              <div class="row px-3 ">
-                <div class="col-md-4 text-center">Video trực tiếp</div>
-                <div class="col-md-4 text-center">Ảnh/video</div>
-                <div class="col-md-4 text-center">Cảm xúc/hoạt động</div>
+              <div className="row px-3 ">
+                <div className="col-md-4 text-center">Video trực tiếp</div>
+                <div className="col-md-4 text-center">Ảnh/video</div>
+                <div className="col-md-4 text-center">Cảm xúc/hoạt động</div>
               </div>
             </div>
           </form>
@@ -93,7 +101,7 @@ function Posting() {
                   />
                 </div>
               </div>
-              <div className=" mx-4 mt-2 ">
+              <div className=" mx-4 my-2 ">
                 <div className="float-start posting-list__feel">4.9rating</div>
                 <div className="float-end">
                   <a href="" className="posting-list__feel">
@@ -103,7 +111,7 @@ function Posting() {
                 </div>
               </div>
               <hr className="posting-list__hr" />
-              <div className="px-5 ">
+              {/* <div className="px-5 text-center   ">
                 <div className="float-start">
                   {" "}
                   <div>
@@ -117,20 +125,56 @@ function Posting() {
                         transition
                         fillColor="orange"
                         emptyColor="gray"
-                        className="foo" // Will remove the inline style if applied
+                        className="foo" 
                       />
                     </div>
                     <span className="posting-list__feel__icon">{rating}</span>
                   </div>
-                  {/* Use rating value */}
+                </div>
+                <div className="d-block">
+                  <Link to=""> <ReportGmailerrorredIcon/> Báo cáo</Link>
                 </div>
                 <div className="float-end">
                   <a href="" className="posting-list__feel__icon">
                     {" "}
-                    <i class="bx bx-message-square-dots me-2 "></i>Comment
+                    <i className="bx bx-message-square-dots me-2 "></i>Comment
                   </a>
                 </div>
-              </div>
+              </div> */}
+
+              <Box sx={{}}>
+                <BottomNavigation
+                  showLabels
+                  value={value}
+                  onChange={(event, newValue) => {
+                    setValue(newValue);
+                  }}
+                >
+                  <BottomNavigationAction
+                    label={rating}
+                    icon={
+                      <Rating
+                        onClick={handleRating}
+                        ratingValue={rating}
+                        size={30}
+                        label
+                        transition
+                        fillColor="orange"
+                        emptyColor="gray"
+                        className="foo d-block"
+                      />
+                    }
+                  />
+                  <BottomNavigationAction
+                    label="Bình luận"
+                    icon={<ChatBubbleOutlineIcon />}
+                  />
+                  <BottomNavigationAction
+                    label="Báo cáo"
+                    icon={<ReportGmailerrorredIcon />}
+                  />
+                </BottomNavigation>
+              </Box>
             </div>
           </form>
         </DashboardWrapperMain>
@@ -149,10 +193,10 @@ function Posting() {
               </div>
               <div className="col-md-10">
                 <div className="mt-2  ms-2">
-                <Link to="/home/profiles">
-                  <span className="posting-list__titleName">
-                    {userPostings.fullname}
-                  </span>
+                  <Link to="/home/profiles">
+                    <span className="posting-list__titleName">
+                      {userPostings.fullname}
+                    </span>
                   </Link>
                   <span className="posting-list__titleName__date">user</span>
                 </div>
@@ -163,32 +207,32 @@ function Posting() {
       </DashboardWrapper>
       {/* modal */}
       <div
-        class="modal fade"
+        className="modal fade"
         id="exampleModalToggle"
         aria-hidden="true"
         aria-labelledby="exampleModalToggleLabel"
         tabindex="-1"
       >
-        <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content">
-            <div class="modal-header position-relative">
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header position-relative">
               <span
-                class="modal-title fs-5 position-absolute top-0 start-50 translate-middle-x pt-3 fw-bolder text-dark "
+                className="modal-title fs-5 position-absolute top-0 start-50 translate-middle-x pt-3 fw-bolder text-dark "
                 id="exampleModalToggleLabel"
               >
                 Tạo bài viết
               </span>
               <button
                 type="button"
-                class="btn-close"
+                className="btn-close"
                 data-bs-dismiss="modal"
                 aria-label="Close"
               ></button>
             </div>
-            <div class="modal-body"></div>
-            <div class="modal-footer">
+            <div className="modal-body"></div>
+            <div className="modal-footer">
               <button
-                class="btn btn-primary"
+                className="btn btn-primary"
                 // data-bs-target="#exampleModalToggle2"
                 data-bs-toggle="modal"
               >
@@ -199,7 +243,7 @@ function Posting() {
         </div>
       </div>
       <div
-        class="modal fade"
+        className="modal fade"
         id="exampleModalToggle2"
         aria-hidden="true"
         aria-labelledby="exampleModalToggleLabel2"

@@ -4,12 +4,11 @@ import axios from "axios";
 
 const User = () => {
   const [users, setUsers] = useState([]);
-  console.log(users);
   function getUsers() {
-    const token = localStorage.getItem("access_token");
+    const token = JSON.parse(localStorage.getItem("access_token"));
     const config = {
       headers: {
-        authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token.accessToken}`,
       },
     };
     return axios.get("https://f-homes-be.vercel.app/users", config)
@@ -20,8 +19,18 @@ const User = () => {
         console.error(error);
       });
   }
+  //useEffect này giúp mỗi lần update trang sẽ get lại data ko cần reload trang
+  useEffect(() => {
+    getUsers()
+      .then((data) => {
+        console.log(data); // in ra giá trị trả về
+        setUsers(data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
   
-
   const handlePutUser = (id) => {
     fetch(
       `https://63fc47ff677c41587308cabf.mockapi.io/api/v1/user/user-v1/${id}`,
@@ -84,12 +93,12 @@ const User = () => {
   };
 
   return (
-    <div class="card mt-4">
-      <div class="card-header">
-        <h4 class="card-title"> Users </h4>
+    <div className="card mt-4">
+      <div className="card-header">
+        <h4 className="card-title"> Users </h4>
         <button
           type="button"
-          class="btn btn-primary btn-sm rounded-0 float-end"
+          className="btn btn-primary btn-sm rounded-0 float-end"
           data-bs-toggle="modal"
           data-bs-target="#addModal"
           data-bs-backdrop="static"
@@ -98,9 +107,9 @@ const User = () => {
           Add User
         </button>
       </div>
-      <div class="card-body">
-        <div class="col-md-12">
-          <table class="table table-bordered">
+      <div className="card-body">
+        <div className="col-md-12">
+          <table className="table table-bordered">
             <thead>
               <tr>
                 <th> Id </th>
@@ -122,7 +131,7 @@ const User = () => {
                   </td>
                   <td>{user._id}</td>
                   <td>
-                    <img src={user.img} />
+                    <img src={user.img} className="mx-10" />
                   </td>
                   <td>{user.phoneNumber}</td>
                   <td>

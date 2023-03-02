@@ -31,7 +31,7 @@ const Login = () => {
           );
           if (response.ok) {
             const data = await response.json();
-            if (data !== undefined && data.data.user.roleName !== "admin") {
+            if (data !== undefined && data.data.user.roleName !== "admin" && data.data.user.status.user !== true) {
               localStorage.setItem(
                 "access_token",
                 JSON.stringify(data.data)
@@ -69,7 +69,6 @@ const Login = () => {
     if (typeof userDataString === "string" && userDataString !== "") {
       userData = JSON.parse(userDataString);
     }
-  console.log(userData)
     if (accessToken && userData && userData.user.roleName !== "") {
       navigate("/home");
     } else {
