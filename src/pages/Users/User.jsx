@@ -1,22 +1,25 @@
 import React, { useEffect, useState } from "react";
 import toastr from "cogo-toast";
+import axios from "axios";
 
 const User = () => {
   const [users, setUsers] = useState([]);
   console.log(users);
-  useEffect(() => {
-    async function fetchData() {
-      const token = localStorage.getItem("access_token");
-      const response = await fetch("https://f-homes-be.vercel.app/users", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+  function getUsers() {
+    const token = localStorage.getItem("access_token");
+    const config = {
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+    };
+    return axios.get("https://f-homes-be.vercel.app/users", config)
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error) => {
+        console.error(error);
       });
-      const data = await response.json();
-      setUsers(data);
-    }
-    fetchData();
-  }, []);
+  }
   
 
   const handlePutUser = (id) => {
@@ -90,6 +93,7 @@ const User = () => {
           data-bs-toggle="modal"
           data-bs-target="#addModal"
           data-bs-backdrop="static"
+          onClick={getUsers}
         >
           Add User
         </button>

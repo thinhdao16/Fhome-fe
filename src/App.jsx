@@ -13,22 +13,11 @@ import Upload from "./pages/Uploads/Upload";
 import Posting from "./pages/Postings/Posting";
 function App() {
   return (
-    // <BrowserRouter>
-    //     <Routes>
-    //         <Route path="/" element={<MainLayout />}>
-    //             <Route index element={<Dashboard />} />
-
-    //         </Route>
-    //     </Routes>
-    // </BrowserRouter>
-
     <React.Fragment>
       <AuthContextProvider>
         <BrowserRouter>
           <Routes>
             <Route path="/">
-              {/* <Route path="/home" element={<Protected><Home /></Protected>} />
-                    <Route path="/profile" element={<List />} /> */}
               <Route path="home" element={<MainLayout />}>
                 <Route
                   index

@@ -29,10 +29,9 @@ const Login = () => {
               body,
             }
           );
-          //khi nào có server thì sửa thành if(response.ok)
           if (response.ok) {
             const data = await response.json();
-            if (data !== undefined && data.data.user.roleName !=="admin") {
+            if (data !== undefined && data.data.user.roleName !== "admin") {
               localStorage.setItem(
                 "access_token",
                 JSON.stringify(data.data)
@@ -70,20 +69,13 @@ const Login = () => {
     if (typeof userDataString === "string" && userDataString !== "") {
       userData = JSON.parse(userDataString);
     }
-  
+  console.log(userData)
     if (accessToken && userData && userData.user.roleName !== "") {
       navigate("/home");
     } else {
       navigate("");
     }
   }, [navigate]);
-  
-  
-  
-  
-
-  // rest of the component code
-
   return (
     <div className="body">
       <h1 id="site-logo">

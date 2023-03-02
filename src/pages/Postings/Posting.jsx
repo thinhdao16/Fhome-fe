@@ -8,9 +8,11 @@ import RevenueList from "../../components/revenue-list/RevenueList";
 import Avatar from "react-avatar";
 import { Rating } from "react-simple-star-rating";
 import "./posting.scss";
+import { Link } from "react-router-dom";
 function Posting() {
   const [rating, setRating] = useState(0); // initial rating value
-
+  const userPosting = JSON.parse(localStorage.getItem("access_token"));
+  const userPostings = userPosting.user;
   // Catch Rating value
   const handleRating = (rate) => {
     setRating(rate);
@@ -28,7 +30,7 @@ function Posting() {
                     name="John Doe"
                     size="40"
                     round={true}
-                    src="https://www.example.com/image.jpg"
+                    src={userPostings.img}
                   />
                 </div>
                 <div className="col-md-11">
@@ -38,7 +40,7 @@ function Posting() {
                     href="#exampleModalToggle"
                     role="button"
                   >
-                    Dao oi, ban muon dang gi
+                    {userPostings.fullname} oi, ban muon dang gi
                   </div>
                 </div>
               </div>
@@ -58,14 +60,12 @@ function Posting() {
                     name="John Doe"
                     size="40"
                     round={true}
-                    src="https://www.example.com/image.jpg"
+                    src={userPostings.img}
                   />
                 </div>
                 <div className="col-md-11">
                   <div>
-                    <span className="posting-list__titleName">
-                      thịnh đào
-                    </span>
+                    <span className="posting-list__titleName">thịnh đào</span>
                     <span className="posting-list__titleName__date">
                       1 tháng 3 lúc 10:03
                     </span>
@@ -135,28 +135,30 @@ function Posting() {
           </form>
         </DashboardWrapperMain>
         <DashboardWrapperRight>
-                  <div className='card border-0'>
-                    <div className="row">
-                      <div className="col-md-2">
-                      <Avatar
+          <div className="card border-0">
+            <div className="row">
+              <div className="col-md-2">
+                <Link to="/home/profiles">
+                  <Avatar
                     name="John Doe"
                     size="55"
                     round={true}
-                    src="https://www.example.com/image.jpg"
+                    src={userPostings.img}
                   />
-                      </div>
-                      <div className="col-md-10">
-                        <div className="mt-2  ms-2">
-                        <span className="posting-list__titleName">
-                      thịnh đào
-                    </span>
-                    <span className="posting-list__titleName__date">
-                      user
-                    </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                </Link>
+              </div>
+              <div className="col-md-10">
+                <div className="mt-2  ms-2">
+                <Link to="/home/profiles">
+                  <span className="posting-list__titleName">
+                    {userPostings.fullname}
+                  </span>
+                  </Link>
+                  <span className="posting-list__titleName__date">user</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </DashboardWrapperRight>
       </DashboardWrapper>
       {/* modal */}

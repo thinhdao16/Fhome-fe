@@ -10,7 +10,6 @@ const Profile = () => {
         });
       };
       const userData = JSON.parse(localStorage.getItem("access_token")); 
-      console.log(userData)
   return (
     <div className="body-profile">
       <div className="container">
