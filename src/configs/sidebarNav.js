@@ -24,10 +24,10 @@ const sidebarNav = [
         text: 'Postings'
     },
     {
-        link: 'stats',
-        section: 'stats',
+        link: 'createRooms',
+        section: 'createRooms',
         icon: <i className='bx bx-line-chart'></i>,
-        text: 'Stats'
+        text: 'CreateRooms'
     },
     {
         link: 'settings',

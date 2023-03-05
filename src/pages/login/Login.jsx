@@ -1,41 +1,46 @@
 import "./login.scss";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import GoogleButton from "react-google-button";
 import { Link, useNavigate } from "react-router-dom";
 import { UserAuth } from "../../components/context/AuthContext";
 import { auth } from "../../components/context/firebase";
-
+import clientId from "./client_secret_624291541261-vsnpuqvrn48tah5ju43l048ug23a3hre.apps.googleusercontent.com.json"
+import axios from "axios";
 const Login = () => {
   const navigate = useNavigate();
   const { googleSignIn, user, accessToken } = UserAuth();
+  console.log(user)
   const handleGoogleSignIn = async () => {
     try {
       await googleSignIn();
       if (accessToken !== undefined) {
         // Thêm điều kiện kiểm tra accessToken
         const user = auth.currentUser;
+        console.log(user)
         if (user) {
           const idToken = await user.getIdToken();
           const body = JSON.stringify({ accessToken: accessToken });
-          const response = await fetch(
-            "https://f-homes-be.vercel.app/login",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "Content-Length": body.length.toString(),
-                Authorization: `Bearer ${idToken}`,
-              },
-              body,
-            }
-          );
+          const response = await axios("https://f-homes-be.vercel.app/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Methods": "GET, POST, PATCH, PUT, DELETE, OPTIONS",
+              "Access-Control-Allow-Headers": "Origin, Content-Type, X-Auth-Token",
+              Authorization: `Bearer ${idToken}`,
+            },
+            body,
+          });
+          
+          console.log(response)
           if (response.ok) {
             const data = await response.json();
-            if (data !== undefined && data.data.user.roleName !== "admin" && data.data.user.status.user !== true) {
-              localStorage.setItem(
-                "access_token",
-                JSON.stringify(data.data)
-              );
+            if (
+              data !== undefined &&
+              data.data.user.roleName !== "admin" &&
+              data.data.user.status.user !== true
+            ) {
+              localStorage.setItem("access_token", JSON.stringify(data.data));
               console.log(data);
               navigate("/home");
               //         }
@@ -63,7 +68,7 @@ const Login = () => {
     if (typeof accessTokenString === "string" && accessTokenString !== "") {
       accessToken = JSON.parse(accessTokenString);
     }
-  
+
     const userDataString = localStorage.getItem("access_token");
     let userData = null;
     if (typeof userDataString === "string" && userDataString !== "") {
@@ -92,6 +97,7 @@ const Login = () => {
             <GoogleButton
               className="googleButton"
               onClick={handleGoogleSignIn}
+              data-clientid={clientId.web.client_id}
             />
           </li>
         </ul>
