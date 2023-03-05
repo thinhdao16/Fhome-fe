@@ -1,171 +1,157 @@
+import {
+  Avatar,
+  Button,
+  ButtonGroup,
+  Fab,
+  Modal,
+  Stack,
+  styled,
+  TextField,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import React, { useState } from "react";
-import DashboardWrapper, {
-  DashboardWrapperMain,
-  DashboardWrapperRight,
-} from "../../components/dashboard-wrapper/DashboardWrapper";
-import OverallList from "../../components/overall-list/OverallList";
-import RevenueList from "../../components/revenue-list/RevenueList";
-import Avatar from "react-avatar";
-import { Rating } from "react-simple-star-rating";
-import Modal from './modal/Modal'
-import "./posting.scss";
-function Posting() {
-  const [rating, setRating] = useState(0); // initial rating value
+import Box from '@mui/material/Box';
+// import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select'
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
+// import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
+import {
+  Add as AddIcon,
+  DateRange,
+  EmojiEmotions,
+  Image,
+  PersonAdd,
+  VideoCameraBack,
+} from "@mui/icons-material";
 
-  // Catch Rating value
-  const handleRating = (rate) => {
-    setRating(rate);
-    // Some logic
+// import { IconButton } from "@mui/material";
+// import CloseIcon from '@mui/icons-material/Close';
+// import './stylemodal.scss'
+
+const StyledModal = styled(Modal)({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+});
+
+const UserBox = styled(Box)({
+  display: "flex",
+  alignItems: "center",
+  gap: "10px",
+  marginBottom: "20px",
+});
+
+const Add = () => {
+  const [open, setOpen] = useState(false);
+
+  const [age, setAge] = React.useState('');
+
+  const handleChange = (event) => {
+    setAge(event.target.value);
   };
+
   return (
-    <div className="posting-list">
-      <DashboardWrapper>
-        <DashboardWrapperMain>
-          <form className="card shadow-sm bg-body rounded-3 border-0">
-            <div className="card-body">
-              <div className="row">
-                <div className="col-md-1">
-                  <Avatar
-                    name="John Doe"
-                    size="40"
-                    round={true}
-                    src="https://www.example.com/image.jpg"
-                  />
-                </div>
-                <div className="col-md-11">
-                  <div
-                    class="btn d-block rounded-5 posting-list__whwant"
-                    data-bs-toggle="modal"
-                    href="#exampleModalToggle"
-                    role="button"
-                  >
-                    Dao oi, ban muon dang gi
-                  </div>
-                </div>
-              </div>
-              <hr className="mx-1" />
-              <div class="row px-3 ">
-                <div class="col-md-4 text-center">Video trực tiếp</div>
-                <div class="col-md-4 text-center">Ảnh/video</div>
-                <div class="col-md-4 text-center">Cảm xúc/hoạt động</div>
-              </div>
-            </div>
-          </form>
-          <form className="mt-3">
-            <div className="card p-3 shadow-sm bg-body rounded-3 border-0">
-              <div className="row">
-                <div className="col-md-1">
-                  <Avatar
-                    name="John Doe"
-                    size="40"
-                    round={true}
-                    src="https://www.example.com/image.jpg"
-                  />
-                </div>
-                <div className="col-md-11">
-                  <div>
-                    <span className="posting-list__titleName">
-                      thịnh đào
-                    </span>
-                    <span className="posting-list__titleName__date">
-                      1 tháng 3 lúc 10:03
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <span className="fs-6 posting-list__color-text my-2 d-block">
-                PHÉP THỬ ĐƠN GIẢN: “Với số tiền x triệu Việt Nam Đồng (X từ tiểu
-                học, trung học tới đại học, cao học), tao có thể mua được brand
-                quốc tế A, B, C thay vì mua một local brand (Việt) .” Lời khẳng
-                định đanh như thép, chất như nước cất này là một “tấm bùa hộ
-                mệnh” dành cho bất kỳ một ai đang là anti-local brands hay có
-                một cái nhìn “ác cảm” đối với những thương hiệu Việt hiện tại.
-                Cũng đúng thôi vì đó là “hậu quả xấu” sau những tin nào là:
-                Local brand ăn cắp ý tưởng, local brands làm chất lượng kém,
-                local brands đấu giá những sản phẩm lên tới chục triệu. Nhưng đó
-                thực sự có phải là một “Tấm bùa hộ mệnh” quy chuẩn.
-              </span>
-              <div className="posting-img rounded-3">
-                <div className="px-5">
-                  <img
-                    className="rounded-3"
-                    src="https://scontent.fsgn5-8.fna.fbcdn.net/v/t39.30808-6/334252997_1137915373570538_7254530606042011463_n.jpg?stp=cp6_dst-jpg&_nc_cat=109&ccb=1-7&_nc_sid=8bfeb9&_nc_ohc=0LGQuCMKq8MAX90HgLu&_nc_ht=scontent.fsgn5-8.fna&oh=00_AfCqHNi4xdkye3JyR4YnrleEhexZDFffrpOkvI4QsfONvA&oe=64036A4D"
-                    alt=""
-                  />
-                </div>
-              </div>
-              <div className=" mx-4 mt-2 ">
-                <div className="float-start posting-list__feel">4.9rating</div>
-                <div className="float-end">
-                  <a href="" className="posting-list__feel">
-                    {" "}
-                    233 comment
-                  </a>
-                </div>
-              </div>
-              <hr className="posting-list__hr" />
-              <div className="px-5 ">
-                <div className="float-start">
-                  {" "}
-                  <div>
-                    <div className="d-inline">
-                      {" "}
-                      <Rating
-                        onClick={handleRating}
-                        ratingValue={rating}
-                        size={20}
-                        label
-                        transition
-                        fillColor="orange"
-                        emptyColor="gray"
-                        className="foo" // Will remove the inline style if applied
-                      />
-                    </div>
-                    <span className="posting-list__feel__icon">{rating}</span>
-                  </div>
-                  {/* Use rating value */}
-                </div>
-                <div className="float-end">
-                  <a href="" className="posting-list__feel__icon">
-                    {" "}
-                    <i class="bx bx-message-square-dots me-2 "></i>Comment
-                  </a>
-                </div>
-              </div>
-            </div>
-          </form>
-        </DashboardWrapperMain>
-        <DashboardWrapperRight>
-          <div className='card border-0'>
-            <div className="row">
-              <div className="col-md-2">
-                <Avatar
-                  name="John Doe"
-                  size="55"
-                  round={true}
-                  src="https://www.example.com/image.jpg"
-                />
-              </div>
-              <div className="col-md-10">
-                <div className="mt-2  ms-2">
-                  <span className="posting-list__titleName">
-                    thịnh đào
-                  </span>
-                  <span className="posting-list__titleName__date">
-                    user
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </DashboardWrapperRight>
-      </DashboardWrapper>
+    <>
+
+      <Tooltip
+        onClick={(e) => setOpen(true)}
+        title="Delete"
+        sx={{
+          position: "fixed",
+          bottom: 20,
+          left: { xs: "calc(50% - 25px)", md: 30 },
+        }}
+      >
+        <Fab color="primary" aria-label="add">
+          <AddIcon />
+        </Fab>
+      </Tooltip>
       {/* Modal */}
-      <Modal />
-        {/* Modal */}
 
-    </div>
+
+      <StyledModal
+        open={open}
+        onClose={(e) => setOpen(false)}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box width={500} height={380} bgcolor="white" p={3} borderRadius={5}>
+          <Typography variant="h4" color="gray" textAlign="center">Tạo bài viết</Typography>
+          <hr width="100%" size="5px" align="center" color="gray" />
+          <UserBox>
+
+            <Avatar
+              src="https://images.pexels.com/photos/846741/pexels-photo-846741.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+              sx={{ width: 55, height: 55, marginTop: 1 }}
+            />
+            <Typography fontWeight={700} sx={{ marginTop: -3 }} variant="span">Thịnh Đào</Typography>
+            <FormControl sx={{ minWidth: 120, height: 10 }}>
+              <Select sx={{ width: 120, height: 30, marginTop: 1, marginLeft: -11, backgroundColor: 'gray', color: 'white' }}
+
+                value={age}
+                onChange={handleChange}
+                displayEmpty
+                inputProps={{ 'aria-label': 'Without label' }}
+              >
+                <MenuItem value="">
+                  Công khai
+                </MenuItem>
+                <MenuItem value={10}>Bạn bè</MenuItem>
+                <MenuItem value={20}>Chỉ mình tôi</MenuItem>
+                <MenuItem value={30}>Bạn bè cụ thể</MenuItem>
+              </Select>
+            </FormControl>
+
+
+          </UserBox>
+          <TextField
+            sx={{ width: "100%" }}
+            id="standard-multiline-static"
+            multiline
+            rows={5}
+            placeholder="Thịnh Đào ơi, bạn đang nghỉ gì thế ?"
+            variant="standard"
+            placeholderTypographyProps={{ fontSize: 20 }}
+            InputProps={{
+              endAdornment: (
+                <SentimentSatisfiedAltIcon sx={{ position: 'absolute', right: '10px', top: '80%', transform: 'translateY(-50%)' }} />
+              )
+            }}
+          />
+
+          <Box sx={{ border: '2px solid #ccc', borderRadius: '4px', padding: '0px' }}>
+            <Stack direction="row" gap={6} mt={2} mb={3}>
+              <Typography sx={{ fontSize: '17px' }}>Thêm vào bài viết của bạn</Typography>
+              <div sx={{ display: 'flex' }}>
+                <EmojiEmotions sx={{ marginRight: '25px' }} color="primary" />
+                <Image sx={{ marginRight: '25px' }} color="secondary" />
+                <VideoCameraBack sx={{ marginRight: '25px' }} color="success" />
+                <PersonAdd sx={{ marginRight: '25px' }} color="error" />
+                <MoreHorizIcon />
+              </div>
+            </Stack>
+          </Box>
+
+          <ButtonGroup
+            sx={{ marginTop: '10px' }}
+            fullWidth
+            variant="contained"
+            aria-label="outlined primary button group"
+          >
+            <Button>Đăng</Button>
+            <Button sx={{ width: "100px" }}>
+              <DateRange />
+            </Button>
+          </ButtonGroup>
+        </Box>
+      </StyledModal>
+
+    </>
   );
-}
+};
 
-export default Posting;
+export default Add;
