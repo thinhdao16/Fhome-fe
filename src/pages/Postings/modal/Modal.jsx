@@ -1,29 +1,22 @@
 import React, { useState } from "react";
-import Box from "@mui/material/Box";
-import BottomNavigation from "@mui/material/BottomNavigation";
-import BottomNavigationAction from "@mui/material/BottomNavigationAction";
-import ReportGmailerrorredIcon from '@mui/icons-material/ReportGmailerrorred';
-import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import DashboardWrapper, {
   DashboardWrapperMain,
   DashboardWrapperRight,
 } from "../../components/dashboard-wrapper/DashboardWrapper";
+import OverallList from "../../components/overall-list/OverallList";
+import RevenueList from "../../components/revenue-list/RevenueList";
 import Avatar from "react-avatar";
-import Modal from './modal/Modal'
 import { Rating } from "react-simple-star-rating";
+import Modal from './modal/Modal'
 import "./posting.scss";
-import { Link } from "react-router-dom";
-
 function Posting() {
   const [rating, setRating] = useState(0); // initial rating value
-  const userPosting = JSON.parse(localStorage.getItem("access_token"));
-  const userPostings = userPosting.user;
+
   // Catch Rating value
   const handleRating = (rate) => {
     setRating(rate);
     // Some logic
   };
-  const [value, setValue] = React.useState(0);
   return (
     <div className="posting-list">
       <DashboardWrapper>
@@ -36,25 +29,25 @@ function Posting() {
                     name="John Doe"
                     size="40"
                     round={true}
-                    src={userPostings.img}
+                    src="https://www.example.com/image.jpg"
                   />
                 </div>
                 <div className="col-md-11">
                   <div
-                    className="btn d-block rounded-5 posting-list__whwant"
+                    class="btn d-block rounded-5 posting-list__whwant"
                     data-bs-toggle="modal"
                     href="#exampleModalToggle"
                     role="button"
                   >
-                    {userPostings.fullname} oi, ban muon dang gi
+                    Dao oi, ban muon dang gi
                   </div>
                 </div>
               </div>
               <hr className="mx-1" />
-              <div className="row px-3 ">
-                <div className="col-md-4 text-center">Video trực tiếp</div>
-                <div className="col-md-4 text-center">Ảnh/video</div>
-                <div className="col-md-4 text-center">Cảm xúc/hoạt động</div>
+              <div class="row px-3 ">
+                <div class="col-md-4 text-center">Video trực tiếp</div>
+                <div class="col-md-4 text-center">Ảnh/video</div>
+                <div class="col-md-4 text-center">Cảm xúc/hoạt động</div>
               </div>
             </div>
           </form>
@@ -66,12 +59,14 @@ function Posting() {
                     name="John Doe"
                     size="40"
                     round={true}
-                    src={userPostings.img}
+                    src="https://www.example.com/image.jpg"
                   />
                 </div>
                 <div className="col-md-11">
                   <div>
-                    <span className="posting-list__titleName">thịnh đào</span>
+                    <span className="posting-list__titleName">
+                      thịnh đào
+                    </span>
                     <span className="posting-list__titleName__date">
                       1 tháng 3 lúc 10:03
                     </span>
@@ -99,7 +94,7 @@ function Posting() {
                   />
                 </div>
               </div>
-              <div className=" mx-4 my-2 ">
+              <div className=" mx-4 mt-2 ">
                 <div className="float-start posting-list__feel">4.9rating</div>
                 <div className="float-end">
                   <a href="" className="posting-list__feel">
@@ -109,7 +104,7 @@ function Posting() {
                 </div>
               </div>
               <hr className="posting-list__hr" />
-              {/* <div className="px-5 text-center   ">
+              <div className="px-5 ">
                 <div className="float-start">
                   {" "}
                   <div>
@@ -123,89 +118,52 @@ function Posting() {
                         transition
                         fillColor="orange"
                         emptyColor="gray"
-                        className="foo" 
+                        className="foo" // Will remove the inline style if applied
                       />
                     </div>
                     <span className="posting-list__feel__icon">{rating}</span>
                   </div>
-                </div>
-                <div className="d-block">
-                  <Link to=""> <ReportGmailerrorredIcon/> Báo cáo</Link>
+                  {/* Use rating value */}
                 </div>
                 <div className="float-end">
                   <a href="" className="posting-list__feel__icon">
                     {" "}
-                    <i className="bx bx-message-square-dots me-2 "></i>Comment
+                    <i class="bx bx-message-square-dots me-2 "></i>Comment
                   </a>
                 </div>
-              </div> */}
-
-              <Box sx={{}}>
-                <BottomNavigation
-                  showLabels
-                  value={value}
-                  onChange={(event, newValue) => {
-                    setValue(newValue);
-                  }}
-                >
-                  <BottomNavigationAction
-                    label={rating}
-                    icon={
-                      <Rating
-                        onClick={handleRating}
-                        ratingValue={rating}
-                        size={30}
-                        label
-                        transition
-                        fillColor="orange"
-                        emptyColor="gray"
-                        className="foo d-block"
-                      />
-                    }
-                  />
-                  <BottomNavigationAction
-                    label="Bình luận"
-                    icon={<ChatBubbleOutlineIcon />}
-                  />
-                  <BottomNavigationAction
-                    label="Báo cáo"
-                    icon={<ReportGmailerrorredIcon />}
-                  />
-                </BottomNavigation>
-              </Box>
+              </div>
             </div>
           </form>
         </DashboardWrapperMain>
         <DashboardWrapperRight>
-          <div className="card border-0">
+          <div className='card border-0'>
             <div className="row">
               <div className="col-md-2">
-                <Link to="/home/profiles">
-                  <Avatar
-                    name="John Doe"
-                    size="55"
-                    round={true}
-                    src={userPostings.img}
-                  />
-                </Link>
+                <Avatar
+                  name="John Doe"
+                  size="55"
+                  round={true}
+                  src="https://www.example.com/image.jpg"
+                />
               </div>
               <div className="col-md-10">
                 <div className="mt-2  ms-2">
-                  <Link to="/home/profiles">
-                    <span className="posting-list__titleName">
-                      {userPostings.fullname}
-                    </span>
-                  </Link>
-                  <span className="posting-list__titleName__date">user</span>
+                  <span className="posting-list__titleName">
+                    thịnh đào
+                  </span>
+                  <span className="posting-list__titleName__date">
+                    user
+                  </span>
                 </div>
               </div>
             </div>
           </div>
         </DashboardWrapperRight>
       </DashboardWrapper>
-      {/* modal */}
+      {/* Modal */}
       <Modal />
-      {/* modal */}
+        {/* Modal */}
+
     </div>
   );
 }

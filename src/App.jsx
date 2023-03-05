@@ -32,7 +32,7 @@ function App() {
                 <Route path="uploads" element={<Protected><Upload /></Protected>} />
                 <Route path="postings" element={<Protected><Posting /></Protected>} />
                 <Route path="settings" element={<Protected><User /></Protected>} />
-                <Route path="createRooms" element={<Protected><CreateRoom /></Protected>} />
+                <Route path="stats" element={<Protected><User /></Protected>} />
                 <Route path="profiles" element={<Protected><Profile /></Protected>} />
               </Route>
               <Route exact path="" element={<Login />} />
@@ -41,6 +41,7 @@ function App() {
         </BrowserRouter>
       </AuthContextProvider>
     </React.Fragment>
+ 
   );
 }
 
