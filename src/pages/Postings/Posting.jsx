@@ -9,7 +9,6 @@ import DashboardWrapper, {
   DashboardWrapperRight,
 } from "../../components/dashboard-wrapper/DashboardWrapper";
 import Avatar from "react-avatar";
-import Modal from './modal/Modal'
 import { Rating } from "react-simple-star-rating";
 import "./posting.scss";
 import { Link } from "react-router-dom";
@@ -204,7 +203,6 @@ function Posting() {
         </DashboardWrapperRight>
       </DashboardWrapper>
       {/* modal */}
-      <Modal />
       {/* modal */}
     </div>
   );

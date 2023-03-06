@@ -4,44 +4,42 @@ import GoogleButton from "react-google-button";
 import { Link, useNavigate } from "react-router-dom";
 import { UserAuth } from "../../components/context/AuthContext";
 import { auth } from "../../components/context/firebase";
-import clientId from "./client_secret_624291541261-vsnpuqvrn48tah5ju43l048ug23a3hre.apps.googleusercontent.com.json"
+import clientId from "./client_secret_624291541261-vsnpuqvrn48tah5ju43l048ug23a3hre.apps.googleusercontent.com.json";
 import axios from "axios";
 const Login = () => {
   const navigate = useNavigate();
   const { googleSignIn, user, accessToken } = UserAuth();
-  console.log(user)
+  // console.log(user);
   const handleGoogleSignIn = async () => {
     try {
       await googleSignIn();
       if (accessToken !== undefined) {
         // Thêm điều kiện kiểm tra accessToken
         const user = auth.currentUser;
-        console.log(user)
+        console.log(user);
         if (user) {
           const idToken = await user.getIdToken();
-          const body = JSON.stringify({ accessToken: accessToken });
-          const response = await axios("https://f-homes-be.vercel.app/login", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Access-Control-Allow-Origin": "*",
-              "Access-Control-Allow-Methods": "GET, POST, PATCH, PUT, DELETE, OPTIONS",
-              "Access-Control-Allow-Headers": "Origin, Content-Type, X-Auth-Token",
-              Authorization: `Bearer ${idToken}`,
-            },
-            body,
-          });
-          
-          console.log(response)
-          if (response.ok) {
-            const data = await response.json();
+          const accessToken = await user.getIdToken(true);
+          const response = await axios.post(
+            "https://f-homes-be.vercel.app/login",
+            { accessToken: accessToken },
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${idToken}`,
+              },
+            }
+          );
+          console.log(response);
+          if (response.status = 200) {
+            // const data = await response.json();
             if (
-              data !== undefined &&
-              data.data.user.roleName !== "admin" &&
-              data.data.user.status.user !== true
+              response !== undefined 
+              // response.data.user.roleName !== "admin" &&
+              // response.data.user.status.user !== true
             ) {
-              localStorage.setItem("access_token", JSON.stringify(data.data));
-              console.log(data);
+              localStorage.setItem("access_token", JSON.stringify(response.data));
+              console.log(response);
               navigate("/home");
               //         }
             } else {
