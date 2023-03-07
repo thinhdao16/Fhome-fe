@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
-import ReportGmailerrorredIcon from '@mui/icons-material/ReportGmailerrorred';
-import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred";
+import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import DashboardWrapper, {
   DashboardWrapperMain,
   DashboardWrapperRight,
@@ -12,16 +12,81 @@ import Avatar from "react-avatar";
 import { Rating } from "react-simple-star-rating";
 import "./posting.scss";
 import { Link } from "react-router-dom";
+import PostingModal from "./PostingModal";
+import axios from "axios";
+import CropIcon from '@mui/icons-material/Crop';
+import RoofingOutlinedIcon from '@mui/icons-material/RoofingOutlined';
+import PriceChangeOutlinedIcon from '@mui/icons-material/PriceChangeOutlined';
+// import PostModal from "./PostMoal";
 
 function Posting() {
   const [rating, setRating] = useState(0); // initial rating value
   const userPosting = JSON.parse(localStorage.getItem("access_token"));
-  const userPostings = userPosting.user;
+  const userPostings = userPosting.data.user;
   // Catch Rating value
   const handleRating = (rate) => {
     setRating(rate);
     // Some logic
   };
+  const [data, setData] = useState({
+    buildings: ([]),
+    postings: ([]),
+    rooms: ([]),
+    users: ([]),
+  });
+  const dataPost = data.postings;
+  console.log(dataPost);
+
+  useEffect(() => {
+    Promise.all([
+      axios.get("https://fhome-be.vercel.app/getBuildings"),
+      axios.get("https://fhome-be.vercel.app/getAllPostings"),
+      axios.get("https://fhome-be.vercel.app/getRooms"), // Thêm API mới vào đây
+      axios.get("https://fhome-be.vercel.app/getUser"),
+    ])
+      .then((responses) => {
+        const buildings = responses[0].data.data.buildings;
+        const postings = responses[1].data.data.postings;
+        const rooms = responses[2].data.data.rooms;
+        const users = responses[3].data.data.users; // Lấy thông tin phòng từ API mới
+        const newData = postings.map((post) => {
+          const building = buildings.find((b) => b._id === post.buildings);
+          const buildingName = building ? building.buildingName : "";
+
+          const room = rooms.find((r) => r._id === post.rooms); // Tìm thông tin phòng theo id
+          const roomPrice = room ? room.price : "";
+          const roomSize = room ? room.size : "";
+
+          const user = users.find((u) => u._id === post.users);
+          const userEmail = user ? user.email : "";
+          const userFullName = user ? user.fullName : "";
+          const userImg = user ? user.img : "";
+          return {
+            ...post,
+            buildingName,
+            roomPrice, // Thêm thông tin giá phòng vào bài đăng
+            roomSize, // Thêm thông tin diện tích phòng vào bài đăng
+            userEmail,
+            userFullName,
+            userImg,
+          };
+        });
+
+        const buildingIds = newData.map((post) => post.buildings);
+        const filteredBuildingIds = buildings
+          .filter((b) => buildingIds.includes(b._id))
+          .map((b) => b._id);
+
+        setData({
+          users,
+          rooms,
+          buildings,
+          postings: newData,
+          buildingIds: filteredBuildingIds,
+        });
+      })
+      .catch((error) => console.log(error));
+  }, []);
   const [value, setValue] = React.useState(0);
   return (
     <div className="posting-list">
@@ -39,15 +104,17 @@ function Posting() {
                   />
                 </div>
                 <div className="col-md-11">
-                  <div
+                  <PostingModal
                     className="btn d-block rounded-5 posting-list__whwant"
                     data-bs-toggle="modal"
                     href="#exampleModalToggle"
                     role="button"
                   >
+                    {" "}
                     {userPostings.fullname} oi, ban muon dang gi
-                  </div>
+                  </PostingModal>
                 </div>
+                {/* <PostModal /> */}
               </div>
               <hr className="mx-1" />
               <div className="row px-3 ">
@@ -57,123 +124,94 @@ function Posting() {
               </div>
             </div>
           </form>
-          <form className="mt-3">
-            <div className="card p-3 shadow-sm bg-body rounded-3 border-0">
-              <div className="row">
-                <div className="col-md-1">
-                  <Avatar
-                    name="John Doe"
-                    size="40"
-                    round={true}
-                    src={userPostings.img}
-                  />
-                </div>
-                <div className="col-md-11">
-                  <div>
-                    <span className="posting-list__titleName">thịnh đào</span>
-                    <span className="posting-list__titleName__date">
-                      1 tháng 3 lúc 10:03
-                    </span>
+          {Array.isArray(dataPost) && dataPost.map((post) => (
+            <form className="mt-3">
+              <div className="card p-3 shadow-sm bg-body rounded-3 border-0">
+                <div className="row">
+                  <div className="col-md-1">
+                    <Avatar
+                      name={userPosting.fullName}
+                      size="40"
+                      round={true}
+                      src={post.userImg}
+                    />
                   </div>
-                </div>
-              </div>
-              <span className="fs-6 posting-list__color-text my-2 d-block">
-                PHÉP THỬ ĐƠN GIẢN: “Với số tiền x triệu Việt Nam Đồng (X từ tiểu
-                học, trung học tới đại học, cao học), tao có thể mua được brand
-                quốc tế A, B, C thay vì mua một local brand (Việt) .” Lời khẳng
-                định đanh như thép, chất như nước cất này là một “tấm bùa hộ
-                mệnh” dành cho bất kỳ một ai đang là anti-local brands hay có
-                một cái nhìn “ác cảm” đối với những thương hiệu Việt hiện tại.
-                Cũng đúng thôi vì đó là “hậu quả xấu” sau những tin nào là:
-                Local brand ăn cắp ý tưởng, local brands làm chất lượng kém,
-                local brands đấu giá những sản phẩm lên tới chục triệu. Nhưng đó
-                thực sự có phải là một “Tấm bùa hộ mệnh” quy chuẩn.
-              </span>
-              <div className="posting-img rounded-3">
-                <div className="px-5">
-                  <img
-                    className="rounded-3"
-                    src="https://scontent.fsgn5-8.fna.fbcdn.net/v/t39.30808-6/334252997_1137915373570538_7254530606042011463_n.jpg?stp=cp6_dst-jpg&_nc_cat=109&ccb=1-7&_nc_sid=8bfeb9&_nc_ohc=0LGQuCMKq8MAX90HgLu&_nc_ht=scontent.fsgn5-8.fna&oh=00_AfCqHNi4xdkye3JyR4YnrleEhexZDFffrpOkvI4QsfONvA&oe=64036A4D"
-                    alt=""
-                  />
-                </div>
-              </div>
-              <div className=" mx-4 my-2 ">
-                <div className="float-start posting-list__feel">4.9rating</div>
-                <div className="float-end">
-                  <a href="" className="posting-list__feel">
-                    {" "}
-                    233 comment
-                  </a>
-                </div>
-              </div>
-              <hr className="posting-list__hr" />
-              {/* <div className="px-5 text-center   ">
-                <div className="float-start">
-                  {" "}
-                  <div>
-                    <div className="d-inline">
-                      {" "}
-                      <Rating
-                        onClick={handleRating}
-                        ratingValue={rating}
-                        size={20}
-                        label
-                        transition
-                        fillColor="orange"
-                        emptyColor="gray"
-                        className="foo" 
-                      />
+                  <div className="col-md-11">
+                    <div>
+                      <span className="posting-list__titleName">
+                        {post.userFullName}
+                      </span>
+                      <span className="posting-list__titleName__date">
+                        {post.createdAt}
+                      </span>
                     </div>
-                    <span className="posting-list__feel__icon">{rating}</span>
                   </div>
                 </div>
-                <div className="d-block">
-                  <Link to=""> <ReportGmailerrorredIcon/> Báo cáo</Link>
+                <span className="fs-6 posting-list__color-text mt-2  d-block fw-bolder">
+                  {post.title}
+                </span>
+                <div className="row">
+                <div className="col-md-4 text-center"><CropIcon/> {post.roomSize}</div>
+                <div className="col-md-4 text-center"> <RoofingOutlinedIcon/> {post.buildingName}</div>
+                <div className="col-md-4 text-center"><PriceChangeOutlinedIcon />{post.roomPrice} </div>
                 </div>
-                <div className="float-end">
-                  <a href="" className="posting-list__feel__icon">
-                    {" "}
-                    <i className="bx bx-message-square-dots me-2 "></i>Comment
-                  </a>
+              
+                <span className="fs-6 posting-list__color-text my-2 d-block">
+                  {post.description}
+                </span>
+                {/* <div className="posting-img rounded-3"> */}
+                  {/* <div className="px-5"> */}
+                    <img className="rounded-3 mt-3" src={post} alt="" />
+                  {/* </div> */}
+                {/* </div> */}
+                <div className=" mx-4 my-2 ">
+                  <div className="float-start posting-list__feel">
+                    4.9rating
+                  </div>
+                  <div className="float-end">
+                    <a href="" className="posting-list__feel">
+                      {" "}
+                      233 comment
+                    </a>
+                  </div>
                 </div>
-              </div> */}
-
-              <Box sx={{}}>
-                <BottomNavigation
-                  showLabels
-                  value={value}
-                  onChange={(event, newValue) => {
-                    setValue(newValue);
-                  }}
-                >
-                  <BottomNavigationAction
-                    label={rating}
-                    icon={
-                      <Rating
-                        onClick={handleRating}
-                        ratingValue={rating}
-                        size={30}
-                        label
-                        transition
-                        fillColor="orange"
-                        emptyColor="gray"
-                        className="foo d-block"
-                      />
-                    }
-                  />
-                  <BottomNavigationAction
-                    label="Bình luận"
-                    icon={<ChatBubbleOutlineIcon />}
-                  />
-                  <BottomNavigationAction
-                    label="Báo cáo"
-                    icon={<ReportGmailerrorredIcon />}
-                  />
-                </BottomNavigation>
-              </Box>
-            </div>
-          </form>
+                <hr className="posting-list__hr" />
+                <Box sx={{}}>
+                  <BottomNavigation
+                    showLabels
+                    value={value}
+                    onChange={(event, newValue) => {
+                      setValue(newValue);
+                    }}
+                  >
+                    <BottomNavigationAction
+                      label={rating}
+                      icon={
+                        <Rating
+                          onClick={handleRating}
+                          ratingValue={rating}
+                          size={30}
+                          label
+                          transition
+                          fillColor="orange"
+                          emptyColor="gray"
+                          className="foo d-block"
+                        />
+                      }
+                    />
+                    <BottomNavigationAction
+                      label="Bình luận"
+                      icon={<ChatBubbleOutlineIcon />}
+                    />
+                    <BottomNavigationAction
+                      label="Báo cáo"
+                      icon={<ReportGmailerrorredIcon />}
+                    />
+                  </BottomNavigation>
+                </Box>
+              </div>
+            </form>
+          ))}
         </DashboardWrapperMain>
         <DashboardWrapperRight>
           <div className="card border-0">

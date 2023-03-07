@@ -11,7 +11,7 @@ const User = () => {
         Authorization: `Bearer ${token.accessToken}`,
       },
     };
-    return axios.get("https://f-homes-be.vercel.app/users", config)
+    return axios.get("https://fhome-be.vercel.app/getUser", config)
       .then((response) => {
         return response.data;
       })
@@ -23,65 +23,65 @@ const User = () => {
   useEffect(() => {
     getUsers()
       .then((data) => {
-        console.log(data); // in ra giá trị trả về
-        setUsers(data);
+        console.log(data.data.users); // in ra giá trị trả về
+        setUsers(data.data.users);
       })
       .catch((error) => {
         console.error(error);
       });
   }, []);
   
-  const handlePutUser = (id) => {
-    fetch(
-      `https://63fc47ff677c41587308cabf.mockapi.io/api/v1/user/user-v1/${id}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          status: true,
-          roleName: "landlord",
-        }),
-      }
-    )
-      .then((res) => res.json())
-      .then((result) => {
-        // update state to re-render the component
-        setUsers((prevData) => {
-          const updatedData = prevData.map((item) => {
-            if (item.id === result.id) {
-              return result;
-            } else {
-              return item;
-            }
-          });
-          return updatedData;
-        });
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
-  const handleDeleteUser = (id) => {
-    fetch(
-      `https://63fc47ff677c41587308cabf.mockapi.io/api/v1/user/user-v1/${id}`,
-      {
-        method: "DELETE",
-      }
-    )
-      .then((res) => res.json())
-      .then((result) => {
-        // update state to re-render the component
-        setUsers((prevData) => {
-          const filteredData = prevData.filter((item) => item.id !== id);
-          return filteredData;
-        });
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
+  // const handlePutUser = (id) => {
+  //   fetch(
+  //     `https://63fc47ff677c41587308cabf.mockapi.io/api/v1/user/user-v1/${id}`,
+  //     {
+  //       method: "PUT",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({
+  //         status: true,
+  //         roleName: "landlord",
+  //       }),
+  //     }
+  //   )
+  //     .then((res) => res.json())
+  //     .then((result) => {
+  //       // update state to re-render the component
+  //       setUsers((prevData) => {
+  //         const updatedData = prevData.map((item) => {
+  //           if (item.id === result.id) {
+  //             return result;
+  //           } else {
+  //             return item;
+  //           }
+  //         });
+  //         return updatedData;
+  //       });
+  //     })
+  //     .catch((error) => {
+  //       console.error(error);
+  //     });
+  // };
+  // const handleDeleteUser = (id) => {
+  //   fetch(
+  //     `https://63fc47ff677c41587308cabf.mockapi.io/api/v1/user/user-v1/${id}`,
+  //     {
+  //       method: "DELETE",
+  //     }
+  //   )
+  //     .then((res) => res.json())
+  //     .then((result) => {
+  //       // update state to re-render the component
+  //       setUsers((prevData) => {
+  //         const filteredData = prevData.filter((item) => item.id !== id);
+  //         return filteredData;
+  //       });
+  //     })
+  //     .catch((error) => {
+  //       console.error(error);
+  //     });
+  // };
   const [selectedUsers, setSelectedUsers] = useState([]);
 
   const handleSelectUser = (id) => {
@@ -138,14 +138,14 @@ const User = () => {
                     <button
                       type="button"
                       className="btn btn-primary btn-sm"
-                      onClick={() => handlePutUser(user.id)}
+                      // onClick={() => handlePutUser(user.id)}
                     >
                       Edit
                     </button>{" "}
                     <button
                       type="button"
                       className="btn btn-danger btn-sm"
-                      onClick={() => handleDeleteUser(user.id)}
+                      // onClick={() => handleDeleteUser(user.id)}
                     >
                       Delete
                     </button>

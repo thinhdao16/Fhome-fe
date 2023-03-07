@@ -7,11 +7,14 @@ import {
   onAuthStateChanged,
 } from "firebase/auth";
 import { auth } from "../context/firebase";
+import axios from "axios";
 const AuthContext = createContext();
 
 export function AuthContextProvider({ children }) {
   const [user, setUser] = useState({});
   const [accessToken, setAccessToken] = useState("");
+  const [buildings, setBuildings] = useState([]);
+  const buildingsData = buildings.data
   const googleSignIn = async () => {
     const provider = new GoogleAuthProvider();
     const result = await signInWithPopup(auth, provider);
@@ -37,8 +40,19 @@ export function AuthContextProvider({ children }) {
       unsubscribe();
     };
   }, [user]);
+  useEffect(() => {
+    axios
+      .get("https://fhome-be.vercel.app/getBuildings")
+      .then((response) => {
+        setBuildings(response.data);
+        localStorage.setItem("buildings", JSON.stringify(response.data));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
   return (
-    <AuthContext.Provider value={{ googleSignIn, logOut, user, accessToken }}>
+    <AuthContext.Provider value={{ googleSignIn, logOut, user, accessToken,buildingsData }}>
       {children}
     </AuthContext.Provider>
   );

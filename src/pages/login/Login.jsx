@@ -1,5 +1,5 @@
 import "./login.scss";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import GoogleButton from "react-google-button";
 import { Link, useNavigate } from "react-router-dom";
 import { UserAuth } from "../../components/context/AuthContext";
@@ -21,7 +21,7 @@ const Login = () => {
           const idToken = await user.getIdToken();
           const accessToken = await user.getIdToken(true);
           const response = await axios.post(
-            "https://f-homes-be.vercel.app/login",
+            "https://fhome-be.vercel.app/login",
             { accessToken: accessToken },
             {
               headers: {
@@ -35,8 +35,8 @@ const Login = () => {
             // const data = await response.json();
             if (
               response !== undefined 
-              // response.data.user.roleName !== "admin" &&
-              // response.data.user.status.user !== true
+              &&response.data.data.user.roleName !== "admin" &&
+              response.data.data.user.status.user !== true
             ) {
               localStorage.setItem("access_token", JSON.stringify(response.data));
               console.log(response);
@@ -60,6 +60,7 @@ const Login = () => {
       console.log("error", error);
     }
   };
+
   useEffect(() => {
     const accessTokenString = localStorage.getItem("access_token");
     let accessToken = null;
@@ -72,7 +73,7 @@ const Login = () => {
     if (typeof userDataString === "string" && userDataString !== "") {
       userData = JSON.parse(userDataString);
     }
-    if (accessToken && userData && userData.user.roleName !== "") {
+    if (accessToken && userData && userData.user.roleName !== "admin") {
       navigate("/home");
     } else {
       navigate("");
