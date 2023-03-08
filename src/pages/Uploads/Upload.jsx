@@ -51,24 +51,19 @@ export default function Upload() {
     }
 
     var formData = new FormData();
+    formData.append("title", title);
+    formData.append("description", description);
+    formData.append("buildings", building);
+    formData.append("rooms", room);
     formData.append("img", selectedFile);
 
     axios
-      .post(
-        "https://fhome-be.vercel.app/postingNew",
-        {
-          title: title,
-          description: description,
-          buildings: building,
-          rooms: room,
+      .post("https://fhome-be.vercel.app/createPosting",formData, {
+        headers: {
+          Authorization: `Bearer ${token.data.accessToken}`,
+          "Content-Type": "multipart/form-data",
         },
-        {
-          headers: {
-            Authorization: `Bearer ${token.data.accessToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      )
+      })
       .then((response) => {
         console.log(response.data);
         toast.success("Successfully!");
