@@ -42,13 +42,13 @@ function Posting() {
       axios.get("https://fhome-be.vercel.app/getBuildings"),
       axios.get("https://fhome-be.vercel.app/getAllPostings"),
       axios.get("https://fhome-be.vercel.app/getRooms"), // Thêm API mới vào đây
-      axios.get("https://fhome-be.vercel.app/getUser"),
+      axios.get("https://fhome-be.vercel.app/getAllUsers"),
     ])
       .then((responses) => {
         const buildings = responses[0].data.data.buildings;
         const postings = responses[1].data.data.postings;
         const rooms = responses[2].data.data.rooms;
-        const users = responses[3].data.data.users; // Lấy thông tin phòng từ API mới
+        const users = responses[3].data; // Lấy thông tin phòng từ API mới
         const newData = postings.map((post) => {
           const building = buildings.find((b) => b._id === post.buildings);
           const buildingName = building ? building.buildingName : "";
@@ -57,9 +57,9 @@ function Posting() {
           const roomPrice = room ? room.price : "";
           const roomSize = room ? room.size : "";
 
-          const user = users.find((u) => u._id === post.users);
+          const user = users.find((u) => u._id === post.userPosting);
           const userEmail = user ? user.email : "";
-          const userFullName = user ? user.fullName : "";
+          const userFullName = user ? user.fullname : "";
           const userImg = user ? user.img : "";
           return {
             ...post,
@@ -131,7 +131,7 @@ function Posting() {
                   <div className="row">
                     <div className="col-md-1">
                       <Avatar
-                        name={userPosting.fullName}
+                        name={userPosting.fullname}
                         size="40"
                         round={true}
                         src={post.userImg}
@@ -170,7 +170,7 @@ function Posting() {
                   </span>
                   {/* <div className="posting-img rounded-3"> */}
                   {/* <div className="px-5"> */}
-                  <img className="rounded-3 mt-3" src={post} alt="" />
+                  <img className="rounded-3 mt-3" src={post.img} alt="" />
                   {/* </div> */}
                   {/* </div> */}
                   <div className=" mx-4 my-2 ">

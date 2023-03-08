@@ -43,7 +43,7 @@ export function AuthContextProvider({ children }) {
   }, [user]);
   useEffect(() => {
     const storedBuildings = JSON.parse(localStorage.getItem("buildings"));
-    const storedApartments = JSON.parse(localStorage.getItem("apartments"));
+    const storedApartments = JSON.parse(localStorage.getItem("account_start"));
   
     if (storedBuildings) {
       setBuildings(storedBuildings);
