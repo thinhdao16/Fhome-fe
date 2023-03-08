@@ -15,6 +15,7 @@ export function AuthContextProvider({ children }) {
   const [accessToken, setAccessToken] = useState("");
   const [buildings, setBuildings] = useState([]);
   const buildingsData = buildings.data
+  const [accountStart, setAccountStart] = useState([]); 
   const googleSignIn = async () => {
     const provider = new GoogleAuthProvider();
     const result = await signInWithPopup(auth, provider);
@@ -41,16 +42,39 @@ export function AuthContextProvider({ children }) {
     };
   }, [user]);
   useEffect(() => {
-    axios
-      .get("https://fhome-be.vercel.app/getBuildings")
-      .then((response) => {
-        setBuildings(response.data);
-        localStorage.setItem("buildings", JSON.stringify(response.data));
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    const storedBuildings = JSON.parse(localStorage.getItem("buildings"));
+    const storedApartments = JSON.parse(localStorage.getItem("apartments"));
+  
+    if (storedBuildings) {
+      setBuildings(storedBuildings);
+    } else {
+      axios
+        .get("https://fhome-be.vercel.app/getBuildings")
+        .then((response) => {
+          setBuildings(response.data);
+          localStorage.setItem("buildings", JSON.stringify(response.data));
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  
+    if (storedApartments) {
+      setAccountStart(storedApartments);
+    } else {
+      axios
+        .get("https://fhome-be.vercel.app/getUser")
+        .then((response) => {
+          setAccountStart(response.data);
+          localStorage.setItem("account_start", JSON.stringify(response.data));
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
   }, []);
+  
+  
   return (
     <AuthContext.Provider value={{ googleSignIn, logOut, user, accessToken,buildingsData }}>
       {children}

@@ -14,9 +14,9 @@ import "./posting.scss";
 import { Link } from "react-router-dom";
 import PostingModal from "./PostingModal";
 import axios from "axios";
-import CropIcon from '@mui/icons-material/Crop';
-import RoofingOutlinedIcon from '@mui/icons-material/RoofingOutlined';
-import PriceChangeOutlinedIcon from '@mui/icons-material/PriceChangeOutlined';
+import CropIcon from "@mui/icons-material/Crop";
+import RoofingOutlinedIcon from "@mui/icons-material/RoofingOutlined";
+import PriceChangeOutlinedIcon from "@mui/icons-material/PriceChangeOutlined";
 // import PostModal from "./PostMoal";
 
 function Posting() {
@@ -29,10 +29,10 @@ function Posting() {
     // Some logic
   };
   const [data, setData] = useState({
-    buildings: ([]),
-    postings: ([]),
-    rooms: ([]),
-    users: ([]),
+    buildings: [],
+    postings: [],
+    rooms: [],
+    users: [],
   });
   const dataPost = data.postings;
   console.log(dataPost);
@@ -124,94 +124,103 @@ function Posting() {
               </div>
             </div>
           </form>
-          {Array.isArray(dataPost) && dataPost.map((post) => (
-            <form className="mt-3">
-              <div className="card p-3 shadow-sm bg-body rounded-3 border-0">
-                <div className="row">
-                  <div className="col-md-1">
-                    <Avatar
-                      name={userPosting.fullName}
-                      size="40"
-                      round={true}
-                      src={post.userImg}
-                    />
-                  </div>
-                  <div className="col-md-11">
-                    <div>
-                      <span className="posting-list__titleName">
-                        {post.userFullName}
-                      </span>
-                      <span className="posting-list__titleName__date">
-                        {post.createdAt}
-                      </span>
+          {Array.isArray(dataPost) &&
+            dataPost.map((post) => (
+              <form className="mt-3">
+                <div className="card p-3 shadow-sm bg-body rounded-3 border-0">
+                  <div className="row">
+                    <div className="col-md-1">
+                      <Avatar
+                        name={userPosting.fullName}
+                        size="40"
+                        round={true}
+                        src={post.userImg}
+                      />
+                    </div>
+                    <div className="col-md-11">
+                      <div>
+                        <span className="posting-list__titleName">
+                          {post.userFullName}
+                        </span>
+                        <span className="posting-list__titleName__date">
+                          {post.createdAt}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <span className="fs-6 posting-list__color-text mt-2  d-block fw-bolder">
-                  {post.title}
-                </span>
-                <div className="row">
-                <div className="col-md-4 text-center"><CropIcon/> {post.roomSize}</div>
-                <div className="col-md-4 text-center"> <RoofingOutlinedIcon/> {post.buildingName}</div>
-                <div className="col-md-4 text-center"><PriceChangeOutlinedIcon />{post.roomPrice} </div>
-                </div>
-              
-                <span className="fs-6 posting-list__color-text my-2 d-block">
-                  {post.description}
-                </span>
-                {/* <div className="posting-img rounded-3"> */}
-                  {/* <div className="px-5"> */}
-                    <img className="rounded-3 mt-3" src={post} alt="" />
-                  {/* </div> */}
-                {/* </div> */}
-                <div className=" mx-4 my-2 ">
-                  <div className="float-start posting-list__feel">
-                    4.9rating
-                  </div>
-                  <div className="float-end">
-                    <a href="" className="posting-list__feel">
+                  <span className="fs-6 posting-list__color-text mt-2  d-block fw-bolder">
+                    {post.title}
+                  </span>
+                  <div className="row">
+                    <div className="col-md-4 text-center">
+                      <CropIcon /> {post.roomSize}
+                    </div>
+                    <div className="col-md-4 text-center">
                       {" "}
-                      233 comment
-                    </a>
+                      <RoofingOutlinedIcon /> {post.buildingName}
+                    </div>
+                    <div className="col-md-4 text-center">
+                      <PriceChangeOutlinedIcon />
+                      {post.roomPrice}{" "}
+                    </div>
                   </div>
+
+                  <span className="fs-6 posting-list__color-text my-2 d-block">
+                    {post.description}
+                  </span>
+                  {/* <div className="posting-img rounded-3"> */}
+                  {/* <div className="px-5"> */}
+                  <img className="rounded-3 mt-3" src={post} alt="" />
+                  {/* </div> */}
+                  {/* </div> */}
+                  <div className=" mx-4 my-2 ">
+                    <div className="float-start posting-list__feel">
+                      4.9rating
+                    </div>
+                    <div className="float-end">
+                      <a href="" className="posting-list__feel">
+                        {" "}
+                        233 comment
+                      </a>
+                    </div>
+                  </div>
+                  <hr className="posting-list__hr" />
+                  <Box sx={{}}>
+                    <BottomNavigation
+                      showLabels
+                      value={value}
+                      onChange={(event, newValue) => {
+                        setValue(newValue);
+                      }}
+                    >
+                      <BottomNavigationAction
+                        label={rating}
+                        icon={
+                          <Rating
+                            onClick={handleRating}
+                            ratingValue={rating}
+                            size={30}
+                            label
+                            transition
+                            fillColor="orange"
+                            emptyColor="gray"
+                            className="foo d-block"
+                          />
+                        }
+                      />
+                      <BottomNavigationAction
+                        label="Bình luận"
+                        icon={<ChatBubbleOutlineIcon />}
+                      />
+                      <BottomNavigationAction
+                        label="Báo cáo"
+                        icon={<ReportGmailerrorredIcon />}
+                      />
+                    </BottomNavigation>
+                  </Box>
                 </div>
-                <hr className="posting-list__hr" />
-                <Box sx={{}}>
-                  <BottomNavigation
-                    showLabels
-                    value={value}
-                    onChange={(event, newValue) => {
-                      setValue(newValue);
-                    }}
-                  >
-                    <BottomNavigationAction
-                      label={rating}
-                      icon={
-                        <Rating
-                          onClick={handleRating}
-                          ratingValue={rating}
-                          size={30}
-                          label
-                          transition
-                          fillColor="orange"
-                          emptyColor="gray"
-                          className="foo d-block"
-                        />
-                      }
-                    />
-                    <BottomNavigationAction
-                      label="Bình luận"
-                      icon={<ChatBubbleOutlineIcon />}
-                    />
-                    <BottomNavigationAction
-                      label="Báo cáo"
-                      icon={<ReportGmailerrorredIcon />}
-                    />
-                  </BottomNavigation>
-                </Box>
-              </div>
-            </form>
-          ))}
+              </form>
+            ))}
         </DashboardWrapperMain>
         <DashboardWrapperRight>
           <div className="card border-0">

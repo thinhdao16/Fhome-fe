@@ -68,17 +68,19 @@ const Login = () => {
       accessToken = JSON.parse(accessTokenString);
     }
 
-    const userDataString = localStorage.getItem("access_token");
+    const userDataString = localStorage.getItem("user_data");
     let userData = null;
     if (typeof userDataString === "string" && userDataString !== "") {
       userData = JSON.parse(userDataString);
     }
+
     if (accessToken && userData && userData.user.roleName !== "admin") {
       navigate("/home");
     } else {
       navigate("");
     }
   }, [navigate]);
+
   return (
     <div className="body">
       <h1 id="site-logo">
