@@ -6,6 +6,7 @@ const User = () => {
   const [users, setUsers] = useState([]);
   function getUsers() {
     const token = JSON.parse(localStorage.getItem("access_token"));
+    console.log(token)
     const config = {
       headers: {
         Authorization: `Bearer ${token.accessToken}`,

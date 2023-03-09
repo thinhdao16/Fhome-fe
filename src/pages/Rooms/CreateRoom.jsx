@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import DescriptionIcon from "@mui/icons-material/Description";
 import DashboardWrapper, {
@@ -16,13 +16,10 @@ import {
   CardActions,
   CardContent,
   CardMedia,
-  Input,
-  TextField,
   Typography,
 } from "@mui/material";
 import { Textarea } from "@mui/joy";
-import { AccountCircle } from "@mui/icons-material";
-
+import './CreateRoom.scss'
 function CreateRoom() {
   const localStorageDataBuildings = localStorage.getItem("buildings");
   const data = JSON.parse(localStorageDataBuildings);
@@ -32,6 +29,7 @@ function CreateRoom() {
   const [description, setDescription] = React.useState("");
   const [price, setPrice] = React.useState("");
   const [building, setBuilding] = React.useState("");
+  console.log(building)
   const [selectedFile, setSelectedFile] = React.useState(null);
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -44,7 +42,7 @@ function CreateRoom() {
     formData.append("size", size);
     formData.append("description", description);
     formData.append("price", price);
-    formData.append("building", building);
+    formData.append("buildings", building);
     formData.append("img", selectedFile);
 
     axios
@@ -98,15 +96,17 @@ function CreateRoom() {
           };
         });
     
-        const buildingIds = newData.map((post) => post.rooms);
-        const filteredBuildingIds = rooms
+        const buildingIds = buildings.map((post) => post.buildings);
+        const filteredBuildingIds = buildings
           .filter((b) => buildingIds.includes(b._id))
           .map((b) => b._id);
     
         setDataRoom((prevState) => {
           return {
             ...prevState,
-            rooms: newData,
+            buildings:newData,
+            rooms,
+            users,
             buildingIds: filteredBuildingIds,
           };
         });
@@ -230,6 +230,7 @@ function CreateRoom() {
           </form>
         </DashboardWrapperMain>
         <DashboardWrapperRight>
+          <div  className="scroll-container" >
           {Array.isArray(dataRooms) &&
             dataRooms.map((rooms) => (
               <Card sx={{ maxWidth: 345, marginBottom: 2 }}>
@@ -252,6 +253,7 @@ function CreateRoom() {
                 </CardActions>
               </Card>
             ))}
+            </div>
         </DashboardWrapperRight>
       </DashboardWrapper>
     </div>

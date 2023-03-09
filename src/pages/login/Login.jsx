@@ -30,17 +30,36 @@ const Login = () => {
               },
             }
           );
-          console.log(response);
-          if (response.status = 200) {
+          if ((response.status = 200)) {
             // const data = await response.json();
             if (
-              response !== undefined 
-              &&response.data.data.user.roleName !== "admin" &&
+              response !== undefined &&
+              response.data.data.user.roleName !== "admin" &&
               response.data.data.user.status.user !== true
             ) {
-              localStorage.setItem("access_token", JSON.stringify(response.data));
+              localStorage.setItem(
+                "access_token",
+                JSON.stringify(response.data)
+              );
               console.log(response);
-              navigate("/home");
+              const token = JSON.parse(localStorage.getItem("access_token"));
+              const headers = {
+                Authorization: `Bearer ${token.data.accessToken}`,
+              };
+              axios
+                .get("https://fhome-be.vercel.app/getRoomsByUserId", {
+                  headers,
+                })
+                .then((response) => {
+                  const roomIds = response.data;
+                  if (roomIds) {
+                    localStorage.setItem("roomIds", JSON.stringify(roomIds));
+                  }
+                })
+                .catch((error) => {
+                  console.error(error);
+                });
+                navigate("/home");
               //         }
             } else {
               setTimeout(() => {

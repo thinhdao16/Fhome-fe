@@ -21,14 +21,14 @@ export default function Upload() {
   const localStorageDataProfile = localStorage.getItem("access_token");
   const dataProfile = JSON.parse(localStorageDataProfile);
   const dataProfiles = dataProfile.data.user;
-  const accessTokenUser = dataProfile.data.accessToken;
 
-  const [imagePreview, setImagePreview] = React.useState(null);
   const [title, setTitle] = React.useState("");
   const [description, setDescription] = React.useState("");
   const [room, setRoom] = React.useState("");
   const [building, setBuilding] = React.useState("");
   const [selectedFile, setSelectedFile] = React.useState(null);
+
+  const roomUserId = JSON.parse(localStorage.getItem("roomIds")).data.rooms;
   // const handleDrop = (acceptedFiles) => {
   //   const file = acceptedFiles[0];
   //   const reader = new FileReader();
@@ -119,16 +119,9 @@ export default function Upload() {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
-            <TextField
-              fullWidth
-              placeholder="room"
-              id="fullWidth"
-              value={room}
-              onChange={(e) => setRoom(e.target.value)}
-            />
             <div style={{ display: "flex" }}>
               <select
-                className="form-select"
+                // className="form-select"
                 aria-label="Default select example"
                 style={{
                   maxHeight: "100px",
@@ -147,6 +140,36 @@ export default function Upload() {
                   ) => (
                     <option key={index} value={building._id}>
                       {building._id}
+                    </option>
+                  )
+                )}
+              </select>
+
+              <span>
+                512 đường Nguyễn Xiển, Phường Long Thạnh Mỹ, Quận 9, TP. Thủ Đức
+              </span>
+            </div>
+            <div style={{ display: "flex" }}>
+              <select
+                // className="form-select"
+                aria-label="Default select example"
+                style={{
+                  maxHeight: "100px",
+                  overflowY: "auto",
+                }}
+                value={room}
+                onChange={(e) => setRoom(e.target.value)}
+              >
+                <option value="" disabled>
+                 chon phong
+                </option>
+                {roomUserId.map(
+                  (
+                    rooms,
+                    index // Thêm tham số index vào hàm map
+                  ) => (
+                    <option key={index} value={rooms._id}>
+                      {rooms._id}
                     </option>
                   )
                 )}

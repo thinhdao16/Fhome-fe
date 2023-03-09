@@ -24,7 +24,7 @@ function App() {
                   index
                   element={
                     <Protected>
-                      <Dashboard />
+                      <Posting  />
                     </Protected>
                   }
                 />
