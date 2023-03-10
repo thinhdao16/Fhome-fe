@@ -12,7 +12,7 @@ const sidebarNav = [
         text: 'Users'
     },
     {
-        link: 'uploads',
+        link: '',
         section: 'uploads',
         icon: <i className='bx bx-cube'></i>,
         text: 'Uploads'

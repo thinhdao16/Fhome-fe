@@ -6,6 +6,7 @@ import { UserAuth } from "../../components/context/AuthContext";
 import { auth } from "../../components/context/firebase";
 import clientId from "./client_secret_624291541261-vsnpuqvrn48tah5ju43l048ug23a3hre.apps.googleusercontent.com.json";
 import axios from "axios";
+
 const Login = () => {
   const navigate = useNavigate();
   const { googleSignIn, user, accessToken } = UserAuth();
@@ -52,6 +53,7 @@ const Login = () => {
                 })
                 .then((response) => {
                   const roomIds = response.data;
+                  console.log(roomIds)
                   if (roomIds) {
                     localStorage.setItem("roomIds", JSON.stringify(roomIds));
                   }

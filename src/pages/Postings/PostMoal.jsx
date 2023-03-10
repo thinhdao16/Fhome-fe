@@ -32,18 +32,18 @@ const UserBox = styled(Box)({
 
 const PostModal = () => {
   const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [success, setSuccess] = useState(false);
-
+  const [roomIds, setRoomIds] = useState([]);
+  console.log(roomIds);
   const localStorageDataBuildings = localStorage.getItem("buildings");
   const data = JSON.parse(localStorageDataBuildings);
   const dataOfBuildings = data.data.buildings;
-  const roomUserId = JSON.parse(localStorage.getItem("roomIds"))?.data?.rooms;
+  const roomUserId = roomIds?.data?.rooms;
   const userPosting = JSON.parse(localStorage.getItem("access_token"));
   const userPostings = userPosting.data.user;
   if (roomUserId) {
-    console.log(roomUserId);
+    // console.log(roomUserId);
   } else {
     console.log("Không tìm thấy thông tin phòng!");
   }
@@ -104,10 +104,26 @@ const PostModal = () => {
   const handleFileChange = (acceptedFiles) => {
     setSelectedFile(acceptedFiles[0]);
   };
+  const handleGetRoomUpdate = () => {
+    setOpen(true);
+    const token = JSON.parse(localStorage.getItem("access_token"));
+    const headers = { Authorization: `Bearer ${token.data.accessToken}` };
+    axios
+      .get("https://fhome-be.vercel.app/getRoomsByUserId", { headers })
+      .then((response) => {
+        const roomIds = response.data;
+        if (roomIds) {
+          setRoomIds(roomIds);
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
   return (
     <>
       <Button
-        onClick={handleOpen}
+        onClick={handleGetRoomUpdate}
         variant="contained"
         fullWidth={true}
         className="rounded-5 bg-light shadow-none text-secondary"
@@ -180,7 +196,7 @@ const PostModal = () => {
               id="standard-multiline-static"
               multiline
               rows={5}
-              placeholder="Thịnh Ngáo ơi, bạn đang nghỉ gì thế ?"
+              placeholder={`${userPostings.fullname} ơi bạn muốn đăng gì thế ?`}
               variant="standard"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -243,7 +259,7 @@ const PostModal = () => {
                       ) => (
                         <MenuItem key={index} value={rooms?._id}>
                           {" "}
-                          {rooms?.price}
+                          {rooms?.roomName}
                         </MenuItem>
                       )
                     )}

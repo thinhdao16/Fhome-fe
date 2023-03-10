@@ -19,17 +19,18 @@ import {
   Typography,
 } from "@mui/material";
 import { Textarea } from "@mui/joy";
-import './CreateRoom.scss'
+import "./CreateRoom.scss";
 function CreateRoom() {
   const localStorageDataBuildings = localStorage.getItem("buildings");
   const data = JSON.parse(localStorageDataBuildings);
   const dataOfBuildings = data.data.buildings;
 
+  const [name, setName] = React.useState("")
   const [size, setSize] = React.useState("");
   const [description, setDescription] = React.useState("");
   const [price, setPrice] = React.useState("");
   const [building, setBuilding] = React.useState("");
-  console.log(building)
+  console.log(building);
   const [selectedFile, setSelectedFile] = React.useState(null);
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -39,6 +40,7 @@ function CreateRoom() {
       return;
     }
     var formData = new FormData();
+    formData.append("roomName",name)
     formData.append("size", size);
     formData.append("description", description);
     formData.append("price", price);
@@ -71,6 +73,13 @@ function CreateRoom() {
     // Lấy dữ liệu từ server
     const fetchData = async () => {
       try {
+        // const token = JSON.parse(localStorage.getItem("access_token"));
+        // // console.log(token)
+        // if (!token) {
+        //   console.log("No access token found.");
+        //   return;
+        // }    
+        // const headers = { Authorization: `Bearer ${token}` };
         const responses = await Promise.all([
           axios.get("https://fhome-be.vercel.app/getBuildings"),
           axios.get("https://fhome-be.vercel.app/getRooms"),
@@ -82,7 +91,7 @@ function CreateRoom() {
         const newData = rooms.map((room) => {
           const building = buildings.find((b) => b._id === room.buildings);
           const buildingName = building ? building.buildingName : "";
-    
+
           const user = users.find((u) => u._id === room.users);
           const userEmail = user ? user.email : "";
           const userFullName = user ? user.fullname : "";
@@ -95,16 +104,16 @@ function CreateRoom() {
             userImg,
           };
         });
-    
+
         const buildingIds = buildings.map((post) => post.buildings);
         const filteredBuildingIds = buildings
           .filter((b) => buildingIds.includes(b._id))
           .map((b) => b._id);
-    
+
         setDataRoom((prevState) => {
           return {
             ...prevState,
-            buildings:newData,
+            buildings: newData,
             rooms,
             users,
             buildingIds: filteredBuildingIds,
@@ -114,7 +123,6 @@ function CreateRoom() {
         console.log(error);
       }
     };
-    
 
     fetchData();
   }, []);
@@ -125,8 +133,7 @@ function CreateRoom() {
     users: [],
   });
   const dataRooms = dataRoom.rooms;
-  console.log(dataRoom);
-  
+
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
   };
@@ -151,6 +158,18 @@ function CreateRoom() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               /> */}
+              <span className="m-3">
+                <CropOutlinedIcon />
+                Name
+              </span>
+              <Textarea
+                name="Plain"
+                placeholder="Type in here…"
+                variant="plain"
+                className="shadow rounded-3 mb-3"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
               <span className="m-3">
                 <CropOutlinedIcon />
                 Size
@@ -213,8 +232,8 @@ function CreateRoom() {
                       building,
                       index // Thêm tham số index vào hàm map
                     ) => (
-                      <option key={index} value={building._id}>
-                        {building._id}
+                      <option key={index} value={building?._id}>
+                        {building?.buildingName}
                       </option>
                     )
                   )}
@@ -230,30 +249,41 @@ function CreateRoom() {
           </form>
         </DashboardWrapperMain>
         <DashboardWrapperRight>
-          <div  className="scroll-container" >
+          <div className="scroll-container">
           {Array.isArray(dataRooms) &&
-            dataRooms.map((rooms) => (
-              <Card sx={{ maxWidth: 345, marginBottom: 2 }}>
-                <CardMedia
-                  sx={{ height: 140 }}
-                  image={rooms.img}
-                  title="green iguana"
-                />
-                <CardContent>
+              dataRooms
+                .sort((a, b) => {
+                  return (
+                    new Date(b?.updatedAt).getTime() -
+                    new Date(a?.updatedAt).getTime()
+                  );
+                })
+                .map((rooms) => (
+                <Card sx={{ maxWidth: 345, marginBottom: 2 }}>
+                  <CardMedia
+                    sx={{ height: 140 }}
+                    image={rooms.img}
+                    title="green iguana"
+                  />
+                  <CardContent>
                   <Typography gutterBottom variant="h5" component="div">
-                    {rooms.buildingName}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {rooms.description}
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <Button size="small">{rooms.price}</Button>
-                  <Button size="small">{rooms.size}</Button>
-                </CardActions>
-              </Card>
-            ))}
-            </div>
+                      {rooms.roomName}
+                    </Typography>
+                    <Typography gutterBottom variant="h5" component="div">
+                      {rooms.buildingName}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {rooms.description}
+                    </Typography>
+                  </CardContent>
+                  <CardActions>
+                    <Button size="small">{rooms.price}</Button>
+                    <Button size="small">{rooms.size}</Button>
+                    <span style={{fontSize:15}}>  {new Date(rooms?.updatedAt).toLocaleString()}</span>
+                  </CardActions>
+                </Card>
+              ))}
+          </div>
         </DashboardWrapperRight>
       </DashboardWrapper>
     </div>

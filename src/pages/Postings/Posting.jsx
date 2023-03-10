@@ -36,6 +36,7 @@
       rooms: [],
       users: [],
     });
+    console.log(data.postings)
     const dataPost = data?.postings;
 
     useEffect(() => {
@@ -51,22 +52,25 @@
           const postings = responses[1].data.data.postings;
           const rooms = responses[2].data.data.rooms;
           const users = responses[3].data;
-
           const newData = postings.map((post) => {
             const building = buildings.find((b) => b._id === post.buildings);
             const buildingName = building ? building.buildingName : "";
 
             const room = rooms.find((r) => r._id === post.rooms);
-            const roomPrice = room ? room.price : "";
-            const roomSize = room ? room.size : "";
+            const roomPrice = room ? room?.price : "";
+            const roomSize = room ? room?.size : "";
+            const roomName = room ? room?.roomName :"";
 
             const user = users.find((u) => u._id === post.userPosting);
             const userEmail = user ? user.email : "";
             const userFullName = user ? user.fullname : "";
             const userImg = user ? user.img : "";
+            
+
             return {
               ...post,
               buildingName,
+              roomName,
               roomPrice,
               roomSize,
               userEmail,
@@ -75,10 +79,10 @@
             };
           });
 
-          const buildingIds = newData.map((post) => post.buildings);
+          const buildingIds = newData.map((post) => post?.buildings);
           const filteredBuildingIds = buildings
-            .filter((b) => buildingIds.includes(b._id))
-            .map((b) => b._id);
+            .filter((b) => buildingIds.includes(b?._id))
+            .map((b) => b?._id);
 
           setData({
             users,
@@ -108,7 +112,7 @@
                       name="John Doe"
                       size="40"
                       round={true}
-                      src={userPostings.img}
+                      src={userPostings?.img}
                     />
                   </div>
                   <div className="col-md-11">
@@ -127,8 +131,8 @@
               dataPost
                 .sort((a, b) => {
                   return (
-                    new Date(b.createdAt).getTime() -
-                    new Date(a.createdAt).getTime()
+                    new Date(b?.createdAt).getTime() -
+                    new Date(a?.createdAt).getTime()
                   );
                 })
                 .map((post) => (
@@ -138,45 +142,45 @@
                       <div className="row">
                         <div className="col-md-1">
                           <Avatar
-                            name={userPosting.fullname}
+                            name={userPosting?.fullname}
                             size="40"
                             round={true}
-                            src={post.userImg}
+                            src={post?.userImg}
                           />
                         </div>
                         <div className="col-md-11">
                           <div>
                             <span className="posting-list__titleName">
-                              {post.userFullName}
+                              {post?.userFullName}
                             </span>
                             <span className="posting-list__titleName__date">
-                              {new Date(post.createdAt).toLocaleString()}
+                              {new Date(post?.createdAt).toLocaleString()}
                             </span>
                           </div>
                         </div>
                       </div>
                       <span className="fs-6 posting-list__color-text mt-2  d-block fw-bolder">
-                        {post.title}
+                        {post?.title}
                       </span>
                       <div className="row">
                         <div className="col-md-4 text-center">
-                          <CropIcon /> {post.roomSize}
+                          <CropIcon /> {post?.roomSize}
                         </div>
                         <div className="col-md-4 text-center">
                           {" "}
-                          <RoofingOutlinedIcon /> {post.buildingName}
+                          <RoofingOutlinedIcon /> {post?.buildingName}
                         </div>
                         <div className="col-md-4 text-center">
                           <PriceChangeOutlinedIcon />
-                          {post.roomPrice}{" "}
+                          {post?.roomPrice}{" "}
                         </div>
                       </div>
                       <span className="fs-6 posting-list__color-text my-2 d-block">
-                        {post.description}
+                        {post?.description}
                       </span>
                       {/* <div className="posting-img rounded-3"> */}
                       {/* <div className="px-5"> */}
-                      <img className="rounded-3 mt-3" src={post.img} alt="" />
+                      <img className="rounded-3 mt-3" src={post?.img} alt="" />
                       {/* </div> */}
                       {/* </div> */}
                       <div className=" mx-4 my-2 ">
@@ -237,7 +241,7 @@
                       name="John Doe"
                       size="55"
                       round={true}
-                      src={userPostings.img}
+                      src={userPostings?.img}
                     />
                   </Link>
                 </div>
@@ -245,7 +249,7 @@
                   <div className="mt-2  ms-2">
                     <Link to="/home/profiles">
                       <span className="posting-list__titleName">
-                        {userPostings.fullname}
+                        {userPostings?.fullname}
                       </span>
                     </Link>
                     <span className="posting-list__titleName__date">user</span>

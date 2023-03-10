@@ -29,7 +29,7 @@ function App() {
                   }
                 />
                 <Route path="users" element={<Protected><User /></Protected>} />
-                <Route path="uploads" element={<Protected><Upload /></Protected>} />
+                <Route path="home" element={<Protected><Upload /></Protected>} />
                 <Route path="postings" element={<Protected><Posting /></Protected>} />
                 <Route path="createRooms" element={<Protected><CreateRoom /></Protected>} />
                 <Route path="stats" element={<Protected><User /></Protected>} />
