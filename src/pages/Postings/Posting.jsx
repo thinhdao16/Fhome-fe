@@ -1,106 +1,114 @@
-  import React, { useEffect, useState } from "react";
-  import Box from "@mui/material/Box";
-  import BottomNavigation from "@mui/material/BottomNavigation";
-  import BottomNavigationAction from "@mui/material/BottomNavigationAction";
-  import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred";
-  import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
-  import DashboardWrapper, {
-    DashboardWrapperMain,
-    DashboardWrapperRight,
-  } from "../../components/dashboard-wrapper/DashboardWrapper";
-  import Avatar from "react-avatar";
-  import { Rating } from "react-simple-star-rating";
-  import "./posting.scss";
-  import { Link } from "react-router-dom";
-  import axios from "axios";
-  import CropIcon from "@mui/icons-material/Crop";
-  import RoofingOutlinedIcon from "@mui/icons-material/RoofingOutlined";
-  import PriceChangeOutlinedIcon from "@mui/icons-material/PriceChangeOutlined";
-  import PostModal from "./PostMoal";
-  // import PostModal from "./PostMoal";
+import React, { useEffect, useState } from "react";
+import Box from "@mui/material/Box";
+import BottomNavigation from "@mui/material/BottomNavigation";
+import BottomNavigationAction from "@mui/material/BottomNavigationAction";
+import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred";
+import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
+import DashboardWrapper, {
+  DashboardWrapperMain,
+  DashboardWrapperRight,
+} from "../../components/dashboard-wrapper/DashboardWrapper";
+import Avatar from "react-avatar";
+import { Rating } from "react-simple-star-rating";
+import "./posting.scss";
+import { Link } from "react-router-dom";
+import axios from "axios";
+import CropIcon from "@mui/icons-material/Crop";
+import RoofingOutlinedIcon from "@mui/icons-material/RoofingOutlined";
+import PriceChangeOutlinedIcon from "@mui/icons-material/PriceChangeOutlined";
+import PostModal from "./PostMoal";
+import PostComment from "./PostComment";
+import { DataContext } from "../DataContext";
+// import PostModal from "./PostMoal";
 
-  function Posting() {
-    const [rating, setRating] = useState(0); // initial rating value
-    const userPosting = JSON.parse(localStorage.getItem("access_token"));
-    const userPostings = userPosting?.data?.user;
+function Posting({ children }) {
+  const [rating, setRating] = useState(0); // initial rating value
+  const userPosting = JSON.parse(localStorage.getItem("access_token"));
+  const userPostings = userPosting?.data?.user;
+  // Catch Rating value
+  const handleRating = (rate) => {
+    setRating(rate);
+    // Some logic
+  };
+  const [dataPosting, setDataPosting] = useState({
+    buildings: [],
+    postings: [],
+    rooms: [],
+    users: [],
+  });
+  // console.log(data.postings)
+  const dataPost = dataPosting?.postings;
+  // console.log(dataPost)
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const responses = await Promise.all([
+          axios.get("https://fhome-be.vercel.app/getBuildings"),
+          axios.get("https://fhome-be.vercel.app/getAllPostings"),
+          axios.get("https://fhome-be.vercel.app/getRooms"),
+          axios.get("https://fhome-be.vercel.app/getAllUsers"),
+        ]);
+        const buildings = responses[0].data.data.buildings;
+        const postings = responses[1].data.data.postings;
+        const rooms = responses[2].data.data.rooms;
+        const users = responses[3].data;
+        const newData = postings.map((post) => {
+          const building = buildings.find((b) => b._id === post.buildings);
+          const buildingName = building ? building.buildingName : "";
 
-    
-    // Catch Rating value
-    const handleRating = (rate) => {
-      setRating(rate);
-      // Some logic
+          const room = rooms.find((r) => r._id === post.rooms);
+          const roomPrice = room ? room?.price : "";
+          const roomSize = room ? room?.size : "";
+          const roomName = room ? room?.roomName : "";
+
+          const user = users.find((u) => u._id === post.userPosting);
+          const userEmail = user ? user.email : "";
+          const userFullName = user ? user.fullname : "";
+          const userImg = user ? user.img : "";
+
+          return {
+            ...post,
+            buildingName,
+            roomName,
+            roomPrice,
+            roomSize,
+            userEmail,
+            userFullName,
+            userImg,
+          };
+        });
+
+        const buildingIds = newData.map((post) => post?.buildings);
+        const filteredBuildingIds = buildings
+          .filter((b) => buildingIds.includes(b?._id))
+          .map((b) => b?._id);
+
+        setDataPosting({
+          users,
+          rooms,
+          buildings,
+          postings: newData,
+          buildingIds: filteredBuildingIds,
+        });
+      } catch (error) {
+        console.log(error);
+      }
     };
-    const [data, setData] = useState({
-      buildings: [],
-      postings: [],
-      rooms: [],
-      users: [],
-    });
-    console.log(data.postings)
-    const dataPost = data?.postings;
+    const intervalId = setInterval(fetchData, 5000); // Gọi fetchData sau mỗi 5 giây
+    return () => clearInterval(intervalId);
+  }, []);
 
-    useEffect(() => {
-      const fetchData = async () => {
-        try {
-          const responses = await Promise.all([
-            axios.get("https://fhome-be.vercel.app/getBuildings"),
-            axios.get("https://fhome-be.vercel.app/getAllPostings"),
-            axios.get("https://fhome-be.vercel.app/getRooms"),
-            axios.get("https://fhome-be.vercel.app/getAllUsers"),
-          ]);
-          const buildings = responses[0].data.data.buildings;
-          const postings = responses[1].data.data.postings;
-          const rooms = responses[2].data.data.rooms;
-          const users = responses[3].data;
-          const newData = postings.map((post) => {
-            const building = buildings.find((b) => b._id === post.buildings);
-            const buildingName = building ? building.buildingName : "";
+  const [value, setValue] = React.useState(0);
+  function handleCommentPost(event, id) {
+    event.preventDefault();
+    const index = dataPost.findIndex((item) => item._id === id);
+    const idDataPost = dataPost[index];
+    setSelectedPost(idDataPost);
+  }
+  const [selectedPost, setSelectedPost] = useState(null);
 
-            const room = rooms.find((r) => r._id === post.rooms);
-            const roomPrice = room ? room?.price : "";
-            const roomSize = room ? room?.size : "";
-            const roomName = room ? room?.roomName :"";
-
-            const user = users.find((u) => u._id === post.userPosting);
-            const userEmail = user ? user.email : "";
-            const userFullName = user ? user.fullname : "";
-            const userImg = user ? user.img : "";
-            
-
-            return {
-              ...post,
-              buildingName,
-              roomName,
-              roomPrice,
-              roomSize,
-              userEmail,
-              userFullName,
-              userImg,
-            };
-          });
-
-          const buildingIds = newData.map((post) => post?.buildings);
-          const filteredBuildingIds = buildings
-            .filter((b) => buildingIds.includes(b?._id))
-            .map((b) => b?._id);
-
-          setData({
-            users,
-            rooms,
-            buildings,
-            postings: newData,
-            buildingIds: filteredBuildingIds,
-          });
-        } catch (error) {
-          console.log(error);
-        }
-      };
-      const intervalId = setInterval(fetchData, 5000); // Gọi fetchData sau mỗi 5 giây
-      return () => clearInterval(intervalId);
-    }, []);
-
-    const [value, setValue] = React.useState(0);
-    return (
+  return (
+    <DataContext.Provider value={{ dataPosting, setDataPosting, selectedPost }}>
       <div className="posting-list">
         <DashboardWrapper>
           <DashboardWrapperMain>
@@ -136,13 +144,19 @@
                   );
                 })
                 .map((post) => (
-                  
                   <form className="mt-3">
                     <div className="card p-3 shadow-sm bg-body rounded-3 border-0">
                       <div className="row">
+                        <button
+                          onClick={(event) =>
+                            handleCommentPost(event, post._id)
+                          }
+                        >
+                          Edit
+                        </button>
                         <div className="col-md-1">
                           <Avatar
-                            name={userPosting?.fullname}
+                            name={post.fullname}
                             size="40"
                             round={true}
                             src={post?.userImg}
@@ -178,11 +192,7 @@
                       <span className="fs-6 posting-list__color-text my-2 d-block">
                         {post?.description}
                       </span>
-                      {/* <div className="posting-img rounded-3"> */}
-                      {/* <div className="px-5"> */}
                       <img className="rounded-3 mt-3" src={post?.img} alt="" />
-                      {/* </div> */}
-                      {/* </div> */}
                       <div className=" mx-4 my-2 ">
                         <div className="float-start posting-list__feel">
                           4.9rating
@@ -190,7 +200,7 @@
                         <div className="float-end">
                           <a href="" className="posting-list__feel">
                             {" "}
-                            233 comment
+                            {post?.userFullName}
                           </a>
                         </div>
                       </div>
@@ -220,7 +230,13 @@
                           />
                           <BottomNavigationAction
                             label="Bình luận"
-                            icon={<ChatBubbleOutlineIcon />}
+                            icon={
+                              <PostComment
+                                onClick={(event) =>
+                                  handleCommentPost(event, post._id)
+                                }
+                              />
+                            }
                           />
                           <BottomNavigationAction
                             label="Báo cáo"
@@ -262,7 +278,8 @@
         {/* modal */}
         {/* modal */}
       </div>
-    );
-  }
+    </DataContext.Provider>
+  );
+}
 
-  export default Posting;
+export default Posting;

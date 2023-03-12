@@ -12,11 +12,11 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import Box from "@mui/material/Box";
-import { Textarea } from "@mui/joy";
 import axios from "axios";
 import Dropzone from "react-dropzone";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import ImageOutlinedIcon from "@mui/icons-material/ImageOutlined";
+import { Textarea } from "@mui/joy";
 const StyledModal = styled(Modal)({
   display: "flex",
   alignItems: "center",
@@ -35,7 +35,6 @@ const PostModal = () => {
   const handleClose = () => setOpen(false);
   const [success, setSuccess] = useState(false);
   const [roomIds, setRoomIds] = useState([]);
-  console.log(roomIds);
   const localStorageDataBuildings = localStorage.getItem("buildings");
   const data = JSON.parse(localStorageDataBuildings);
   const dataOfBuildings = data.data.buildings;
@@ -45,7 +44,7 @@ const PostModal = () => {
   if (roomUserId) {
     // console.log(roomUserId);
   } else {
-    console.log("Không tìm thấy thông tin phòng!");
+    // console.log("Không tìm thấy thông tin phòng!");
   }
 
   const [title, setTitle] = React.useState("");

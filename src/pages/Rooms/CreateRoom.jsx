@@ -73,16 +73,16 @@ function CreateRoom() {
     // Lấy dữ liệu từ server
     const fetchData = async () => {
       try {
-        // const token = JSON.parse(localStorage.getItem("access_token"));
-        // // console.log(token)
-        // if (!token) {
-        //   console.log("No access token found.");
-        //   return;
-        // }    
-        // const headers = { Authorization: `Bearer ${token}` };
+        const token = JSON.parse(localStorage.getItem("access_token"));
+        // console.log(token)
+        if (!token) {
+          console.log("No access token found.");
+          return;
+        }    
+        const headers = { Authorization: `Bearer ${token.data.accessToken}` };
         const responses = await Promise.all([
           axios.get("https://fhome-be.vercel.app/getBuildings"),
-          axios.get("https://fhome-be.vercel.app/getRooms"),
+          axios.get("https://fhome-be.vercel.app/getRoomsByUserId",{headers}  ),
           axios.get("https://fhome-be.vercel.app/getAllUsers"),
         ]);
         const buildings = responses[0].data.data.buildings;
