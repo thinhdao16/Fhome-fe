@@ -17,6 +17,8 @@ import Dropzone from "react-dropzone";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import ImageOutlinedIcon from "@mui/icons-material/ImageOutlined";
 import { Textarea } from "@mui/joy";
+import toastr from "cogo-toast";
+
 const StyledModal = styled(Modal)({
   display: "flex",
   alignItems: "center",
@@ -84,12 +86,19 @@ const PostModal = () => {
           },
         }
       );
-
+      toastr.success("Post successfully", {
+        position: "top-right",
+        heading: "Done",
+      });
       if (isMounted) {
         console.log(response.data);
         setOpen(false);
       }
     } catch (error) {
+      toastr.error("Can not post", {
+        position: "top-right",
+        heading: "Done",
+      });
       console.error(error);
     }
     return () => {
@@ -116,6 +125,7 @@ const PostModal = () => {
         }
       })
       .catch((error) => {
+
         console.error(error);
       });
   };
@@ -308,6 +318,7 @@ const PostModal = () => {
                 </div>
               )}
             </Dropzone>
+
             <ButtonGroup style={{ position: "absolute", width: "90%" }}>
               <Button variant="contained" fullWidth={true} type="submit">
                 Click me

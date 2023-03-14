@@ -1,4 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import Box from "@mui/material/Box";
 import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
@@ -11,7 +17,7 @@ import DashboardWrapper, {
 import Avatar from "react-avatar";
 import { Rating } from "react-simple-star-rating";
 import "./posting.scss";
-import { Link } from "react-router-dom";
+import { Link, Route } from "react-router-dom";
 import axios from "axios";
 import CropIcon from "@mui/icons-material/Crop";
 import RoofingOutlinedIcon from "@mui/icons-material/RoofingOutlined";
@@ -19,12 +25,13 @@ import PriceChangeOutlinedIcon from "@mui/icons-material/PriceChangeOutlined";
 import PostModal from "./PostMoal";
 import PostComment from "./PostComment";
 import { DataContext } from "../DataContext";
-// import PostModal from "./PostMoal";
+
 
 function Posting({ children }) {
   const [rating, setRating] = useState(0); // initial rating value
   const userPosting = JSON.parse(localStorage.getItem("access_token"));
   const userPostings = userPosting?.data?.user;
+  const { posting, setPosting } = useContext(DataContext);
   // Catch Rating value
   const handleRating = (rate) => {
     setRating(rate);
@@ -36,9 +43,14 @@ function Posting({ children }) {
     rooms: [],
     users: [],
   });
+  useEffect(() => {
+    if (dataPosting?.postings.length > 0) {
+      setPosting(dataPosting?.postings);
+    }
+  }, [dataPosting?.postings]);
   // console.log(data.postings)
-  const dataPost = dataPosting?.postings;
-  // console.log(dataPost)
+  const arrPost = useMemo(() => dataPosting?.postings, [dataPosting]);
+  const dataPost1 = useState("1");
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -101,14 +113,17 @@ function Posting({ children }) {
   const [value, setValue] = React.useState(0);
   function handleCommentPost(event, id) {
     event.preventDefault();
-    const index = dataPost.findIndex((item) => item._id === id);
-    const idDataPost = dataPost[index];
+    const index = arrPost.findIndex((item) => item._id === id);
+    const idDataPost = arrPost[index];
     setSelectedPost(idDataPost);
   }
   const [selectedPost, setSelectedPost] = useState(null);
-
   return (
-    <DataContext.Provider value={{ dataPosting, setDataPosting, selectedPost }}>
+    <DataContext.Provider
+      value={{ dataPosting, setDataPosting, selectedPost, arrPost, dataPost1 }}
+    >
+      {children}
+
       <div className="posting-list">
         <DashboardWrapper>
           <DashboardWrapperMain>
@@ -135,8 +150,8 @@ function Posting({ children }) {
                 </div>
               </div>
             </form>
-            {Array.isArray(dataPost) &&
-              dataPost
+            {Array.isArray(arrPost) &&
+              arrPost
                 .sort((a, b) => {
                   return (
                     new Date(b?.createdAt).getTime() -
@@ -147,13 +162,6 @@ function Posting({ children }) {
                   <form className="mt-3">
                     <div className="card p-3 shadow-sm bg-body rounded-3 border-0">
                       <div className="row">
-                        <button
-                          onClick={(event) =>
-                            handleCommentPost(event, post._id)
-                          }
-                        >
-                          Edit
-                        </button>
                         <div className="col-md-1">
                           <Avatar
                             name={post.fullname}
@@ -230,14 +238,16 @@ function Posting({ children }) {
                           />
                           <BottomNavigationAction
                             label="Bình luận"
-                            icon={
-                              <PostComment
-                                onClick={(event) =>
-                                  handleCommentPost(event, post._id)
-                                }
-                              />
-                            }
+                            icon={<PostComment />}
                           />
+                          <button
+                            onClick={(event) =>
+                              handleCommentPost(event, post._id)
+                            }
+                          >
+                            submit
+                          </button>
+                          {/* </button> */}
                           <BottomNavigationAction
                             label="Báo cáo"
                             icon={<ReportGmailerrorredIcon />}
@@ -272,6 +282,12 @@ function Posting({ children }) {
                   </div>
                 </div>
               </div>
+            </div>
+            <div>
+              {/* <input type="text" value={searchTerm} onChange={handleSearch} />
+              {filteredData.map((post) => (
+                <form className="mt-3" key={post._id}></form>
+              ))} */}
             </div>
           </DashboardWrapperRight>
         </DashboardWrapper>

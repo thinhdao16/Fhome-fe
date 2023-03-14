@@ -12,10 +12,13 @@ import Login from "./pages/login/Login";
 import Upload from "./pages/Uploads/Upload";
 import Posting from "./pages/Postings/Posting";
 import CreateRoom from "./pages/Rooms/CreateRoom";
+import { DataContext } from "./pages/DataContext";
+import SearchPost from "./pages/search/SearchPost";
 function App() {
   return (
     <React.Fragment>
       <AuthContextProvider>
+        {/* <DataContext.Provider> */}
         <BrowserRouter>
           <Routes>
             <Route path="/">
@@ -24,24 +27,74 @@ function App() {
                   index
                   element={
                     <Protected>
-                      <Posting  />
+                      <Posting />
                     </Protected>
                   }
                 />
-                <Route path="users" element={<Protected><User /></Protected>} />
-                <Route path="home" element={<Protected><Upload /></Protected>} />
-                <Route path="postings" element={<Protected><Posting /></Protected>} />
-                <Route path="createRooms" element={<Protected><CreateRoom /></Protected>} />
-                <Route path="stats" element={<Protected><User /></Protected>} />
-                <Route path="profiles" element={<Protected><Profile /></Protected>} />
+                <Route
+                  path="users"
+                  element={
+                    <Protected>
+                      <User />
+                    </Protected>
+                  }
+                />
+                <Route
+                  path="home"
+                  element={
+                    <Protected>
+                      <Upload />
+                    </Protected>
+                  }
+                />
+                <Route
+                  path="postings"
+                  element={
+                    <Protected>
+                      <Posting />
+                    </Protected>
+                  }
+                />
+                <Route
+                  path="createRooms"
+                  element={
+                    <Protected>
+                      <CreateRoom />
+                    </Protected>
+                  }
+                />
+                <Route
+                  path="stats"
+                  element={
+                    <Protected>
+                      <User />
+                    </Protected>
+                  }
+                />
+                      <Route
+                  path="searchPost"
+                  element={
+                    <Protected>
+                     <SearchPost/>
+                    </Protected>
+                  }
+                />
+                <Route
+                  path="profiles"
+                  element={
+                    <Protected>
+                      <Profile />
+                    </Protected>
+                  }
+                />
               </Route>
               <Route exact path="" element={<Login />} />
             </Route>
           </Routes>
         </BrowserRouter>
+        {/* </DataContext.Provider> */}
       </AuthContextProvider>
     </React.Fragment>
- 
   );
 }
 

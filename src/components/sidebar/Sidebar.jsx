@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import './sidebar.scss'
 import { Link, useLocation } from 'react-router-dom'
 import { images } from '../../constants'
 import sidebarNav from '../../configs/sidebarNav'
-import { UserAuth } from '../context/AuthContext'
+import { DataContext } from '../../pages/DataContext'
+// import { UserAuth } from '../context/AuthContext'
 
 const Sidebar = () => {
     const [activeIndex, setActiveIndex] = useState(0)
     const location = useLocation()
-    const { logOut } = UserAuth()
+    const { logOut } = useContext(DataContext)
     const handleSignOut = async () => {
       try {
         await logOut()

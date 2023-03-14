@@ -1,15 +1,17 @@
 import "./login.scss";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import GoogleButton from "react-google-button";
 import { Link, useNavigate } from "react-router-dom";
 import { UserAuth } from "../../components/context/AuthContext";
 import { auth } from "../../components/context/firebase";
 import clientId from "./client_secret_624291541261-vsnpuqvrn48tah5ju43l048ug23a3hre.apps.googleusercontent.com.json";
 import axios from "axios";
+import { DataContext } from "../DataContext";
+import toastr from "cogo-toast";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { googleSignIn, user, accessToken } = UserAuth();
+  const { googleSignIn, user, accessToken } = useContext(DataContext);
   // console.log(user);
   const handleGoogleSignIn = async () => {
     try {
@@ -53,7 +55,7 @@ const Login = () => {
                 })
                 .then((response) => {
                   const roomIds = response.data;
-                  console.log(roomIds)
+                  console.log(roomIds);
                   if (roomIds) {
                     localStorage.setItem("roomIds", JSON.stringify(roomIds));
                   }
@@ -61,12 +63,20 @@ const Login = () => {
                 .catch((error) => {
                   console.error(error);
                 });
-                navigate("/home");
+              toastr.success("find successfully", {
+                position: "top-right",
+                heading: "Done",
+              });
+              navigate("/home");
               //         }
             } else {
-              setTimeout(() => {
-                alert("Please you are admin please dont enter");
-              }, 1000);
+              // setTimeout(() => {
+              //   alert("Please you are admin please dont enter");
+              // }, 1000);
+              toastr.error("Please you are admin please dont enter", {
+                position: "top-right",
+                heading: "Done",
+              });
             }
           } else {
             console.log("Response not OK");

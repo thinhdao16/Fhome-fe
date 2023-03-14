@@ -1,16 +1,18 @@
 import { Link } from "react-router-dom";
-import "./profile.scss"
+import "./profile.scss";
 import toastr from "cogo-toast";
-
+import { DataContext } from "../DataContext";
+import { useContext } from "react";
 const Profile = () => {
-    const handleDeleteUser = (id) => {
-        toastr.success("Update successfully", {
-          position: "top-right",
-          heading: "Done",
-        });
-      };
-      const userData = JSON.parse(localStorage.getItem("access_token")).data; 
-      console.log(userData)
+  const handleDeleteUser = (id) => {
+    toastr.success("Update successfully", {
+      position: "top-right",
+      heading: "Done",
+    });
+  };
+  const { posting, setPosting, searchPosting } = useContext(DataContext);
+console.log(searchPosting)
+  const userData = JSON.parse(localStorage.getItem("access_token")).data;
   return (
     <div className="body-profile">
       <div className="container">
@@ -64,7 +66,11 @@ const Profile = () => {
               <div className="form-group">
                 <label className="col-lg-3 control-label">AdminID:</label>
                 <div className="col-lg-8">
-                  <input className="form-control" type="text" defaultValue ={userData.user.id}/>
+                  <input
+                    className="form-control"
+                    type="text"
+                    defaultValue={userData.user.id}
+                  />
                 </div>
               </div>
               <div className="form-group">
@@ -80,7 +86,7 @@ const Profile = () => {
               <div className="form-group">
                 <label className="col-md-3 control-label" />
                 <div className="col-md-8">
-                  <Link to="/">
+                  <Link to="/home">
                     <input
                       type="button"
                       className="btn btn-primary"

@@ -8,14 +8,17 @@ import {
 } from "firebase/auth";
 import { auth } from "../context/firebase";
 import axios from "axios";
-const AuthContext = createContext();
+import { DataContext } from "../../pages/DataContext";
+// const AuthContext = createContext();
 
 export function AuthContextProvider({ children }) {
   const [user, setUser] = useState({});
   const [accessToken, setAccessToken] = useState("");
   const [buildings, setBuildings] = useState([]);
   const buildingsData = buildings.data
-  const [accountStart, setAccountStart] = useState([]); 
+  const [accountStart, setAccountStart] = useState([]);
+  const [posting, setPosting] = useState([])
+  const [searchPosting, setSearchPosting] = useState([])
   const googleSignIn = async () => {
     const provider = new GoogleAuthProvider();
     const result = await signInWithPopup(auth, provider);
@@ -58,7 +61,7 @@ export function AuthContextProvider({ children }) {
           console.log(error);
         });
     }
-  
+
     if (storedApartments) {
       setAccountStart(storedApartments);
     } else {
@@ -72,17 +75,17 @@ export function AuthContextProvider({ children }) {
           console.log(error);
         });
     }
-    
+
   }, []);
-  
-  
+
+
   return (
-    <AuthContext.Provider value={{ googleSignIn, logOut, user, accessToken,buildingsData }}>
+    <DataContext.Provider value={{ googleSignIn, logOut, user, accessToken, buildingsData, posting, setPosting, searchPosting, setSearchPosting }}>
       {children}
-    </AuthContext.Provider>
+    </DataContext.Provider>
   );
 }
 
-export const UserAuth = () => {
-  return useContext(AuthContext);
-};
+// export const UserAuth = () => {
+//   return useContext(AuthContext);
+// };

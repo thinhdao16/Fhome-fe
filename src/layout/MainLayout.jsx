@@ -1,10 +1,14 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import './main-layout.scss'
 import { Outlet } from 'react-router-dom'
 import Sidebar from '../components/sidebar/Sidebar'
 import TopNav from '../components/topnav/TopNav'
+// import { DataContext } from '../pages/DataContext'
 
 const MainLayout = () => {
+    // const {posting } = useContext(DataContext);
+    // console.log('1',posting)
+    
     return (
         <>
             <Sidebar />

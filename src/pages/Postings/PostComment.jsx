@@ -39,9 +39,7 @@ const PostComment = () => {
   const userPosting = JSON.parse(localStorage.getItem("access_token"));
   const userPostings = userPosting.data.user;
 
-  const { selectedPost } = useContext(DataContext);
-  const selectedPostComment = selectedPost?._id;
-
+  const { selectedPost} = useContext(DataContext);
   const [description, setDescription] = React.useState("");
   const [selectedFile, setSelectedFile] = React.useState(null);
   const [showDeleteButton, setShowDeleteButton] = useState(false);
@@ -50,40 +48,16 @@ const PostComment = () => {
   // console.log(token)
 
   const [comments, setComments] = React.useState([]);
-  console.log(comments[1]);
-  useEffect(() => {
-    const fetchComments = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:3000/getAllPostingCommentByPost/${selectedPostComment}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token.data.accessToken}`,
-            },
-          }
-        );
-        setComments(response.data.data.postingComments);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchComments();
-  }, []);
-
-  // const roomUserId = JSON.parse(localStorage.getItem("roomIds")).data.rooms;
-  if (!selectedPost) {
-    return null;
-  }
-
+  // console.log(comments[1]);
   const handleSubmit = async (event) => {
     event.preventDefault();
-
+    const selectedPostComment = selectedPost?._id;
+    console.log(selectedPostComment);
     var formData = new FormData();
     formData.append("description", description);
     formData.append("img", selectedFile);
     formData.append("posting", selectedPostComment);
     let isMounted = true;
-
     try {
       const response = await axios.post(
         "http://localhost:3000/postAllPostingCommentByPost",
@@ -107,6 +81,30 @@ const PostComment = () => {
       isMounted = false;
     };
   };
+  useEffect(() => {
+    if (!selectedPost) return;
+
+    const fetchComments = async () => {
+      try {
+        const selectedPostComment = selectedPost._id;
+        const response = await axios.get(
+          `http://localhost:3000/getAllPostingCommentByPost/${selectedPostComment}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token.data.accessToken}`,
+            },
+          }
+        );
+        setComments(response.data.data.postingComments);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchComments();
+  }, [selectedPost]);
+
+  // const roomUserId = JSON.parse(localStorage.getItem("roomIds")).data.rooms;
+
   const handleDelete = () => {
     setSelectedFile(null);
     setShowDeleteButton(false);
@@ -117,6 +115,9 @@ const PostComment = () => {
   const handleGetRoomUpdate = () => {
     setOpen(true);
   };
+  if (!selectedPost) {
+    return null;
+  }
 
   return (
     <>
@@ -139,14 +140,14 @@ const PostComment = () => {
           <Box
             style={{ position: "relative" }}
             width={700}
-            maxHeight={650}
+            height={650}
             bgcolor="white"
             p={3}
             borderRadius={5}
             overflow="auto"
           >
             <Typography color="gray" textAlign="center">
-              Tạo bài viết
+              Bài viết
             </Typography>
             <hr width="100%" size="5px" align="center" color="gray" />
             <div className="p-3 bg-body rounded-3 border-0">
@@ -193,17 +194,8 @@ const PostComment = () => {
                 className="rounded-3 mt-3"
                 src={selectedPost.img}
                 alt=""
-                style={{ maxWidth: 100 }}
+                style={{ maxWidth: 600 }}
               />
-              {/* <div className=" mx-4 my-2 ">
-              <div className="float-start posting-list__feel">4.9rating</div>
-              <div className="float-end">
-                <a href="" className="posting-list__feel">
-                  {" "}
-                  {selectedPost.userFullName}
-                </a>
-              </div>
-            </div> */}
               <hr className="posting-list__hr" />
             </div>
             {Array.isArray(comments) &&
@@ -226,17 +218,24 @@ const PostComment = () => {
                           src={commentss.userPostingComment?.img}
                         />
                       </div>
-                      <div className="col-md-11 rounded-3 bg-light">
-                        <span className="bolder">
-                          {commentss.userPostingComment.fullname}
+                      <div className="col-md-11 rounded-3">
+                        <div className="bg-light p-2 rounded-4" style={{width:'fit-content'}}>
+                          {" "}
+                          <span className="fw-bolder fs-6 text-dark">
+                            {commentss.userPostingComment.fullname}
+                          </span>
+                          <span className="d-block fs-6 text-dark">
+                            {commentss.description}
+                          </span>
+                        </div>
+                        <span className="d-block fs-6 text-dark">
+                          {new Date(commentss?.updatedAt).toLocaleString()}
                         </span>
-                        <span className="d-block">
-                          {commentss.description}
-                        </span>
-                        <span className="d-block">
-                        {new Date(commentss?.updatedAt).toLocaleString()}
-                        </span>
-                        <img src={commentss?.img} alt="err" style={{maxWidth:200}} />
+                        <img
+                          src={commentss?.img}
+                          alt="err"
+                          style={{ maxWidth: 200, borderRadius: 15 }}
+                        />
                       </div>
                     </div>
                   </Box>
@@ -316,6 +315,7 @@ const PostComment = () => {
                   </div>
                 )}
               </Dropzone>
+
               <ButtonGroup style={{ position: "absolute", width: "90%" }}>
                 <Button variant="contained" fullWidth={true} type="submit">
                   Click me

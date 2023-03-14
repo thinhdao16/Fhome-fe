@@ -151,13 +151,6 @@ function CreateRoom() {
                   </div>
                 </Box>
               </Box>
-              {/* <TextField
-                fullWidth
-                placeholder="description"
-                id="fullWidth"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              /> */}
               <span className="m-3">
                 <CropOutlinedIcon />
                 Name
