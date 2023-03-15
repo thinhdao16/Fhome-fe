@@ -15,10 +15,13 @@ export function AuthContextProvider({ children }) {
   const [user, setUser] = useState({});
   const [accessToken, setAccessToken] = useState("");
   const [buildings, setBuildings] = useState([]);
-  const buildingsData = buildings.data
+  const buildingsData = buildings.data;
   const [accountStart, setAccountStart] = useState([]);
-  const [posting, setPosting] = useState([])
-  const [searchPosting, setSearchPosting] = useState([])
+  const [posting, setPosting] = useState([]);
+  const [searchPosting, setSearchPosting] = useState([]);
+  const [filterPosting, setFilterPosting] = useState([]);
+  const [ filterBuildingPosting, setFilterBuildingPosting] = useState([])
+  const [filterAreaPosting, setFilterAreaPosting] = useState([])
   const googleSignIn = async () => {
     const provider = new GoogleAuthProvider();
     const result = await signInWithPopup(auth, provider);
@@ -47,7 +50,7 @@ export function AuthContextProvider({ children }) {
   useEffect(() => {
     const storedBuildings = JSON.parse(localStorage.getItem("buildings"));
     const storedApartments = JSON.parse(localStorage.getItem("account_start"));
-    const storedRooms = JSON.parse(localStorage.getItem("show_rooms"))
+    const storedRooms = JSON.parse(localStorage.getItem("show_rooms"));
     if (storedBuildings) {
       setBuildings(storedBuildings);
     } else {
@@ -75,12 +78,28 @@ export function AuthContextProvider({ children }) {
           console.log(error);
         });
     }
-
   }, []);
 
-
   return (
-    <DataContext.Provider value={{ googleSignIn, logOut, user, accessToken, buildingsData, posting, setPosting, searchPosting, setSearchPosting }}>
+    <DataContext.Provider
+      value={{
+        googleSignIn,
+        logOut,
+        user,
+        accessToken,
+        buildingsData,
+        posting,
+        setPosting,
+        searchPosting,
+        setSearchPosting,
+        filterPosting,
+        setFilterPosting,
+        filterBuildingPosting,
+        setFilterBuildingPosting,
+        filterAreaPosting,
+        setFilterAreaPosting
+      }}
+    >
       {children}
     </DataContext.Provider>
   );

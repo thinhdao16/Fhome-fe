@@ -25,6 +25,7 @@ import PriceChangeOutlinedIcon from "@mui/icons-material/PriceChangeOutlined";
 import PostModal from "./PostMoal";
 import PostComment from "./PostComment";
 import { DataContext } from "../DataContext";
+import toastr from "cogo-toast";
 
 
 function Posting({ children }) {
@@ -50,7 +51,7 @@ function Posting({ children }) {
   }, [dataPosting?.postings]);
   // console.log(data.postings)
   const arrPost = useMemo(() => dataPosting?.postings, [dataPosting]);
-  const dataPost1 = useState("1");
+  // console.log(arrPost)
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -102,11 +103,20 @@ function Posting({ children }) {
           postings: newData,
           buildingIds: filteredBuildingIds,
         });
+      
       } catch (error) {
+        toastr.error("Can not find post", {
+          position: "top-right",
+          heading: "Done",
+        });
         console.log(error);
       }
     };
     const intervalId = setInterval(fetchData, 5000); // Gọi fetchData sau mỗi 5 giây
+    toastr.info("This is Post", {
+      position: "top-right",
+      heading: "Done",
+    });
     return () => clearInterval(intervalId);
   }, []);
 
@@ -120,7 +130,7 @@ function Posting({ children }) {
   const [selectedPost, setSelectedPost] = useState(null);
   return (
     <DataContext.Provider
-      value={{ dataPosting, setDataPosting, selectedPost, arrPost, dataPost1 }}
+      value={{ dataPosting, setDataPosting, selectedPost, arrPost }}
     >
       {children}
 

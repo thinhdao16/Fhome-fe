@@ -14,6 +14,9 @@ import Posting from "./pages/Postings/Posting";
 import CreateRoom from "./pages/Rooms/CreateRoom";
 import { DataContext } from "./pages/DataContext";
 import SearchPost from "./pages/search/SearchPost";
+import FilterPost from "./pages/search/FilterPost";
+import FilterBuildingPost from "./pages/search/FilterBuildingPost";
+import FilterAreaPost from "./pages/search/FilterAreaPost";
 function App() {
   return (
     <React.Fragment>
@@ -76,6 +79,30 @@ function App() {
                   element={
                     <Protected>
                      <SearchPost/>
+                    </Protected>
+                  }
+                />
+                     <Route
+                  path="filterPost"
+                  element={
+                    <Protected>
+                     <FilterPost/>
+                    </Protected>
+                  }
+                />
+                <Route
+                  path="filterBuildPost"
+                  element={
+                    <Protected>
+                     <FilterBuildingPost/>
+                    </Protected>
+                  }
+                />
+                   <Route
+                  path="filterAreaPost"
+                  element={
+                    <Protected>
+                     <FilterAreaPost/>
                     </Protected>
                   }
                 />

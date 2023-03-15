@@ -11,7 +11,7 @@ const Profile = () => {
     });
   };
   const { posting, setPosting, searchPosting } = useContext(DataContext);
-console.log(searchPosting)
+// console.log(searchPosting)
   const userData = JSON.parse(localStorage.getItem("access_token")).data;
   return (
     <div className="body-profile">

@@ -10,11 +10,11 @@ import { Rating } from "react-simple-star-rating";
 import PostComment from "../Postings/PostComment";
 import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred";
 
-const SearchPost = ({ children }) => {
+const FilterPost = ({ children }) => {
   const [value, setValue] = useState(0);
   const [rating, setRating] = useState(0); // initial rating value
 
-  const {  searchPosting ,filterPosting, posting} = useContext(DataContext);
+  const {filterPosting} = useContext(DataContext);
   console.log(filterPosting);
   const handleRating = (rate) => {
     setRating(rate);
@@ -22,8 +22,8 @@ const SearchPost = ({ children }) => {
   };
   function handleCommentPost(event, id) {
     event.preventDefault();
-    const index = searchPosting.findIndex((item) => item._id === id);
-    const idDataPost = searchPosting[index];
+    const index = filterPosting.findIndex((item) => item._id === id);
+    const idDataPost = filterPosting[index];
     setSelectedPost(idDataPost);
   }
   const [selectedPost, setSelectedPost] = useState(null);
@@ -37,8 +37,8 @@ const SearchPost = ({ children }) => {
         {" "}
         {/* <div className="body-profile" style={{backgroundColor:"F3F4FA !important"}}> */}
           <div className="container" >
-            {Array.isArray(searchPosting) &&
-              searchPosting
+            {Array.isArray(filterPosting) &&
+              filterPosting
                 .sort((a, b) => {
                   return (
                     new Date(b?.createdAt).getTime() -
@@ -151,4 +151,4 @@ const SearchPost = ({ children }) => {
     </DataContext.Provider>
   );
 };
-export default SearchPost;
+export default FilterPost;
