@@ -3,6 +3,7 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import Box from "@mui/material/Box";
@@ -26,8 +27,17 @@ import PostModal from "./PostMoal";
 import PostComment from "./PostComment";
 import { DataContext } from "../DataContext";
 import toastr from "cogo-toast";
-
-
+import {
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardMedia,
+  Typography,
+} from "@mui/material";
+import DoneOutlinedIcon from "@mui/icons-material/DoneOutlined";
+import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
+import { CommentBankOutlined } from "@mui/icons-material";
 function Posting({ children }) {
   const [rating, setRating] = useState(0); // initial rating value
   const userPosting = JSON.parse(localStorage.getItem("access_token"));
@@ -103,7 +113,6 @@ function Posting({ children }) {
           postings: newData,
           buildingIds: filteredBuildingIds,
         });
-      
       } catch (error) {
         toastr.error("Can not find post", {
           position: "top-right",
@@ -119,15 +128,21 @@ function Posting({ children }) {
     });
     return () => clearInterval(intervalId);
   }, []);
-
+  const postCommentRef = useRef(null);
   const [value, setValue] = React.useState(0);
   function handleCommentPost(event, id) {
     event.preventDefault();
     const index = arrPost.findIndex((item) => item._id === id);
     const idDataPost = arrPost[index];
     setSelectedPost(idDataPost);
+  
+    if (postCommentRef.current) {
+      postCommentRef.current.click();
+    }
   }
+  
   const [selectedPost, setSelectedPost] = useState(null);
+  
   return (
     <DataContext.Provider
       value={{ dataPosting, setDataPosting, selectedPost, arrPost }}
@@ -191,10 +206,10 @@ function Posting({ children }) {
                           </div>
                         </div>
                       </div>
-                      <span className="fs-6 posting-list__color-text mt-2  d-block fw-bolder">
+                      <span className="fs-6 posting-list__color-text mt-2 ms-2 d-block fw-bolder">
                         {post?.title}
                       </span>
-                      <div className="row">
+                      <div className="row text-dark">
                         <div className="col-md-4 text-center">
                           <CropIcon /> {post?.roomSize}
                         </div>
@@ -207,7 +222,7 @@ function Posting({ children }) {
                           {post?.roomPrice}{" "}
                         </div>
                       </div>
-                      <span className="fs-6 posting-list__color-text my-2 d-block">
+                      <span className="fs-6 posting-list__color-text my-2 ms-2 d-block">
                         {post?.description}
                       </span>
                       <img className="rounded-3 mt-3" src={post?.img} alt="" />
@@ -248,15 +263,18 @@ function Posting({ children }) {
                           />
                           <BottomNavigationAction
                             label="Bình luận"
-                            icon={<PostComment />}
+                            icon={<CommentBankOutlined/>}
                           />
-                          <button
-                            onClick={(event) =>
-                              handleCommentPost(event, post._id)
-                            }
-                          >
-                            submit
-                          </button>
+                          <div>
+                            <button
+                              onClick={(event) =>
+                                handleCommentPost(event, post._id)
+                              }
+                            >
+                              submit
+                            </button>
+                            <PostComment ref={postCommentRef} />
+                          </div>
                           {/* </button> */}
                           <BottomNavigationAction
                             label="Báo cáo"
@@ -269,7 +287,7 @@ function Posting({ children }) {
                 ))}
           </DashboardWrapperMain>
           <DashboardWrapperRight>
-            <div className="card border-0">
+            <div className="card border-0 mb-4  ">
               <div className="row">
                 <div className="col-md-2">
                   <Link to="/home/profiles">
@@ -293,12 +311,59 @@ function Posting({ children }) {
                 </div>
               </div>
             </div>
-            <div>
-              {/* <input type="text" value={searchTerm} onChange={handleSearch} />
-              {filteredData.map((post) => (
-                <form className="mt-3" key={post._id}></form>
-              ))} */}
-            </div>
+            {Array.isArray(arrPost) &&
+              arrPost
+                .sort((a, b) => {
+                  return (
+                    new Date(b?.createdAt).getTime() -
+                    new Date(a?.createdAt).getTime()
+                  );
+                })
+                .map((post) => (
+                  <Card sx={{ maxWidth: 345, marginBottom: 2 }}>
+                    <CardMedia
+                      component="img"
+                      alt="green iguana"
+                      height="140"
+                      image={post?.img}
+                    />
+                    <CardContent>
+                      <Typography gutterBottom variant="h5" component="div">
+                        {post?.title}
+                      </Typography>
+                      <div className="row">
+                        <div className="col-md-4" style={{ fontSize: 15 }}>
+                          <CropIcon className="d-block" /> {post?.roomSize}
+                        </div>
+                        <div className="col-md-4" style={{ fontSize: 15 }}>
+                          {" "}
+                          <RoofingOutlinedIcon className="d-block" />{" "}
+                          {post?.buildingName}
+                        </div>
+                        <div className="col-md-4 " style={{ fontSize: 15 }}>
+                          <PriceChangeOutlinedIcon className="d-block" />
+                          {post?.roomPrice}{" "}
+                        </div>
+                      </div>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ maxHeight: 80 }}
+                      >
+                        {post?.description}
+                      </Typography>
+                    </CardContent>
+                    <CardActions>
+                      <Button size="small">
+                        <DoneOutlinedIcon sx={{ color: "green" }} />
+                      </Button>
+                      <Button size="small">
+                        {" "}
+                        <DeleteOutlinedIcon sx={{ color: "red" }} />
+                      </Button>
+                    </CardActions>
+                  </Card>
+                ))}
           </DashboardWrapperRight>
         </DashboardWrapper>
         {/* modal */}

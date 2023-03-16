@@ -39,8 +39,10 @@ const PostModal = () => {
   const [roomIds, setRoomIds] = useState([]);
   const localStorageDataBuildings = localStorage.getItem("buildings");
   const data = JSON.parse(localStorageDataBuildings);
-  const dataOfBuildings = data.data.buildings;
+  const dataOfBuildings = data?.data?.buildings;
+  // console.log(dataOfBuildings);
   const roomUserId = roomIds?.data?.rooms;
+  // console.log(roomUserId);
   const userPosting = JSON.parse(localStorage.getItem("access_token"));
   const userPostings = userPosting.data.user;
   if (roomUserId) {
@@ -55,6 +57,10 @@ const PostModal = () => {
   const [building, setBuilding] = React.useState("");
   const [selectedFile, setSelectedFile] = React.useState(null);
   const [showDeleteButton, setShowDeleteButton] = useState(false);
+
+  const [buildingName, setBuildingName] = useState("");
+  const [buildingId, setBuildingId] = useState("");
+  // console.log(buildingId, title,description,room,selectedFile);
   // const roomUserId = JSON.parse(localStorage.getItem("roomIds")).data.rooms;
 
   const handleSubmit = async (event) => {
@@ -70,7 +76,7 @@ const PostModal = () => {
     var formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
-    formData.append("buildings", building);
+    formData.append("buildings", buildingId);
     formData.append("rooms", room);
     formData.append("img", selectedFile);
     let isMounted = true;
@@ -125,10 +131,19 @@ const PostModal = () => {
         }
       })
       .catch((error) => {
-
         console.error(error);
       });
   };
+
+  function getBuildingName(roomId) {
+    const room = roomUserId.find((room) => room?._id === roomId);
+    const building = dataOfBuildings.find(
+      (building) => building?._id === room?.buildings
+    );
+    setBuildingName(building?.buildingName);
+    setBuildingId(building?._id);
+  }
+
   return (
     <>
       <Button
@@ -137,7 +152,7 @@ const PostModal = () => {
         fullWidth={true}
         className="rounded-5 bg-light shadow-none text-secondary"
       >
-        Open modal
+        Posting
       </Button>
       {/* Modal */}
       <StyledModal
@@ -241,6 +256,8 @@ const PostModal = () => {
                       )
                     )}
                   </Select>
+                  {room && <div>Building: {buildingName}</div>}
+                  {room && <div>BuildingID: {buildingId}</div>}
                 </FormControl>
               </div>
               <div className="col-md-6">
@@ -252,26 +269,20 @@ const PostModal = () => {
                     id="demo-select-small"
                     value={room}
                     label="Room"
-                    onChange={(e) => setRoom(e.target.value)}
-                    style={{
-                      maxHeight: "50px",
-                      overflowY: "auto",
+                    onChange={(e) => {
+                      setRoom(e.target.value);
+                      getBuildingName(e.target.value);
                     }}
+                    style={{ maxHeight: "50px", overflowY: "auto" }}
                   >
                     <MenuItem value="">
                       <em>None</em>
                     </MenuItem>
-                    {roomUserId?.map(
-                      (
-                        rooms,
-                        index // Thêm tham số index vào hàm map
-                      ) => (
-                        <MenuItem key={index} value={rooms?._id}>
-                          {" "}
-                          {rooms?.roomName}
-                        </MenuItem>
-                      )
-                    )}
+                    {roomUserId?.map((room) => (
+                      <MenuItem key={room._id} value={room._id}>
+                        {room.roomName}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
               </div>

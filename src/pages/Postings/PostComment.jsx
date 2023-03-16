@@ -39,7 +39,7 @@ const PostComment = () => {
   const userPosting = JSON.parse(localStorage.getItem("access_token"));
   const userPostings = userPosting.data.user;
 
-  const { selectedPost} = useContext(DataContext);
+  const { selectedPost ,arrPost } = useContext(DataContext);
   const [description, setDescription] = React.useState("");
   const [selectedFile, setSelectedFile] = React.useState(null);
   const [showDeleteButton, setShowDeleteButton] = useState(false);
@@ -60,7 +60,7 @@ const PostComment = () => {
     let isMounted = true;
     try {
       const response = await axios.post(
-        "http://localhost:3000/postAllPostingCommentByPost",
+        "https://fhome-be.vercel.app/postAllPostingCommentByPost",
         formData,
         {
           headers: {
@@ -88,7 +88,7 @@ const PostComment = () => {
       try {
         const selectedPostComment = selectedPost._id;
         const response = await axios.get(
-          `http://localhost:3000/getAllPostingCommentByPost/${selectedPostComment}`,
+          `https://fhome-be.vercel.app/getAllPostingCommentByPost/${selectedPostComment}`,
           {
             headers: {
               Authorization: `Bearer ${token.data.accessToken}`,
@@ -124,13 +124,15 @@ const PostComment = () => {
       <Button
         onClick={handleGetRoomUpdate}
         variant="contained"
-        fullWidth={true}
+        // fullWidth={true}
         className="rounded-5 bg-light shadow-none text-secondary"
       >
-        Open modal
+        Comment
       </Button>
+      
       {/* Modal */}
       <StyledModal
+        // onClick={handleGetRoomUpdate}
         open={open}
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
@@ -154,25 +156,25 @@ const PostComment = () => {
               <div className="row">
                 <div className="col-md-1">
                   <Avatar
-                    name={selectedPost.userFullName}
+                    name={selectedPost?.userFullName}
                     size="40"
                     round={true}
-                    src={selectedPost.userImg}
+                    src={selectedPost?.userImg}
                   />
                 </div>
                 <div className="col-md-11">
                   <div>
                     <span className="posting-list__titleName">
-                      {selectedPost.userFullName}
+                      {selectedPost?.userFullName}
                     </span>
                     <span className="posting-list__titleName__date">
-                      {new Date(selectedPost.updatedAt).toLocaleString()}
+                      {new Date(selectedPost?.updatedAt).toLocaleString()}
                     </span>
                   </div>
                 </div>
               </div>
               <span className="fs-6 posting-list__color-text mt-2  d-block fw-bolder">
-                {selectedPost.title}
+                {selectedPost?.title}
               </span>
               <div className="row">
                 <div className="col-md-4 text-center">
@@ -180,19 +182,19 @@ const PostComment = () => {
                 </div>
                 <div className="col-md-4 text-center">
                   {" "}
-                  <RoofingOutlinedIcon /> {selectedPost.buildingName}
+                  <RoofingOutlinedIcon /> {selectedPost?.buildingName}
                 </div>
                 <div className="col-md-4 text-center">
                   <PriceChangeOutlinedIcon />
-                  {selectedPost.roomPrice}{" "}
+                  {selectedPost?.roomPrice}{" "}
                 </div>
               </div>
               <span className="fs-6 posting-list__color-text my-2 d-block">
-                {selectedPost.description}
+                {selectedPost?.description}
               </span>
               <img
                 className="rounded-3 mt-3"
-                src={selectedPost.img}
+                src={selectedPost?.img}
                 alt=""
                 style={{ maxWidth: 600 }}
               />
@@ -219,7 +221,10 @@ const PostComment = () => {
                         />
                       </div>
                       <div className="col-md-11 rounded-3">
-                        <div className="bg-light p-2 rounded-4" style={{width:'fit-content'}}>
+                        <div
+                          className="bg-light p-2 rounded-4"
+                          style={{ width: "fit-content" }}
+                        >
                           {" "}
                           <span className="fw-bolder fs-6 text-dark">
                             {commentss.userPostingComment.fullname}

@@ -30,7 +30,7 @@ const TopNav = () => {
 
   const localStorageDataBuildings = localStorage.getItem("buildings");
   const data = JSON.parse(localStorageDataBuildings);
-  const dataOfBuildings = data.data.buildings;
+  const dataOfBuildings = data?.data?.buildings;
 
   const navigate = useNavigate();
 
@@ -208,14 +208,14 @@ const TopNav = () => {
                   <MenuItem value="">
                     <em>None</em>
                   </MenuItem>
-                  {dataOfBuildings.map(
+                  {dataOfBuildings?.map(
                     (
                       building,
                       index // Thêm tham số index vào hàm map
                     ) => (
-                      <MenuItem key={index} value={building.buildingName}>
+                      <MenuItem key={index} value={building?.buildingName}>
                         {" "}
-                        {building.buildingName}
+                        {building?.buildingName}
                       </MenuItem>
                     )
                   )}
