@@ -30,7 +30,8 @@ const UserBox = styled(Box)({
 });
 
 const PostComment = () => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
+  const [commentButtonClicked, setCommentButtonClicked] = useState(false);
 
   const handleClose = () => setOpen(false);
 
@@ -39,7 +40,7 @@ const PostComment = () => {
   const userPosting = JSON.parse(localStorage.getItem("access_token"));
   const userPostings = userPosting.data.user;
 
-  const { selectedPost ,arrPost } = useContext(DataContext);
+  const { selectedPost, arrPost } = useContext(DataContext);
   const [description, setDescription] = React.useState("");
   const [selectedFile, setSelectedFile] = React.useState(null);
   const [showDeleteButton, setShowDeleteButton] = useState(false);
@@ -112,8 +113,10 @@ const PostComment = () => {
   const handleFileChange = (acceptedFiles) => {
     setSelectedFile(acceptedFiles[0]);
   };
+
   const handleGetRoomUpdate = () => {
-    setOpen(true);
+    setCommentButtonClicked(true);
+    setOpen(false);
   };
   if (!selectedPost) {
     return null;
@@ -121,6 +124,7 @@ const PostComment = () => {
 
   return (
     <>
+{commentButtonClicked ? null : (
       <Button
         onClick={handleGetRoomUpdate}
         variant="contained"
@@ -129,7 +133,8 @@ const PostComment = () => {
       >
         Comment
       </Button>
-      
+)}
+
       {/* Modal */}
       <StyledModal
         // onClick={handleGetRoomUpdate}

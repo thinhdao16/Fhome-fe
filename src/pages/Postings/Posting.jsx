@@ -48,6 +48,7 @@ function Posting({ children }) {
     setRating(rate);
     // Some logic
   };
+  const [isButtonVisible, setIsButtonVisible] = useState(true);
   const [dataPosting, setDataPosting] = useState({
     buildings: [],
     postings: [],
@@ -131,6 +132,7 @@ function Posting({ children }) {
   const postCommentRef = useRef(null);
   const [value, setValue] = React.useState(0);
   function handleCommentPost(event, id) {
+    setIsButtonVisible(false);
     event.preventDefault();
     const index = arrPost.findIndex((item) => item._id === id);
     const idDataPost = arrPost[index];
@@ -266,14 +268,17 @@ function Posting({ children }) {
                             icon={<CommentBankOutlined/>}
                           />
                           <div>
-                            <button
+                            {isButtonVisible && (
+                            <button                        
                               onClick={(event) =>
                                 handleCommentPost(event, post._id)
                               }
                             >
                               submit
                             </button>
+                             )}
                             <PostComment ref={postCommentRef} />
+                           
                           </div>
                           {/* </button> */}
                           <BottomNavigationAction

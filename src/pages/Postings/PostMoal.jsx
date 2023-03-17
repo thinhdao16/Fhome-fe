@@ -165,173 +165,206 @@ const PostModal = () => {
           <Box
             style={{ position: "relative" }}
             width={500}
-            maxHeight={480}
+            maxHeight={700}
             bgcolor="white"
             p={3}
             borderRadius={5}
             overflow="auto"
+            sx={{
+              "::-webkit-scrollbar": {
+                display: "none",
+              },
+            }}
           >
-            <Typography color="gray" textAlign="center">
+            <Typography
+              sx={{
+                position: "absolute",
+                top: "0",
+              }}
+              color="gray"
+              textAlign="center"
+            >
               Tạo bài viết
             </Typography>
             <hr width="100%" size="5px" align="center" color="gray" />
-            <UserBox>
-              <Avatar
-                src={userPostings.img}
-                sx={{ width: 55, height: 55, marginTop: 1 }}
-              />
-              <Typography
-                fontWeight={500}
-                sx={{
-                  marginTop: -3,
-                  color: "black",
-                  fontSize: ".875rem",
-                  fontWeight: 600,
-                }}
-                variant="span"
-              >
-                {userPostings.fullname}
-              </Typography>
-              <Typography
-                style={{
-                  marginLeft: -68,
-                  marginTop: 30,
-                  fontSize: "0.75rem",
-                  fontWeight: "500",
-                  backgroundColor: "#e4e6eb",
-                  boxShadow: "rgb(149 157 165 / 20%) 0px 8px 24px",
-                  padding: "2px 4px",
-                  borderRadius: "10px",
-                  color: "black",
-                }}
-              >
-                <AccountCircleOutlinedIcon /> {userPostings.roleName}
-              </Typography>
-            </UserBox>
-            <Textarea
-              name="Plain"
-              placeholder="title"
-              variant="plain"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-            <Textarea
-              sx={{ width: "100%", minHeight: 90 }}
-              id="standard-multiline-static"
-              multiline
-              rows={5}
-              placeholder={`${userPostings.fullname} ơi bạn muốn đăng gì thế ?`}
-              variant="standard"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-            <div style={{ display: "flex", flexDirection: "row" }}>
-              <div className="col-md-6">
-                {" "}
-                <FormControl sx={{ minWidth: 180 }} size="small">
-                  <InputLabel id="demo-select-small">Building</InputLabel>
-                  <Select
-                    labelId="demo-select-small"
-                    id="demo-select-small"
-                    value={building}
-                    label="Building"
-                    onChange={(e) => setBuilding(e.target.value)}
-                    style={{
-                      maxHeight: "40px",
-                      overflowY: "auto",
-                    }}
-                  >
-                    <MenuItem value="">
-                      <em>None</em>
-                    </MenuItem>
-                    {dataOfBuildings.map(
-                      (
-                        building,
-                        index // Thêm tham số index vào hàm map
-                      ) => (
-                        <MenuItem key={index} value={building._id}>
-                          {" "}
-                          {building.buildingName}
-                        </MenuItem>
-                      )
-                    )}
-                  </Select>
-                  {room && <div>Building: {buildingName}</div>}
-                  {room && <div>BuildingID: {buildingId}</div>}
-                </FormControl>
-              </div>
-              <div className="col-md-6">
-                {" "}
-                <FormControl sx={{ minWidth: 180 }} size="small">
-                  <InputLabel id="demo-select-small">Room</InputLabel>
-                  <Select
-                    labelId="demo-select-small"
-                    id="demo-select-small"
-                    value={room}
-                    label="Room"
-                    onChange={(e) => {
-                      setRoom(e.target.value);
-                      getBuildingName(e.target.value);
-                    }}
-                    style={{ maxHeight: "50px", overflowY: "auto" }}
-                  >
-                    <MenuItem value="">
-                      <em>None</em>
-                    </MenuItem>
-                    {roomUserId?.map((room) => (
-                      <MenuItem key={room._id} value={room._id}>
-                        {room.roomName}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </div>
+
+            <div>
+              <UserBox >
+                <Avatar
+                  src={userPostings?.img}
+                  sx={{ width: 55, height: 55, marginTop: 1 }}
+                />
+                <Typography
+                  fontWeight={500}
+                  sx={{
+                    marginTop: -3,
+                    color: "black",
+                    fontSize: ".875rem",
+                    fontWeight: 600,
+                  }}
+                  variant="span"
+                >
+                  {userPostings?.fullname}
+                </Typography>
+                <Typography
+                  style={{
+                    marginLeft: -68,
+                    marginTop: 30,
+                    fontSize: "0.75rem",
+                    fontWeight: "500",
+                    backgroundColor: "#e4e6eb",
+                    boxShadow: "rgb(149 157 165 / 20%) 0px 8px 24px",
+                    padding: "2px 4px",
+                    borderRadius: "10px",
+                    color: "black",
+                  }}
+                >
+                  <AccountCircleOutlinedIcon /> {userPostings?.roleName}
+                </Typography>
+              </UserBox>
             </div>
 
-            <div style={{ flex: 1 }}>
-              <Typography
-                style={{ fontSize: "15px", margin: 10, color: "black" }}
-              >
-                Đ. Nguyễn Xiển, Long Thạnh Mỹ, Quận 9, Thành phố Hồ Chí Minh
-                700000{" "}
-              </Typography>
-            </div>
-            <Dropzone onDrop={handleFileChange} accept="image/*">
-              {({ getRootProps, getInputProps }) => (
-                <div {...getRootProps()}>
-                  <input {...getInputProps()} />
-                  {selectedFile ? (
-                    <div>
-                      <img
-                        className="rounded-3 shadow"
-                        src={URL.createObjectURL(selectedFile)}
-                        alt="preview"
-                      />
-                      {showDeleteButton && (
-                        <button onClick={handleDelete}>Delete</button>
-                      )}
-                    </div>
-                  ) : (
-                    <p
-                      className="text-center"
+            <div
+              style={{
+                maxHeight: "430px",
+                overflow: "auto",
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
+              }}
+            >
+              {/* <hr width="100%" size="5px" align="center" color="gray" style={{ marginTop: "-15px" }} /> */}
+
+              <Textarea
+                name="Plain"
+                placeholder="title"
+                variant="plain"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
+              <Textarea
+                sx={{ width: "100%", minHeight: 90 }}
+                id="standard-multiline-static"
+                multiline
+                rows={5}
+                placeholder={`${userPostings?.fullname} ơi bạn muốn đăng gì thế ?`}
+                variant="standard"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+              <div style={{ display: "flex", flexDirection: "row" }}>
+                <div className="col-md-6">
+                  {" "}
+                  <FormControl sx={{ minWidth: 180 }} size="small">
+                    <InputLabel id="demo-select-small">Building</InputLabel>
+                    <Select
+                      labelId="demo-select-small"
+                      id="demo-select-small"
+                      value={building}
+                      label="Building"
+                      onChange={(e) => setBuilding(e.target.value)}
                       style={{
-                        fontSize: "0.875rem",
-                        fontWeight: 600,
-                        color: "#65676b",
+                        maxHeight: "40px",
+                        overflowY: "auto",
                       }}
                     >
-                      <ImageOutlinedIcon
-                        style={{ fontSize: "30px", color: "#6ab175" }}
-                      />{" "}
-                      Thêm ảnh
-                    </p>
-                  )}
+                      <MenuItem value="">
+                        <em>None</em>
+                      </MenuItem>
+                      {dataOfBuildings.map(
+                        (
+                          building,
+                          index // Thêm tham số index vào hàm map
+                        ) => (
+                          <MenuItem key={index} value={building._id}>
+                            {" "}
+                            {building.buildingName}
+                          </MenuItem>
+                        )
+                      )}
+                    </Select>
+                    {room && <div>Building: {buildingName}</div>}
+                    {room && <div>BuildingID: {buildingId}</div>}
+                  </FormControl>
                 </div>
-              )}
-            </Dropzone>
+                <div className="col-md-6">
+                  {" "}
+                  <FormControl sx={{ minWidth: 180 }} size="small">
+                    <InputLabel id="demo-select-small">Room</InputLabel>
+                    <Select
+                      labelId="demo-select-small"
+                      id="demo-select-small"
+                      value={room}
+                      label="Room"
+                      onChange={(e) => {
+                        setRoom(e.target.value);
+                        getBuildingName(e.target.value);
+                      }}
+                      style={{ maxHeight: "50px", overflowY: "auto" }}
+                    >
+                      <MenuItem value="">
+                        <em>None</em>
+                      </MenuItem>
+                      {roomUserId?.map((room) => (
+                        <MenuItem key={room._id} value={room._id}>
+                          {room.roomName}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </div>
+              </div>
 
-            <ButtonGroup style={{ position: "absolute", width: "90%" }}>
-              <Button variant="contained" fullWidth={true} type="submit">
+              <div style={{ flex: 1 }}>
+                <Typography
+                  style={{ fontSize: "15px", margin: 10, color: "black" }}
+                >
+                  Đ. Nguyễn Xiển, Long Thạnh Mỹ, Quận 9, Thành phố Hồ Chí Minh
+                  700000{" "}
+                </Typography>
+              </div>
+              <Dropzone onDrop={handleFileChange} accept="image/*">
+                {({ getRootProps, getInputProps }) => (
+                  <div {...getRootProps()}>
+                    <input {...getInputProps()} />
+                    {selectedFile ? (
+                      <div>
+                        <img
+                          className="rounded-3 shadow"
+                          src={URL.createObjectURL(selectedFile)}
+                          alt="preview"
+                        />
+                        {showDeleteButton && (
+                          <button onClick={handleDelete}>Delete</button>
+                        )}
+                      </div>
+                    ) : (
+                      <p
+                        className="text-center"
+                        style={{
+                          fontSize: "0.875rem",
+                          fontWeight: 600,
+                          color: "#65676b",
+                        }}
+                      >
+                        <ImageOutlinedIcon
+                          style={{ fontSize: "30px", color: "#6ab175" }}
+                        />{" "}
+                        Thêm ảnh
+                      </p>
+                    )}
+                  </div>
+                )}
+              </Dropzone>
+            </div>
+
+            <ButtonGroup
+              style={{
+                position: "absolute",
+                width: "90%",
+                bottom: "10",
+              }}
+            >
+              <Button variant="contained" fullWidth={true} type="submit" style={{ marginBottom:"12px" }}>
                 Click me
               </Button>
             </ButtonGroup>
