@@ -55,7 +55,6 @@ const PostModal = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     const token = JSON.parse(localStorage.getItem("access_token"));
     if (!token) {
       console.log("No access token found.");

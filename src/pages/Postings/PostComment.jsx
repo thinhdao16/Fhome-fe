@@ -16,6 +16,8 @@ import { DataContext } from "../DataContext";
 import ForwardOutlinedIcon from "@mui/icons-material/ForwardOutlined";
 import RoofingOutlinedIcon from "@mui/icons-material/RoofingOutlined";
 import PriceChangeOutlinedIcon from "@mui/icons-material/PriceChangeOutlined";
+import toastr from "cogo-toast";
+
 const StyledModal = styled(Modal)({
   display: "flex",
   alignItems: "center",
@@ -45,14 +47,13 @@ const PostComment = () => {
   const [showDeleteButton, setShowDeleteButton] = useState(false);
 
   const token = JSON.parse(localStorage.getItem("access_token"));
-  // console.log(token)
 
   const [comments, setComments] = React.useState([]);
-  // console.log(comments[1]);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
+    console.log(event)
     const selectedPostComment = selectedPost?._id;
-    console.log(selectedPostComment);
     var formData = new FormData();
     formData.append("description", description);
     formData.append("img", selectedFile);
@@ -74,6 +75,10 @@ const PostComment = () => {
         console.log(response.data);
         setOpen(false);
       }
+      toastr.success("Comment successfully", {
+        position: "top-right",
+        heading: "Done",
+      });
     } catch (error) {
       console.error(error);
     }
@@ -151,7 +156,15 @@ const PostComment = () => {
               },
             }}
           >
-            <div className="text-center" style={{margin:'-24px -24px 10px -24px', padding:24 , boxShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px' }}>
+            <div
+              className="text-center"
+              style={{
+                margin: "-24px -24px 10px -24px",
+                padding: 24,
+                boxShadow:
+                  "rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px",
+              }}
+            >
               <span
                 sx={{
                   position: "absolute",
@@ -168,7 +181,8 @@ const PostComment = () => {
                 Tạo bài viết
               </span>
             </div>
-            <div  style={{
+            <div
+              style={{
                 maxHeight: "497px",
                 overflow: "auto",
                 scrollbarWidth: "none",
@@ -177,7 +191,8 @@ const PostComment = () => {
                   display: "none",
                 },
               }}
-              className="postmodal-scoll">
+              className="postmodal-scoll"
+            >
               <div className="p-3 bg-body rounded-3 border-0">
                 <div className="row">
                   <div className="col-md-1">
@@ -204,7 +219,6 @@ const PostComment = () => {
                 </span>
                 <div className="row">
                   <div className="col-md-4 text-center">
-                    {/* <CropIcon /> {dataPost.roomSize} */}
                   </div>
                   <div className="col-md-4 text-center">
                     {" "}
@@ -282,10 +296,9 @@ const PostComment = () => {
                 backgroundColor: "white",
                 margin: "0 -24px 0 -24px",
                 padding: "12px 24px 0 24px",
-                boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px',
+                boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px",
               }}
             >
-              <div>
                 <UserBox>
                   <Avatar
                     src={userPostings.img}
@@ -296,7 +309,7 @@ const PostComment = () => {
                       width: "100%",
                       backgroundColor: "#f0f2f5",
                       color: "black",
-                      borderRadius:25
+                      borderRadius: 25,
                     }}
                     id="standard-multiline-static"
                     multiline
@@ -329,7 +342,13 @@ const PostComment = () => {
                       padding: 0,
                     }}
                   >
-                    <ForwardOutlinedIcon style={{ fontSize: "25px", color: "#b48845" ,margin:-22}}/>
+                    <ForwardOutlinedIcon
+                      style={{
+                        fontSize: "25px",
+                        color: "#b48845",
+                        margin: -22,
+                      }}
+                    />
                   </Button>
                 </UserBox>
                 <div style={{ display: "block", marginLeft: 50 }}>
@@ -362,7 +381,6 @@ const PostComment = () => {
                     ></p>
                   )}
                 </div>
-              </div>
             </div>
           </Box>
         </form>

@@ -27,6 +27,8 @@ import "./CreateRoom.scss";
 import Dropzone from "react-dropzone";
 import BedroomParentOutlinedIcon from "@mui/icons-material/BedroomParentOutlined";
 import DnsOutlinedIcon from "@mui/icons-material/DnsOutlined";
+import toastr from "cogo-toast";
+
 function CreateRoom() {
   const localStorageDataBuildings = localStorage.getItem("buildings");
   const data = JSON.parse(localStorageDataBuildings);
@@ -65,7 +67,10 @@ function CreateRoom() {
       })
       .then((response) => {
         console.log(response.data);
-        // Cập nhật dữ liệu mới vào state
+        toastr.success("Create Room successfully", {
+          position: "top-right",
+          heading: "Done",
+        });
         setDataRoom((prevData) => {
           return {
             ...prevData,
@@ -74,6 +79,10 @@ function CreateRoom() {
         });
       })
       .catch((error) => {
+        toastr.fail("Create Room fail", {
+          position: "top-right",
+          heading: "Done",
+        });
         console.error(error);
       });
   };
@@ -147,7 +156,6 @@ function CreateRoom() {
     users: [],
   });
   const dataRooms = dataRoom.rooms;
-
   const handleFileChange = (acceptedFiles) => {
     setSelectedFile(acceptedFiles[0]);
   };
@@ -176,7 +184,7 @@ function CreateRoom() {
               />
               <span className="m-3 text-dark">
                 <CropOutlinedIcon style={{color: "#b48845" }}/>
-                Size
+                Size (m²)
               </span>
               <Textarea
                 name="Plain"
@@ -195,7 +203,7 @@ function CreateRoom() {
               <span className="m-3 text-dark">
                 {" "}
                 <MonetizationOnOutlinedIcon style={{color: "#b48845" }}/>
-                Price
+                Price (Kvnđ)
               </span>
               <Textarea
                 name="Plain"

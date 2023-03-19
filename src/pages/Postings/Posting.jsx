@@ -9,7 +9,7 @@ import React, {
 import Box from "@mui/material/Box";
 import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
-import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred";
+import DeleteIcon from "@mui/icons-material/Delete";
 import DashboardWrapper, {
   DashboardWrapperMain,
   DashboardWrapperRight,
@@ -37,7 +37,6 @@ import {
 } from "@mui/material";
 import DoneOutlinedIcon from "@mui/icons-material/DoneOutlined";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
-import { CommentBankOutlined } from "@mui/icons-material";
 import DraftsIcon from "@mui/icons-material/Drafts";
 import PendingIcon from "@mui/icons-material/Pending";
 import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
@@ -50,7 +49,6 @@ function Posting({ children, filePath }) {
   const { posting, setPosting } = useContext(DataContext);
 
   const [isLiked, setIsLiked] = useState(false);
-  const likePost = isLiked?.data?.favourite?.length;
   const likePostFavourite = isLiked?.data?.favourite;
   const [dataPosting, setDataPosting] = useState({
     buildings: [],
@@ -71,14 +69,6 @@ function Posting({ children, filePath }) {
     return dataPosting.postings.filter((posting) => posting.status === "draft");
   }, [dataPosting]);
 
-  const arrPostPublish = useMemo(() => {
-    if (!dataPosting) return [];
-
-    return dataPosting.postings.filter(
-      (posting) => posting.status === "published"
-    );
-  }, [dataPosting]);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -95,7 +85,6 @@ function Posting({ children, filePath }) {
         const newData = postings.map((post) => {
           const building = buildings.find((b) => b._id === post.buildings);
           const buildingName = building ? building.buildingName : "";
-
           const room = rooms.find((r) => r._id === post.rooms);
           const roomPrice = room ? room?.price : "";
           const roomSize = room ? room?.size : "";
@@ -154,7 +143,12 @@ function Posting({ children, filePath }) {
 
     return () => clearInterval(intervalId);
   }, []);
-
+  const arrPostPublish = useMemo(() => {
+    if (!dataPosting) return [];
+    return dataPosting.postings.filter(
+      (posting) => posting.status === "published"
+    );
+  }, [dataPosting]);
   const postCommentRef = useRef(null);
   const [value, setValue] = React.useState(0);
 
@@ -180,7 +174,7 @@ function Posting({ children, filePath }) {
           status: "pending",
         })
         .then((response) => {
-          toastr.success("Reject successfully", {
+          toastr.success("P successfully", {
             position: "top-right",
             heading: "Done",
           });
@@ -221,9 +215,6 @@ function Posting({ children, filePath }) {
   }
   const handleLike = (event, id) => {
     event.preventDefault();
-    // setIsLiked(true);
-    // setLikesCount(likesCount + 1);
-
     axios
       .post(
         "http://localhost:3000/createFavouritePost",
@@ -242,7 +233,25 @@ function Posting({ children, filePath }) {
         console.error("Failed to add like", error);
       });
   };
-
+  const handleDisLike = (event, id) => {
+    const idLike = likePostFavourite?.filter(
+      (like) => like?.post?._id === id
+    )?.[0]._id;
+    event.preventDefault();
+    axios
+      .delete(`http://localhost:3000/deleteFavouritePost/${idLike}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userPosting.data.accessToken}`,
+        },
+      })
+      .then((response) => {
+        console.log("DisLike added successfully");
+      })
+      .catch((error) => {
+        console.error("Failed to add Dislike", error);
+      });
+  };
   const [selectedPost, setSelectedPost] = useState(null);
 
   const styleStatus = {
@@ -361,8 +370,12 @@ function Posting({ children, filePath }) {
                       <img className="rounded-3 mt-3" src={post?.img} alt="" />
                       <div className=" mx-4 my-2 ">
                         <div className="float-start posting-list__feel">
-                          {/* {likePost}rating */}
-                          {likePostFavourite?.filter?.(like =>like?.post?._id === post?._id)?.length} like
+                          {
+                            likePostFavourite?.filter?.(
+                              (like) => like?.post?._id === post?._id
+                            )?.length
+                          }{" "}
+                          like
                         </div>
                         <div className="float-end">
                           <a href="" className="posting-list__feel">
@@ -381,21 +394,29 @@ function Posting({ children, filePath }) {
                           }}
                         >
                           <BottomNavigationAction
-                            icon={<FavoriteIcon sx={{ color: "#ec2d4d" }} />}
+                            icon={
+                              likePostFavourite?.filter(
+                                (f) => f?.post?._id === post?._id
+                              )?.length > 0 ? (
+                                <FavoriteIcon sx={{ color: "#ec2d4d" }} />
+                              ) : (
+                                <FavoriteIcon sx={{ color: "black" }} />
+                              )
+                            }
                             onClick={(event) => handleLike(event, post?._id)}
                           />
                           <BottomNavigationAction
-                            label="Bình luận"
-                            icon={<CommentBankOutlined />}
+                            icon={<DeleteIcon sx={{ color: "black  " }} />}
+                            onClick={(event) => handleDisLike(event, post?._id)}
                           />
-                          <div>
-                            <button
+                          <div style={{ display: "flex" }}>
+                            <Button
                               onClick={(event) =>
                                 handleCommentPost(event, post._id)
                               }
                             >
-                              submit
-                            </button>
+                             CMT
+                            </Button>
                             <PostComment ref={postCommentRef} />
                           </div>
                         </BottomNavigation>

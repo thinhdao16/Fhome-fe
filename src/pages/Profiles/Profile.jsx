@@ -7,15 +7,14 @@ import DashboardWrapper, {
   DashboardWrapperMain,
   DashboardWrapperRight,
 } from "../../components/dashboard-wrapper/DashboardWrapper";
-import { CommentBankOutlined } from "@mui/icons-material";
-import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred";
 
 import axios from "axios";
 import { toast } from "react-toastify";
 import Avatar from "react-avatar";
 import { Box } from "@mui/system";
-import { BottomNavigation, BottomNavigationAction } from "@mui/material";
-import { Rating } from "react-simple-star-rating";
+import { BottomNavigation, BottomNavigationAction, Button } from "@mui/material";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+
 import PostComment from "../Postings/PostComment";
 import CropIcon from "@mui/icons-material/Crop";
 import RoofingOutlinedIcon from "@mui/icons-material/RoofingOutlined";
@@ -34,20 +33,15 @@ const Profile = () => {
   const [profilePost, setProfilePost] = useState([]);
   const arrayProfilePost = profilePost?.data?.postings;
   const [value, setValue] = useState(0);
-  const [rating, setRating] = useState(0);
   const [selectedPost, setSelectedPost] = useState(null);
-  const [profileUpdate, setProfileUpdate] = useState([]);
+  const [isLiked, setIsLiked] = useState(false);
+  const likePostFavourite = isLiked?.data?.favourite;
 
-  const [dataProfile, setDataProfile]= useState([])
-  // console.log(dataProfile)
+  const [dataProfile, setDataProfile] = useState([]);
   const [fullName, setFullName] = useState(userProfiles?.user?.fullname);
   const [email, setEmail] = useState(userProfiles?.user?.email);
   const [phone, setPhone] = useState(userProfiles?.user?.phoneNumber);
   const [newImage, setNewImage] = useState(null);
-
-  const handleRating = (rate) => {
-    setRating(rate);
-  };
 
   function handleCommentPost(event, id) {
     event.preventDefault();
@@ -57,26 +51,28 @@ const Profile = () => {
   }
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3000/getAllStatus", )
-      .then((response) => {
+    Promise.all([
+      axios.get("http://localhost:3000/getAllStatus"),
+      axios.get(`http://localhost:3000/userProfile/${userProfiles.user.id}`),
+      axios.get("http://localhost:3000/getFavouriteByUser", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userProfiles.accessToken}`,
+        },
+      }),
+    ])
+      .then((responses) => {
+        const [profilePostResponse, dataProfileResponse, isLikedResponse] =
+          responses;
+        setProfilePost(profilePostResponse.data);
+        setDataProfile(dataProfileResponse.data);
+        setIsLiked(isLikedResponse.data);
         toast.success("Successfully!");
-        setProfilePost(response.data);
       })
       .catch((error) => {
         console.error(error);
       });
-    axios.get(
-      `http://localhost:3000/userProfile/${userProfiles.user.id}`)
-        .then((response) => {
-          toast.success("Get profile Successfully!");
-          setDataProfile(response.data);
-        })
-        .catch((error) => {
-          console.error(error);
-        }
-    );
-  });
+  }, []);
 
   const handleSubmitFormProfile = async (e) => {
     e.preventDefault();
@@ -96,10 +92,6 @@ const Profile = () => {
           },
         }
       );
-      const roomIds = response.data;
-      if (roomIds) {
-        setProfileUpdate(roomIds);
-      }
       toastr.success("Update successfully", {
         position: "top-right",
         heading: "Done",
@@ -116,7 +108,26 @@ const Profile = () => {
     setNewImage(acceptedFiles[0]);
   };
 
-
+  const handleLike = (event, id) => {
+    event.preventDefault();
+    axios
+      .post(
+        "http://localhost:3000/createFavouritePost",
+        { postId: id },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${userProfiles.accessToken}`,
+          },
+        }
+      )
+      .then((response) => {
+        console.log("Like added successfully");
+      })
+      .catch((error) => {
+        console.error("Failed to add like", error);
+      });
+  };
   const PostingDraft = <DraftsIcon style={{ color: "brown" }} />;
   const PostingPending = <PendingIcon style={{ color: "blue" }} />;
   const PostingAprove = (
@@ -157,11 +168,21 @@ const Profile = () => {
                             <span className="posting-list__titleName__date">
                               {new Date(post?.createdAt).toLocaleString()}
                             </span>
-                            <span className="ms-2">{ post.status === "approved" && PostingAprove  }</span>
-                            <span className="ms-2">{ post.status === "draft" && PostingDraft  }</span>
-                            <span className="ms-2">{ post.status === "pending" && PostingPending  }</span>
-                            <span className="ms-2">{ post.status === "rejected" && PostingReject  }</span>
-                            <span className="ms-2">{ post.status === "pulished" && PostingPublic  }</span>
+                            <span className="ms-2">
+                              {post.status === "approved" && PostingAprove}
+                            </span>
+                            <span className="ms-2">
+                              {post.status === "draft" && PostingDraft}
+                            </span>
+                            <span className="ms-2">
+                              {post.status === "pending" && PostingPending}
+                            </span>
+                            <span className="ms-2">
+                              {post.status === "rejected" && PostingReject}
+                            </span>
+                            <span className="ms-2">
+                              {post.status === "pulished" && PostingPublic}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -187,7 +208,12 @@ const Profile = () => {
                       <img className="rounded-3 mt-3" src={post?.img} alt="" />
                       <div className=" mx-4 my-2 ">
                         <div className="float-start posting-list__feel">
-                          4.9rating
+                        {
+                            likePostFavourite?.filter?.(
+                              (like) => like?.post?._id === post?._id
+                            )?.length
+                          }{" "}
+                          like
                         </div>
                         <div className="float-end">
                           <a href="" className="posting-list__feel">
@@ -206,39 +232,29 @@ const Profile = () => {
                           }}
                         >
                           <BottomNavigationAction
-                            label={rating}
                             icon={
-                              <Rating
-                                onClick={handleRating}
-                                ratingValue={rating}
-                                size={30}
-                                label
-                                transition
-                                fillColor="orange"
-                                emptyColor="gray"
-                                className="foo d-block"
-                              />
+                              likePostFavourite?.filter(
+                                (f) => f?.post?._id === post?._id
+                              )?.length > 0 ? (
+                                <FavoriteIcon sx={{ color: "#ec2d4d" }} />
+                              ) : (
+                                <FavoriteIcon sx={{ color: "black" }} />
+                              )
                             }
+                            onClick={(event) => handleLike(event, post?._id)}
                           />
-                          <BottomNavigationAction
-                            label="Bình luận"
-                            icon={<CommentBankOutlined />}
-                          />
-                          <div>
-                            <button
+
+                          <div style={{ display: "flex" }}>
+                            <Button
                               onClick={(event) =>
                                 handleCommentPost(event, post._id)
                               }
                             >
                               submit
-                            </button>
+                            </Button>
                             <PostComment />
                           </div>
                           {/* </button> */}
-                          <BottomNavigationAction
-                            label="Báo cáo"
-                            icon={<ReportGmailerrorredIcon />}
-                          />
                         </BottomNavigation>
                       </Box>
                     </div>
