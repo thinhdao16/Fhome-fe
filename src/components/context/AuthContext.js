@@ -22,6 +22,7 @@ export function AuthContextProvider({ children }) {
   const [filterPosting, setFilterPosting] = useState([]);
   const [ filterBuildingPosting, setFilterBuildingPosting] = useState([])
   const [filterAreaPosting, setFilterAreaPosting] = useState([])
+  const [imgPostDraft, setImgPostDraft] = useState(null)
   const googleSignIn = async () => {
     const provider = new GoogleAuthProvider();
     const result = await signInWithPopup(auth, provider);
@@ -55,7 +56,7 @@ export function AuthContextProvider({ children }) {
       setBuildings(storedBuildings);
     } else {
       axios
-        .get("https://fhome-be.vercel.app/getBuildings")
+        .get("http://localhost:3000/getBuildings")
         .then((response) => {
           setBuildings(response.data);
           localStorage.setItem("buildings", JSON.stringify(response.data));
@@ -69,7 +70,7 @@ export function AuthContextProvider({ children }) {
       setAccountStart(storedApartments);
     } else {
       axios
-        .get("https://fhome-be.vercel.app/getUser")
+        .get("http://localhost:3000/getUser")
         .then((response) => {
           setAccountStart(response.data);
           localStorage.setItem("account_start", JSON.stringify(response.data));
@@ -97,7 +98,9 @@ export function AuthContextProvider({ children }) {
         filterBuildingPosting,
         setFilterBuildingPosting,
         filterAreaPosting,
-        setFilterAreaPosting
+        setFilterAreaPosting,
+        imgPostDraft,
+        setImgPostDraft,
       }}
     >
       {children}

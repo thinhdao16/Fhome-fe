@@ -17,6 +17,7 @@ import SearchPost from "./pages/search/SearchPost";
 import FilterPost from "./pages/search/FilterPost";
 import FilterBuildingPost from "./pages/search/FilterBuildingPost";
 import FilterAreaPost from "./pages/search/FilterAreaPost";
+import PostingWait from "./pages/PostingStatus/PostingWait";
 function App() {
   return (
     <React.Fragment>
@@ -111,6 +112,14 @@ function App() {
                   element={
                     <Protected>
                       <Profile />
+                    </Protected>
+                  }
+                />
+                <Route
+                  path="wait"
+                  element={
+                    <Protected>
+                      <PostingWait />
                     </Protected>
                   }
                 />

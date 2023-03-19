@@ -35,4 +35,7 @@
             height: max-content;
         }
     }
+    ::-webkit-scrollbar {
+        display: none;
+      }
 }

@@ -7,8 +7,7 @@ import DashboardWrapper, {
 } from "../../components/dashboard-wrapper/DashboardWrapper";
 import CropOutlinedIcon from "@mui/icons-material/CropOutlined";
 import MonetizationOnOutlinedIcon from "@mui/icons-material/MonetizationOnOutlined";
-import Avatar from "react-avatar";
-import { Rating } from "react-simple-star-rating";
+import ApartmentIcon from '@mui/icons-material/Apartment';
 import axios from "axios";
 import {
   Button,
@@ -16,22 +15,32 @@ import {
   CardActions,
   CardContent,
   CardMedia,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
   Typography,
 } from "@mui/material";
 import { Textarea } from "@mui/joy";
+import ImageOutlinedIcon from "@mui/icons-material/ImageOutlined";
 import "./CreateRoom.scss";
+import Dropzone from "react-dropzone";
+import BedroomParentOutlinedIcon from "@mui/icons-material/BedroomParentOutlined";
+import DnsOutlinedIcon from "@mui/icons-material/DnsOutlined";
 function CreateRoom() {
   const localStorageDataBuildings = localStorage.getItem("buildings");
   const data = JSON.parse(localStorageDataBuildings);
   const dataOfBuildings = data.data.buildings;
 
-  const [name, setName] = React.useState("")
+  const [name, setName] = React.useState("");
   const [size, setSize] = React.useState("");
   const [description, setDescription] = React.useState("");
   const [price, setPrice] = React.useState("");
   const [building, setBuilding] = React.useState("");
-  console.log(building);
   const [selectedFile, setSelectedFile] = React.useState(null);
+
+  const [showDeleteButton, setShowDeleteButton] = useState(false);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     const token = JSON.parse(localStorage.getItem("access_token"));
@@ -40,7 +49,7 @@ function CreateRoom() {
       return;
     }
     var formData = new FormData();
-    formData.append("roomName",name)
+    formData.append("roomName", name);
     formData.append("size", size);
     formData.append("description", description);
     formData.append("price", price);
@@ -48,7 +57,7 @@ function CreateRoom() {
     formData.append("img", selectedFile);
 
     axios
-      .post("https://fhome-be.vercel.app/createRoom", formData, {
+      .post("http://localhost:3000/createRoom", formData, {
         headers: {
           Authorization: `Bearer ${token.data.accessToken}`,
           "Content-Type": "multipart/form-data",
@@ -69,6 +78,11 @@ function CreateRoom() {
       });
   };
 
+  const handleDelete = () => {
+    setSelectedFile(null);
+    setShowDeleteButton(false);
+  };
+
   useEffect(() => {
     // Lấy dữ liệu từ server
     const fetchData = async () => {
@@ -78,12 +92,12 @@ function CreateRoom() {
         if (!token) {
           console.log("No access token found.");
           return;
-        }    
+        }
         const headers = { Authorization: `Bearer ${token.data.accessToken}` };
         const responses = await Promise.all([
-          axios.get("https://fhome-be.vercel.app/getBuildings"),
-          axios.get("https://fhome-be.vercel.app/getRoomsByUserId",{headers}  ),
-          axios.get("https://fhome-be.vercel.app/getAllUsers"),
+          axios.get("http://localhost:3000/getBuildings"),
+          axios.get("http://localhost:3000/getRoomsByUserId", { headers }),
+          axios.get("http://localhost:3000/getAllUsers"),
         ]);
         const buildings = responses[0].data.data.buildings;
         const rooms = responses[1].data.data.rooms;
@@ -134,69 +148,76 @@ function CreateRoom() {
   });
   const dataRooms = dataRoom.rooms;
 
-  const handleFileChange = (e) => {
-    setSelectedFile(e.target.files[0]);
+  const handleFileChange = (acceptedFiles) => {
+    setSelectedFile(acceptedFiles[0]);
   };
   return (
     <div className="posting-list">
       <DashboardWrapper>
         <DashboardWrapperMain>
           <form onSubmit={handleSubmit} className="bg-drak">
-            <div className="p-4 bg-white rounded-3">
-              <Box display="grid" gridTemplateColumns="repeat(7, 1fr)" gap={2}>
-                <Box gridColumn="span 1"></Box>
-                <Box gridColumn="span 6">
-                  <div className="mt-2  ms-2">
-                    <span className="posting-list__titleName__date"></span>
-                  </div>
-                </Box>
-              </Box>
-              <span className="m-3">
-                <CropOutlinedIcon />
+            <div className="p-4 bg-white rounded-3 shadow">
+              <div style={{ textAlign: "center", display: "block" }}>
+                <BedroomParentOutlinedIcon
+                  style={{ fontSize: 50, color: "#b48845" }}
+                />{" "}
+              </div>
+              <span className="m-3 text-dark">
+                <DnsOutlinedIcon style={{color: "#b48845" }}/>
                 Name
               </span>
               <Textarea
                 name="Plain"
-                placeholder="Type in here…"
+                placeholder="Room Name..."
                 variant="plain"
-                className="shadow rounded-3 mb-3"
+                className="shadow-sm rounded-3 mb-3"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
-              <span className="m-3">
-                <CropOutlinedIcon />
+              <span className="m-3 text-dark">
+                <CropOutlinedIcon style={{color: "#b48845" }}/>
                 Size
               </span>
               <Textarea
                 name="Plain"
-                placeholder="Type in here…"
+                placeholder="Room Size..."
                 variant="plain"
-                className="shadow rounded-3 mb-3"
+                className="shadow-sm rounded-3 mb-3"
                 value={size}
-                onChange={(e) => setSize(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (!isNaN(value)) {
+                    setSize(value);
+                  }
+                }}
               />
-              <span className="m-3">
+
+              <span className="m-3 text-dark">
                 {" "}
-                <MonetizationOnOutlinedIcon />
+                <MonetizationOnOutlinedIcon style={{color: "#b48845" }}/>
                 Price
               </span>
               <Textarea
                 name="Plain"
-                placeholder="Type in here…"
+                placeholder="Room Price..."
                 variant="plain"
-                className="shadow rounded-3 mb-3"
+                className="shadow-sm rounded-3 mb-3"
                 value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                sx={{ borderRadius: "50px" }}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (!isNaN(value)) {
+                    setPrice(value);
+                  }
+                }}
               />
-
-              <span className=" m-3">
+              <span className=" m-3 text-dark">
                 {" "}
-                <DescriptionIcon />
+                <DescriptionIcon style={{color: "#b48845" }}/>
                 Description
               </span>
               <Textarea
-                className="border-0 shadow rounded-3 mb-3"
+              placeholder="Room Desciption..."
+                className="border-0 shadow-sm rounded-3 mb-3"
                 minRows={3}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
@@ -205,45 +226,85 @@ function CreateRoom() {
                 }}
               />
 
-              <div style={{ display: "flex" }}>
-                <select
-                  className="form-select"
-                  aria-label="Default select example"
-                  style={{
-                    border: "none",
-                    maxHeight: "100px",
-                    overflowY: "auto",
-                  }}
-                  value={building}
-                  onChange={(e) => setBuilding(e.target.value)}
-                >
-                  <option value="" disabled>
-                    Chọn tòa nhà
-                  </option>
-                  {dataOfBuildings.map(
-                    (
-                      building,
-                      index // Thêm tham số index vào hàm map
-                    ) => (
-                      <option key={index} value={building?._id}>
-                        {building?.buildingName}
-                      </option>
-                    )
-                  )}
-                </select>
-                <span>
+              <div style={{ display: "flex", marginBottom: 10 }}>
+                <FormControl style={{ width: 100, marginRight: 12 }}>
+                  <InputLabel id="demo-simple-select-label">
+                    <ApartmentIcon  style={{color: "#b48845"}}/>
+                  </InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={building}
+                    label="Building"
+                    onChange={(e) => setBuilding(e.target.value)}
+                  >
+                    <MenuItem value="">
+                      <em>None</em>
+                    </MenuItem>
+                    {dataOfBuildings.map(
+                      (
+                        building,
+                        index // Thêm tham số index vào hàm map
+                      ) => (
+                        <MenuItem key={index} value={building?._id}>
+                          {building?.buildingName}
+                        </MenuItem>
+                      )
+                    )}
+                  </Select>
+                </FormControl>
+                <span className="text-dark fs-6">
                   512 đường Nguyễn Xiển, Phường Long Thạnh Mỹ, Quận 9, TP. Thủ
                   Đức
                 </span>
               </div>
-              <input type="file" onChange={handleFileChange} />
-              <button type="submit">submit</button>
+              {/* <input type="file" onChange={handleFileChange} /> */}
+
+              <Dropzone onDrop={handleFileChange} accept="image/*">
+                {({ getRootProps, getInputProps }) => (
+                  <div {...getRootProps()} className="text-center">
+                    <input {...getInputProps()} />
+                    {selectedFile ? (
+                      <div>
+                        <img
+                          className="rounded-3 shadow mb-3 mt-1"
+                          src={URL.createObjectURL(selectedFile)}
+                          alt="preview"
+                        />
+                        {showDeleteButton && (
+                          <button onClick={handleDelete}>Delete</button>
+                        )}
+                      </div>
+                    ) : (
+                      <p
+                        className="text-center"
+                        style={{
+                          fontSize: "0.875rem",
+                          fontWeight: 600,
+                          color: "black",
+                        }}
+                      >
+                        <ImageOutlinedIcon
+                          style={{ fontSize: "30px", color: "#b48845" }}
+                        />{" "}
+                        Thêm ảnh
+                      </p>
+                    )}
+                  </div>
+                )}
+              </Dropzone>
+              <div className="text-center">
+                {" "}
+                <Button type="submit" variant="contained" style={{color:'white' , backgroundColor:'#b48845'}}>
+                  Create Room
+                </Button>
+              </div>
             </div>
           </form>
         </DashboardWrapperMain>
         <DashboardWrapperRight>
           <div className="scroll-container">
-          {Array.isArray(dataRooms) &&
+            {Array.isArray(dataRooms) &&
               dataRooms
                 .sort((a, b) => {
                   return (
@@ -252,30 +313,33 @@ function CreateRoom() {
                   );
                 })
                 .map((rooms) => (
-                <Card sx={{ maxWidth: 345, marginBottom: 2 }}>
-                  <CardMedia
-                    sx={{ height: 140 }}
-                    image={rooms.img}
-                    title="green iguana"
-                  />
-                  <CardContent>
-                  <Typography gutterBottom variant="h5" component="div">
-                      {rooms.roomName}
-                    </Typography>
-                    <Typography gutterBottom variant="h5" component="div">
-                      {rooms.buildingName}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {rooms.description}
-                    </Typography>
-                  </CardContent>
-                  <CardActions>
-                    <Button size="small">{rooms.price}</Button>
-                    <Button size="small">{rooms.size}</Button>
-                    <span style={{fontSize:15}}>  {new Date(rooms?.updatedAt).toLocaleString()}</span>
-                  </CardActions>
-                </Card>
-              ))}
+                  <Card sx={{ maxWidth: 345, marginBottom: 2 }}>
+                    <CardMedia
+                      sx={{ height: 140 }}
+                      image={rooms.img}
+                      title="green iguana"
+                    />
+                    <CardContent>
+                      <Typography gutterBottom variant="h5" component="div">
+                        {rooms.roomName}
+                      </Typography>
+                      <Typography gutterBottom variant="h5" component="div">
+                        {rooms.buildingName}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {rooms.description}
+                      </Typography>
+                    </CardContent>
+                    <CardActions>
+                      <span size="small" className="fs-6 text-ceneter"> <MonetizationOnOutlinedIcon  style={{color: "#b48845", display:'block'}}/> {rooms.price}</span>
+                      <span size="small" className="fs-6 text-center"><CropOutlinedIcon  style={{color: "#b48845",display:'block'}}/> {rooms.size}</span>
+                      <span style={{ fontSize: 15 }}>
+                        {" "}
+                        {new Date(rooms?.updatedAt).toLocaleString()}
+                      </span>
+                    </CardActions>
+                  </Card>
+                ))}
           </div>
         </DashboardWrapperRight>
       </DashboardWrapper>

@@ -10,7 +10,6 @@ import Box from "@mui/material/Box";
 import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
 import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred";
-import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import DashboardWrapper, {
   DashboardWrapperMain,
   DashboardWrapperRight,
@@ -23,6 +22,7 @@ import axios from "axios";
 import CropIcon from "@mui/icons-material/Crop";
 import RoofingOutlinedIcon from "@mui/icons-material/RoofingOutlined";
 import PriceChangeOutlinedIcon from "@mui/icons-material/PriceChangeOutlined";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 import PostModal from "./PostMoal";
 import PostComment from "./PostComment";
 import { DataContext } from "../DataContext";
@@ -38,16 +38,20 @@ import {
 import DoneOutlinedIcon from "@mui/icons-material/DoneOutlined";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import { CommentBankOutlined } from "@mui/icons-material";
-function Posting({ children }) {
-  const [rating, setRating] = useState(0); // initial rating value
+import DraftsIcon from "@mui/icons-material/Drafts";
+import PendingIcon from "@mui/icons-material/Pending";
+import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
+import PublicOutlinedIcon from "@mui/icons-material/PublicOutlined";
+import ThumbDownAltOutlinedIcon from "@mui/icons-material/ThumbDownAltOutlined";
+
+function Posting({ children, filePath }) {
   const userPosting = JSON.parse(localStorage.getItem("access_token"));
   const userPostings = userPosting?.data?.user;
   const { posting, setPosting } = useContext(DataContext);
-  // Catch Rating value
-  const handleRating = (rate) => {
-    setRating(rate);
-    // Some logic
-  };
+
+  const [isLiked, setIsLiked] = useState(false);
+  const likePost = isLiked?.data?.favourite?.length;
+  const likePostFavourite = isLiked?.data?.favourite;
   const [dataPosting, setDataPosting] = useState({
     buildings: [],
     postings: [],
@@ -59,17 +63,30 @@ function Posting({ children }) {
       setPosting(dataPosting?.postings);
     }
   }, [dataPosting?.postings]);
-  // console.log(data.postings)
   const arrPost = useMemo(() => dataPosting?.postings, [dataPosting]);
-  // console.log(arrPost)
+
+  const arrPostDarft = useMemo(() => {
+    if (!dataPosting) return [];
+
+    return dataPosting.postings.filter((posting) => posting.status === "draft");
+  }, [dataPosting]);
+
+  const arrPostPublish = useMemo(() => {
+    if (!dataPosting) return [];
+
+    return dataPosting.postings.filter(
+      (posting) => posting.status === "published"
+    );
+  }, [dataPosting]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const responses = await Promise.all([
-          axios.get("https://fhome-be.vercel.app/getBuildings"),
-          axios.get("https://fhome-be.vercel.app/getAllPostings"),
-          axios.get("https://fhome-be.vercel.app/getRooms"),
-          axios.get("https://fhome-be.vercel.app/getAllUsers"),
+          axios.get("http://localhost:3000/getBuildings"),
+          axios.get("http://localhost:3000/getAllStatus"),
+          axios.get("http://localhost:3000/getRooms"),
+          axios.get("http://localhost:3000/getAllUsers"),
         ]);
         const buildings = responses[0].data.data.buildings;
         const postings = responses[1].data.data.postings;
@@ -113,6 +130,18 @@ function Posting({ children }) {
           postings: newData,
           buildingIds: filteredBuildingIds,
         });
+
+        // Get favorites
+        const response = await axios.get(
+          "http://localhost:3000/getFavouriteByUser",
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${userPosting.data.accessToken}`,
+            },
+          }
+        );
+        setIsLiked(response.data);
       } catch (error) {
         toastr.error("Can not find post", {
           position: "top-right",
@@ -122,27 +151,121 @@ function Posting({ children }) {
       }
     };
     const intervalId = setInterval(fetchData, 5000); // Gọi fetchData sau mỗi 5 giây
-    toastr.info("This is Post", {
-      position: "top-right",
-      heading: "Done",
-    });
+
     return () => clearInterval(intervalId);
   }, []);
+
   const postCommentRef = useRef(null);
   const [value, setValue] = React.useState(0);
+
   function handleCommentPost(event, id) {
     event.preventDefault();
     const index = arrPost.findIndex((item) => item._id === id);
     const idDataPost = arrPost[index];
     setSelectedPost(idDataPost);
-  
+
     if (postCommentRef.current) {
       postCommentRef.current.click();
     }
   }
-  
+
+  function handlePostPending(event, id) {
+    event.preventDefault();
+
+    const confirmed = window.confirm("Bạn có chắc chắn muốn gửi bài này?");
+
+    if (confirmed) {
+      axios
+        .put(`http://localhost:3000/confirm-post/${id}`, {
+          status: "pending",
+        })
+        .then((response) => {
+          toastr.success("Reject successfully", {
+            position: "top-right",
+            heading: "Done",
+          });
+        })
+        .catch((error) => {
+          toastr.error("Reject fail", {
+            position: "top-right",
+            heading: "Done",
+          });
+          console.log(error);
+        });
+    }
+  }
+
+  function handlePostRejct(event, id) {
+    event.preventDefault();
+
+    if (window.confirm("Bạn có chắc muốn reject post này không?")) {
+      axios
+        .put(`http://localhost:3000/confirm-post/${id}`, {
+          status: "rejected",
+        })
+        .then((response) => {
+          toastr.success("Reject successfully", {
+            position: "top-right",
+            heading: "Done",
+          });
+          console.log(response.data);
+        })
+        .catch((error) => {
+          toastr.error("Reject fail", {
+            position: "top-right",
+            heading: "Done",
+          });
+          console.log(error);
+        });
+    }
+  }
+  const handleLike = (event, id) => {
+    event.preventDefault();
+    // setIsLiked(true);
+    // setLikesCount(likesCount + 1);
+
+    axios
+      .post(
+        "http://localhost:3000/createFavouritePost",
+        { postId: id },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${userPosting.data.accessToken}`,
+          },
+        }
+      )
+      .then((response) => {
+        console.log("Like added successfully");
+      })
+      .catch((error) => {
+        console.error("Failed to add like", error);
+      });
+  };
+
   const [selectedPost, setSelectedPost] = useState(null);
-  
+
+  const styleStatus = {
+    display: "inline-block",
+    borderRadius: "50%",
+    width: "40px",
+    height: "40px",
+    backgroundColor: "white",
+    color: "black",
+    textAlign: "center",
+    lineHeight: "40px",
+    fontSize: 10,
+    boxShadow: "0px 7px 29px 0px rgba(100, 100, 111, 0.2)",
+    marginLeft: 13,
+  };
+  const PostingDraft = <DraftsIcon style={{ color: "brown" }} />;
+  const PostingPending = <PendingIcon style={{ color: "blue" }} />;
+  const PostingAprove = (
+    <CheckCircleOutlineOutlinedIcon style={{ color: "violet" }} />
+  );
+
+  const PostingPublic = <PublicOutlinedIcon style={{ color: "green" }} />;
+  const PostingReject = <ThumbDownAltOutlinedIcon style={{ color: "red" }} />;
   return (
     <DataContext.Provider
       value={{ dataPosting, setDataPosting, selectedPost, arrPost }}
@@ -165,6 +288,7 @@ function Posting({ children }) {
                   </div>
                   <div className="col-md-11">
                     <PostModal />
+                    {/* <PostDarft /> */}
                   </div>
                 </div>
                 <hr className="mx-1" />
@@ -175,8 +299,8 @@ function Posting({ children }) {
                 </div>
               </div>
             </form>
-            {Array.isArray(arrPost) &&
-              arrPost
+            {Array.isArray(arrPostPublish) &&
+              arrPostPublish
                 .sort((a, b) => {
                   return (
                     new Date(b?.createdAt).getTime() -
@@ -203,6 +327,9 @@ function Posting({ children }) {
                             <span className="posting-list__titleName__date">
                               {new Date(post?.createdAt).toLocaleString()}
                             </span>
+                            <span className="ms-2">
+                              {post.status === "published" && PostingPublic}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -211,14 +338,20 @@ function Posting({ children }) {
                       </span>
                       <div className="row text-dark">
                         <div className="col-md-4 text-center">
-                          <CropIcon /> {post?.roomSize}
+                          <CropIcon style={{ color: "#b48845" }} />{" "}
+                          {post?.roomSize}
                         </div>
                         <div className="col-md-4 text-center">
                           {" "}
-                          <RoofingOutlinedIcon /> {post?.buildingName}
+                          <RoofingOutlinedIcon
+                            style={{ color: "#b48845" }}
+                          />{" "}
+                          {post?.buildingName}
                         </div>
                         <div className="col-md-4 text-center">
-                          <PriceChangeOutlinedIcon />
+                          <PriceChangeOutlinedIcon
+                            style={{ color: "#b48845" }}
+                          />
                           {post?.roomPrice}{" "}
                         </div>
                       </div>
@@ -228,7 +361,8 @@ function Posting({ children }) {
                       <img className="rounded-3 mt-3" src={post?.img} alt="" />
                       <div className=" mx-4 my-2 ">
                         <div className="float-start posting-list__feel">
-                          4.9rating
+                          {/* {likePost}rating */}
+                          {likePostFavourite?.filter?.(like =>like?.post?._id === post?._id)?.length} like
                         </div>
                         <div className="float-end">
                           <a href="" className="posting-list__feel">
@@ -247,23 +381,12 @@ function Posting({ children }) {
                           }}
                         >
                           <BottomNavigationAction
-                            label={rating}
-                            icon={
-                              <Rating
-                                onClick={handleRating}
-                                ratingValue={rating}
-                                size={30}
-                                label
-                                transition
-                                fillColor="orange"
-                                emptyColor="gray"
-                                className="foo d-block"
-                              />
-                            }
+                            icon={<FavoriteIcon sx={{ color: "#ec2d4d" }} />}
+                            onClick={(event) => handleLike(event, post?._id)}
                           />
                           <BottomNavigationAction
                             label="Bình luận"
-                            icon={<CommentBankOutlined/>}
+                            icon={<CommentBankOutlined />}
                           />
                           <div>
                             <button
@@ -275,11 +398,6 @@ function Posting({ children }) {
                             </button>
                             <PostComment ref={postCommentRef} />
                           </div>
-                          {/* </button> */}
-                          <BottomNavigationAction
-                            label="Báo cáo"
-                            icon={<ReportGmailerrorredIcon />}
-                          />
                         </BottomNavigation>
                       </Box>
                     </div>
@@ -311,8 +429,8 @@ function Posting({ children }) {
                 </div>
               </div>
             </div>
-            {Array.isArray(arrPost) &&
-              arrPost
+            {Array.isArray(arrPostDarft) &&
+              arrPostDarft
                 .sort((a, b) => {
                   return (
                     new Date(b?.createdAt).getTime() -
@@ -320,7 +438,7 @@ function Posting({ children }) {
                   );
                 })
                 .map((post) => (
-                  <Card sx={{ maxWidth: 345, marginBottom: 2 }}>
+                  <Card sx={{ maxWidth: 270, marginBottom: 2 }}>
                     <CardMedia
                       component="img"
                       alt="green iguana"
@@ -328,38 +446,75 @@ function Posting({ children }) {
                       image={post?.img}
                     />
                     <CardContent>
-                      <Typography gutterBottom variant="h5" component="div">
-                        {post?.title}
-                      </Typography>
+                      <div className="row mb-2">
+                        <div className="col-md-8">
+                          <span
+                            style={{
+                              wordWrap: "break-word",
+                              display: "block",
+                              marginRight: -45,
+                              overflow: "auto",
+                              maxHeight: 35,
+                            }}
+                          >
+                            {post?.title}
+                          </span>
+                        </div>{" "}
+                        <div className="col-md-2" style={{ marginTop: -5 }}>
+                          {" "}
+                          <div style={styleStatus}>
+                            {" "}
+                            {post.status === "draft" && PostingDraft}
+                          </div>
+                        </div>
+                      </div>
                       <div className="row">
                         <div className="col-md-4" style={{ fontSize: 15 }}>
-                          <CropIcon className="d-block" /> {post?.roomSize}
+                          <CropIcon
+                            className="d-block"
+                            style={{ color: "#b48845" }}
+                          />{" "}
+                          {post?.roomSize}
                         </div>
                         <div className="col-md-4" style={{ fontSize: 15 }}>
                           {" "}
-                          <RoofingOutlinedIcon className="d-block" />{" "}
+                          <RoofingOutlinedIcon
+                            className="d-block"
+                            style={{ color: "#b48845" }}
+                          />{" "}
                           {post?.buildingName}
                         </div>
                         <div className="col-md-4 " style={{ fontSize: 15 }}>
-                          <PriceChangeOutlinedIcon className="d-block" />
+                          <PriceChangeOutlinedIcon
+                            className="d-block"
+                            style={{ color: "#b48845" }}
+                          />
                           {post?.roomPrice}{" "}
                         </div>
                       </div>
                       <Typography
                         variant="body2"
                         color="text.secondary"
-                        sx={{ maxHeight: 80 }}
+                        sx={{ maxHeight: 80, overflow: "auto" }}
                       >
                         {post?.description}
                       </Typography>
                     </CardContent>
                     <CardActions>
                       <Button size="small">
-                        <DoneOutlinedIcon sx={{ color: "green" }} />
+                        <DoneOutlinedIcon
+                          sx={{ color: "green" }}
+                          onClick={(event) =>
+                            handlePostPending(event, post._id)
+                          }
+                        />
                       </Button>
                       <Button size="small">
                         {" "}
-                        <DeleteOutlinedIcon sx={{ color: "red" }} />
+                        <DeleteOutlinedIcon
+                          sx={{ color: "red" }}
+                          onClick={(event) => handlePostRejct(event, post._id)}
+                        />
                       </Button>
                     </CardActions>
                   </Card>

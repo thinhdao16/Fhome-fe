@@ -13,7 +13,7 @@ import Dropzone from "react-dropzone";
 import ImageOutlinedIcon from "@mui/icons-material/ImageOutlined";
 import { Textarea } from "@mui/joy";
 import { DataContext } from "../DataContext";
-import CropIcon from "@mui/icons-material/Crop";
+import ForwardOutlinedIcon from "@mui/icons-material/ForwardOutlined";
 import RoofingOutlinedIcon from "@mui/icons-material/RoofingOutlined";
 import PriceChangeOutlinedIcon from "@mui/icons-material/PriceChangeOutlined";
 const StyledModal = styled(Modal)({
@@ -39,7 +39,7 @@ const PostComment = () => {
   const userPosting = JSON.parse(localStorage.getItem("access_token"));
   const userPostings = userPosting.data.user;
 
-  const { selectedPost ,arrPost } = useContext(DataContext);
+  const { selectedPost, arrPost } = useContext(DataContext);
   const [description, setDescription] = React.useState("");
   const [selectedFile, setSelectedFile] = React.useState(null);
   const [showDeleteButton, setShowDeleteButton] = useState(false);
@@ -60,7 +60,7 @@ const PostComment = () => {
     let isMounted = true;
     try {
       const response = await axios.post(
-        "https://fhome-be.vercel.app/postAllPostingCommentByPost",
+        "http://localhost:3000/postAllPostingCommentByPost",
         formData,
         {
           headers: {
@@ -88,7 +88,7 @@ const PostComment = () => {
       try {
         const selectedPostComment = selectedPost._id;
         const response = await axios.get(
-          `https://fhome-be.vercel.app/getAllPostingCommentByPost/${selectedPostComment}`,
+          `http://localhost:3000/getAllPostingCommentByPost/${selectedPostComment}`,
           {
             headers: {
               Authorization: `Bearer ${token.data.accessToken}`,
@@ -124,15 +124,13 @@ const PostComment = () => {
       <Button
         onClick={handleGetRoomUpdate}
         variant="contained"
-        // fullWidth={true}
+        fullWidth={true}
         className="rounded-5 bg-light shadow-none text-secondary"
       >
         Comment
       </Button>
-      
       {/* Modal */}
       <StyledModal
-        // onClick={handleGetRoomUpdate}
         open={open}
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
@@ -140,193 +138,232 @@ const PostComment = () => {
       >
         <form onSubmit={handleSubmit}>
           <Box
-            style={{ position: "relative" }}
+            style={{ position: "relative", padding: "24px 24px 0 24px" }}
             width={700}
-            height={650}
+            minHeight={475}
+            maxHeight={650}
             bgcolor="white"
-            p={3}
             borderRadius={5}
             overflow="auto"
+            sx={{
+              "::-webkit-scrollbar": {
+                display: "none",
+              },
+            }}
           >
-            <Typography color="gray" textAlign="center">
-              Bài viết
-            </Typography>
-            <hr width="100%" size="5px" align="center" color="gray" />
-            <div className="p-3 bg-body rounded-3 border-0">
-              <div className="row">
-                <div className="col-md-1">
-                  <Avatar
-                    name={selectedPost?.userFullName}
-                    size="40"
-                    round={true}
-                    src={selectedPost?.userImg}
-                  />
-                </div>
-                <div className="col-md-11">
-                  <div>
-                    <span className="posting-list__titleName">
-                      {selectedPost?.userFullName}
-                    </span>
-                    <span className="posting-list__titleName__date">
-                      {new Date(selectedPost?.updatedAt).toLocaleString()}
-                    </span>
+            <div className="text-center" style={{margin:'-24px -24px 10px -24px', padding:24 , boxShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px' }}>
+              <span
+                sx={{
+                  position: "absolute",
+                  top: "0",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  marginTop: 2,
+                  zIndex: 1,
+                }}
+                color="black"
+                textAlign="center"
+                style={{ fontWeight: 600, color: "black" }}
+              >
+                Tạo bài viết
+              </span>
+            </div>
+            <div  style={{
+                maxHeight: "497px",
+                overflow: "auto",
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
+                "::-webkit-scrollbar": {
+                  display: "none",
+                },
+              }}
+              className="postmodal-scoll">
+              <div className="p-3 bg-body rounded-3 border-0">
+                <div className="row">
+                  <div className="col-md-1">
+                    <Avatar
+                      name={selectedPost?.userFullName}
+                      size="40"
+                      round={true}
+                      src={selectedPost?.userImg}
+                    />
+                  </div>
+                  <div className="col-md-11">
+                    <div>
+                      <span className="posting-list__titleName">
+                        {selectedPost?.userFullName}
+                      </span>
+                      <span className="posting-list__titleName__date">
+                        {new Date(selectedPost?.updatedAt).toLocaleString()}
+                      </span>
+                    </div>
                   </div>
                 </div>
+                <span className="fs-6 posting-list__color-text mt-2  d-block fw-bolder">
+                  {selectedPost?.title}
+                </span>
+                <div className="row">
+                  <div className="col-md-4 text-center">
+                    {/* <CropIcon /> {dataPost.roomSize} */}
+                  </div>
+                  <div className="col-md-4 text-center">
+                    {" "}
+                    <RoofingOutlinedIcon /> {selectedPost?.buildingName}
+                  </div>
+                  <div className="col-md-4 text-center">
+                    <PriceChangeOutlinedIcon />
+                    {selectedPost?.roomPrice}{" "}
+                  </div>
+                </div>
+                <span className="fs-6 posting-list__color-text my-2 d-block">
+                  {selectedPost?.description}
+                </span>
+                <img
+                  className="rounded-3 mt-3"
+                  src={selectedPost?.img}
+                  alt=""
+                  style={{ maxWidth: 600 }}
+                />
+                <hr className="posting-list__hr" />
               </div>
-              <span className="fs-6 posting-list__color-text mt-2  d-block fw-bolder">
-                {selectedPost?.title}
-              </span>
-              <div className="row">
-                <div className="col-md-4 text-center">
-                  {/* <CropIcon /> {dataPost.roomSize} */}
-                </div>
-                <div className="col-md-4 text-center">
-                  {" "}
-                  <RoofingOutlinedIcon /> {selectedPost?.buildingName}
-                </div>
-                <div className="col-md-4 text-center">
-                  <PriceChangeOutlinedIcon />
-                  {selectedPost?.roomPrice}{" "}
-                </div>
-              </div>
-              <span className="fs-6 posting-list__color-text my-2 d-block">
-                {selectedPost?.description}
-              </span>
-              <img
-                className="rounded-3 mt-3"
-                src={selectedPost?.img}
-                alt=""
-                style={{ maxWidth: 600 }}
-              />
-              <hr className="posting-list__hr" />
-            </div>
-            {Array.isArray(comments) &&
-              comments
-                .sort((a, b) => {
-                  return (
-                    new Date(b?.updatedAt).getTime() -
-                    new Date(a?.updatedAt).getTime()
-                  );
-                })
-                .map((commentss) => (
-                  <Box>
-                    <div className="row my-3">
-                      <div className="col-md-1">
-                        {" "}
-                        <Avatar
-                          name={commentss.userPostingComment.fullname}
-                          size="10"
-                          round={true}
-                          src={commentss.userPostingComment?.img}
-                        />
-                      </div>
-                      <div className="col-md-11 rounded-3">
-                        <div
-                          className="bg-light p-2 rounded-4"
-                          style={{ width: "fit-content" }}
-                        >
+              {Array.isArray(comments) &&
+                comments
+                  .sort((a, b) => {
+                    return (
+                      new Date(b?.updatedAt).getTime() -
+                      new Date(a?.updatedAt).getTime()
+                    );
+                  })
+                  .map((commentss) => (
+                    <div>
+                      <div className="row my-3">
+                        <div className="col-md-1">
                           {" "}
-                          <span className="fw-bolder fs-6 text-dark">
-                            {commentss.userPostingComment.fullname}
-                          </span>
-                          <span className="d-block fs-6 text-dark">
-                            {commentss.description}
-                          </span>
+                          <Avatar
+                            name={commentss.userPostingComment.fullname}
+                            size="10"
+                            round={true}
+                            src={commentss.userPostingComment?.img}
+                          />
                         </div>
-                        <span className="d-block fs-6 text-dark">
-                          {new Date(commentss?.updatedAt).toLocaleString()}
-                        </span>
-                        <img
-                          src={commentss?.img}
-                          alt="err"
-                          style={{ maxWidth: 200, borderRadius: 15 }}
-                        />
+                        <div className="col-md-11 rounded-3">
+                          <div
+                            className="bg-light p-2 rounded-4"
+                            style={{ width: "fit-content" }}
+                          >
+                            {" "}
+                            <span className="fw-bolder fs-6 text-dark">
+                              {commentss.userPostingComment.fullname}
+                            </span>
+                            <span className="d-block fs-6 text-dark">
+                              {commentss.description}
+                            </span>
+                          </div>
+                          <span className="d-block fs-6 text-dark">
+                            {new Date(commentss?.updatedAt).toLocaleString()}
+                          </span>
+                          <img
+                            src={commentss?.img}
+                            alt="err"
+                            style={{ maxWidth: 200, borderRadius: 15 }}
+                          />
+                        </div>
                       </div>
                     </div>
-                  </Box>
-                ))}
-            <Box>
-              <UserBox>
-                <Avatar
-                  src={userPostings.img}
-                  sx={{ width: 55, height: 55, marginTop: 1 }}
-                />
-                <Typography
-                  fontWeight={500}
-                  sx={{
-                    marginTop: -3,
-                    color: "black",
-                    fontSize: ".875rem",
-                    fontWeight: 600,
-                  }}
-                  variant="span"
-                >
-                  {userPostings.fullname}
-                </Typography>
-                <Typography
-                  style={{
-                    marginLeft: -68,
-                    marginTop: 30,
-                    fontSize: "0.75rem",
-                    fontWeight: "500",
-                    backgroundColor: "#e4e6eb",
-                    boxShadow: "rgb(149 157 165 / 20%) 0px 8px 24px",
-                    padding: "2px 4px",
-                    borderRadius: "10px",
-                    color: "black",
-                  }}
-                ></Typography>
-              </UserBox>
-              <Textarea
-                sx={{ width: "100%" }}
-                id="standard-multiline-static"
-                multiline
-                rows={5}
-                placeholder={`${userPostings.fullname} ơi bạn muốn đăng gì thế ?`}
-                variant="standard"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              />
-              <Dropzone onDrop={handleFileChange} accept="image/*">
-                {({ getRootProps, getInputProps }) => (
-                  <div {...getRootProps()}>
-                    <input {...getInputProps()} />
-                    {selectedFile ? (
-                      <div>
-                        <img
-                          className="rounded-3 shadow"
-                          src={URL.createObjectURL(selectedFile)}
-                          alt="preview"
-                        />
-                        {showDeleteButton && (
-                          <button onClick={handleDelete}>Delete</button>
-                        )}
-                      </div>
-                    ) : (
-                      <p
-                        className="text-center"
-                        style={{
-                          fontSize: "0.875rem",
-                          fontWeight: 600,
-                          color: "#65676b",
-                        }}
-                      >
+                  ))}
+            </div>
+            <div
+              style={{
+                position: "sticky",
+                width: "108%",
+                bottom: "0",
+                display: "flex",
+                flexDirection: "column",
+                backgroundColor: "white",
+                margin: "0 -24px 0 -24px",
+                padding: "12px 24px 0 24px",
+                boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px',
+              }}
+            >
+              <div>
+                <UserBox>
+                  <Avatar
+                    src={userPostings.img}
+                    sx={{ width: 35, height: 35 }}
+                  />
+                  <Textarea
+                    sx={{
+                      width: "100%",
+                      backgroundColor: "#f0f2f5",
+                      color: "black",
+                      borderRadius:25
+                    }}
+                    id="standard-multiline-static"
+                    multiline
+                    rows={1}
+                    placeholder={`${userPostings.fullname} ơi bạn muốn đăng gì thế ?`}
+                    variant="standard"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                  />
+                  <Dropzone onDrop={handleFileChange} accept="image/*">
+                    {({ getRootProps, getInputProps }) => (
+                      <div {...getRootProps()}>
+                        <input {...getInputProps()} />
                         <ImageOutlinedIcon
-                          style={{ fontSize: "30px", color: "#6ab175" }}
+                          style={{ fontSize: "25px", color: "#b48845" }}
                         />{" "}
-                        Thêm ảnh
-                      </p>
+                      </div>
                     )}
-                  </div>
-                )}
-              </Dropzone>
-
-              <ButtonGroup style={{ position: "absolute", width: "90%" }}>
-                <Button variant="contained" fullWidth={true} type="submit">
-                  Click me
-                </Button>
-              </ButtonGroup>
-            </Box>
+                  </Dropzone>
+                  <Button
+                    variant="contained"
+                    type="submit"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      backgroundColor: "#b48845",
+                      color: "white",
+                      border: "none",
+                      padding: 0,
+                    }}
+                  >
+                    <ForwardOutlinedIcon style={{ fontSize: "25px", color: "#b48845" ,margin:-22}}/>
+                  </Button>
+                </UserBox>
+                <div style={{ display: "block", marginLeft: 50 }}>
+                  {selectedFile ? (
+                    <div>
+                      <img
+                        className="rounded-3 shadow"
+                        src={URL.createObjectURL(selectedFile)}
+                        alt="preview"
+                        style={{
+                          maxHeight: 80,
+                          objectFit: "cover",
+                          width: "auto",
+                          marginBottom: 17,
+                          marginTop: -8,
+                        }}
+                      />
+                      {showDeleteButton && (
+                        <button onClick={handleDelete}>Delete</button>
+                      )}
+                    </div>
+                  ) : (
+                    <p
+                      className="text-center"
+                      style={{
+                        fontSize: "0.875rem",
+                        fontWeight: 600,
+                        color: "#65676b",
+                      }}
+                    ></p>
+                  )}
+                </div>
+              </div>
+            </div>
           </Box>
         </form>
       </StyledModal>

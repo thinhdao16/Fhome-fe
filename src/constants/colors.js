@@ -1,7 +1,7 @@
 const colors = {
     green: '#4CAF50',
     red: '#DB190C',
-    purple: '#8624DB',
+    purple: 'rgb(180, 136, 69)',
     white: '#fff',
     orange: '#FF9066'
 }

@@ -12,10 +12,10 @@ const sidebarNav = [
         text: 'Users'
     },
     {
-        link: '',
-        section: 'uploads',
+        link: 'wait',
+        section: 'wait',
         icon: <i className='bx bx-cube'></i>,
-        text: 'Uploads'
+        text: 'wait'
     },
     {
         link: 'postings',
@@ -29,12 +29,12 @@ const sidebarNav = [
         icon: <i className='bx bx-line-chart'></i>,
         text: 'CreateRooms'
     },
-    {
-        link: 'settings',
-        section: 'settings',
-        icon: <i className='bx bx-cog'></i>,
-        text: 'Settings'
-    },
+    // {
+    //     link: 'settings',
+    //     section: 'settings',
+    //     icon: <i className='bx bx-cog'></i>,
+    //     text: 'Settings'
+    // },
     {
         link: 'profiles',
         section: 'profiles',
