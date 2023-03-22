@@ -31,7 +31,6 @@ import DoneOutlinedIcon from "@mui/icons-material/DoneOutlined";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import DraftsIcon from "@mui/icons-material/Drafts";
 import PublicOutlinedIcon from "@mui/icons-material/PublicOutlined";
-import Dropzone from "react-dropzone";
 
 function Posting({ children, filePath }) {
   const userPosting = JSON.parse(localStorage.getItem("access_token"));
@@ -41,8 +40,7 @@ function Posting({ children, filePath }) {
     useContext(DataContext);
 
   const [postingPush, setPostingPush] = useState([]);
-
-  useEffect(() => {
+  const [refresh, setRefresh] = useState(false); // thêm state để xác định trạng thái của nút "Làm mới"
     const fetchData = async () => {
       try {
         const response = await axios.get(
@@ -84,9 +82,15 @@ function Posting({ children, filePath }) {
         });
       }
     };
-    const intervalId = setInterval(fetchData, 3000);
-    return () => clearInterval(intervalId);
-  }, []);
+    useEffect(() => {
+      fetchData   ();
+    }, [refresh]); // thêm refresh vào dependency array để khi giá trị của refresh thay đổi thì useEffect sẽ chạy lại
+  
+    const handleRefresh = () => {
+      setRefresh(!refresh); // đổi giá trị của refresh để gọi lại useEffect
+    };
+  
+
   useEffect(() => {
     if (postingPush?.postings?.length > 0) {
       setPosting(postingPush?.postings);
@@ -104,9 +108,11 @@ function Posting({ children, filePath }) {
     if (!postingPush) return [];
 
     return postingPush?.postings?.filter(
-      (posting) => posting.status === "draft"
+      (posting) => posting.status === "draft" &&
+      posting?.userPosting?._id === userPostings?.id
     );
   }, [postingPush]);
+  console.log(postingPush)
   const postCommentRef = useRef(null);
   const [value, setValue] = React.useState(0);
 
@@ -126,7 +132,7 @@ function Posting({ children, filePath }) {
   function handlePostPending(event, id) {
     event.preventDefault();
     const confirmed = window.confirm("Bạn có chắc chắn muốn gửi bài này?");
-
+console.log(id)
     if (confirmed) {
       axios
         .put(
@@ -148,7 +154,7 @@ function Posting({ children, filePath }) {
           });
         })
         .catch((error) => {
-          toastr.error("Reject fail", {
+          toastr.error("post fail", {
             position: "top-right",
             heading: "Done",
           });
@@ -422,9 +428,12 @@ function Posting({ children, filePath }) {
                           {userPostings?.fullname}
                         </span>
                       </Link>
-                      <span className="posting-list__titleName__date">
-                        user
-                      </span>
+                      <span
+                    className="posting-list__titleName__date"
+                    onClick={handleRefresh}
+                  >
+                    user
+                  </span>
                     </div>
                   </div>
                 </div>

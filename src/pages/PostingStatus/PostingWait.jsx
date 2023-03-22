@@ -17,7 +17,6 @@ import ThumbDownAltOutlinedIcon from "@mui/icons-material/ThumbDownAltOutlined";
 import CropIcon from "@mui/icons-material/Crop";
 import RoofingOutlinedIcon from "@mui/icons-material/RoofingOutlined";
 import PriceChangeOutlinedIcon from "@mui/icons-material/PriceChangeOutlined";
-import { DataContext } from "../DataContext";
 function PostingWait() {
   const styleStatus = {
     display: "inline-block",
@@ -36,27 +35,52 @@ function PostingWait() {
   const PostingAprove = (
     <CheckCircleOutlineOutlinedIcon style={{ color: "violet" }} />
   );
-  const { posting } = useContext(DataContext);
-
-
+  const [posting, setPosting] = useState([]);
   const userPosting = JSON.parse(localStorage.getItem("access_token"));
   const userPostings = userPosting?.data?.user;
+  const [refresh, setRefresh] = useState(false); // thêm state để xác định trạng thái của nút "Làm mới"
+
+  const fetchPosts = async () => {
+    try {
+      const response = await axios.get("https://fhome-be.vercel.app/posts/", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userPosting.data.accessToken}`,
+        },
+      });
+      setPosting(response.data.data?.postings);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchPosts();
+  }, [refresh]); // thêm refresh vào dependency array để khi giá trị của refresh thay đổi thì useEffect sẽ chạy lại
+
+  const handleRefresh = () => {
+    setRefresh(!refresh); // đổi giá trị của refresh để gọi lại useEffect
+  };
+
   const arrPostPeding = useMemo(() => {
     if (!posting) return [];
 
     return posting?.filter(
-      (posting) => posting?.status === "pending"
+      (posting) =>
+        posting?.status === "pending" &&
+        posting?.userPosting?._id === userPostings?.id
     );
   }, [posting]);
+  console.log(arrPostPeding);
   const arrPostApprove = useMemo(() => {
     if (!posting) return [];
 
     return posting?.filter(
-      (posting) => posting?.status === "approved"
+      (posting) =>
+        posting?.status === "approved" &&
+        posting?.userPosting?._id === userPostings?.id
     );
   }, [posting]);
-
-console.log(posting)
   return (
     <div className="posting-list">
       <DashboardWrapper>
@@ -65,8 +89,8 @@ console.log(posting)
             arrPostApprove
               .sort((a, b) => {
                 return (
-                  new Date(b?.createdAt).getTime() -
-                  new Date(a?.createdAt).getTime()
+                  new Date(b?.updatedAt).getTime() -
+                  new Date(a?.updatedAt).getTime()
                 );
               })
               .map((post) => (
@@ -75,19 +99,19 @@ console.log(posting)
                     <div className="row">
                       <div className="col-md-1">
                         <Avatar
-                          name={post.fullname}
+                          name={post?.userPosting?.fullname}
                           size="40"
                           round={true}
-                          src={post?.userImg}
+                          src={post?.userPosting?.img}
                         />
                       </div>
                       <div className="col-md-11">
                         <div>
                           <span className="posting-list__titleName">
-                            {post?.userFullName}
+                            {post?.userPosting?.fullname}
                           </span>
                           <span className="posting-list__titleName__date">
-                            {new Date(post?.createdAt).toLocaleString()}
+                            {new Date(post?.updatedAt).toLocaleString()}
                           </span>
                           <span className="ms-2">
                             {post.status === "approved" && PostingAprove}
@@ -98,6 +122,23 @@ console.log(posting)
                     <span className="fs-6 posting-list__color-text mt-2 ms-2 d-block fw-bolder">
                       {post?.title}
                     </span>
+                    <div className="row text-dark">
+                      <div className="col-md-4 text-center">
+                        <CropIcon style={{ color: "#b48845" }} />{" "}
+                        {post?.rooms?.size}
+                      </div>
+                      <div className="col-md-4 text-center">
+                        {" "}
+                        <RoofingOutlinedIcon
+                          style={{ color: "#b48845" }}
+                        />{" "}
+                        {post?.buildings?.buildingName}
+                      </div>
+                      <div className="col-md-4 text-center">
+                        <PriceChangeOutlinedIcon style={{ color: "#b48845" }} />
+                        {post?.rooms?.price}{" "}
+                      </div>
+                    </div>
                     <span className="fs-6 posting-list__color-text my-2 ms-2 d-block">
                       {post?.description}
                     </span>
@@ -128,7 +169,12 @@ console.log(posting)
                       {userPostings?.fullname}
                     </span>
                   </Link>
-                  <span className="posting-list__titleName__date">user</span>
+                  <span
+                    className="posting-list__titleName__date"
+                    onClick={handleRefresh}
+                  >
+                    user
+                  </span>
                 </div>
               </div>
             </div>
@@ -174,16 +220,16 @@ console.log(posting)
                     </div>
                     <div className="row">
                       <div className="col-md-4" style={{ fontSize: 15 }}>
-                        <CropIcon className="d-block" /> {post?.roomSize}
+                        <CropIcon className="d-block" /> {post?.rooms?.size}
                       </div>
                       <div className="col-md-4" style={{ fontSize: 15 }}>
                         {" "}
                         <RoofingOutlinedIcon className="d-block" />{" "}
-                        {post?.buildingName}
+                        {post?.buildings?.buildingName}
                       </div>
                       <div className="col-md-4 " style={{ fontSize: 15 }}>
                         <PriceChangeOutlinedIcon className="d-block" />
-                        {post?.roomPrice}{" "}
+                        {post?.rooms?.price}{" "}
                       </div>
                     </div>
                     <Typography

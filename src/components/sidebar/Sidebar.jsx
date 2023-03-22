@@ -39,31 +39,35 @@ const Sidebar = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (posting && posting.length > 0) {
-      setLoading(false);
-    }
-  }, [posting]);
-  
-  useEffect(() => {
-    if (allCmt && allCmt.length > 0) {
-      setLoading(false);
-    }
-  }, [allCmt]);
-  
-  useEffect(() => {
-    if (isLiked && isLiked.length > 0) {
-      setLoading(false);
-    }
-  }, [isLiked]);
-  useEffect(() => {
     const timer = setTimeout(() => {
       if (loading) {
         navigate("/home");
       }
     }, 3000);
-
+    setLoading(false);
     return () => clearTimeout(timer);
   }, [loading]);
+
+  // useEffect(() => {
+  //   let timeoutId = setTimeout(() => {
+  //     if (
+  //       posting &&
+  //       allCmt &&
+  //       isLiked &&
+  //       posting.length > 0 &&
+  //       allCmt.length > 0 &&
+  //       isLiked.length > 0
+  //     ) {
+  //       setLoading(false);
+  //       navigate("/home")
+  //     }
+  //   }, 3000); // Set thời gian cho setTimeout là 3 giây (3000ms)
+
+  //   return () => {
+  //     clearTimeout(timeoutId); // Xóa timeout khi component bị unmount để tránh memory leak
+  //   };
+  // }, [posting, allCmt, isLiked]);
+
   return (
     <>
       <div className="sidebar">

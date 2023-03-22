@@ -69,7 +69,7 @@ const Login = () => {
               navigate("/home");
               //         }
             } else {
-              toastr.error("Please you are admin please dont enter", {
+              toastr.error("please wait for admin to confirm", {
                 position: "top-right",
                 heading: "Done",
               });
@@ -94,7 +94,7 @@ const Login = () => {
       }
       setIsLoading(false); // set loading to false after the API call
     } catch (error) {
-      toastr.error(`error${error}`, {
+      toastr.warn(`please wait for admin to confirm`, {
         position: "top-right",
         heading: "Done",
       });

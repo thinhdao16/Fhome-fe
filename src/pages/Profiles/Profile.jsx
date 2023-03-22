@@ -104,9 +104,11 @@ const Profile = () => {
   };
 
   const handleDrop = (acceptedFiles) => {
+    setNewImage(acceptedFiles[0]);
+  };
+  const handleDropEdit = (acceptedFiles) => {
     setNewImageEdit(acceptedFiles[0]);
   };
-
   const handleLike = (event, id) => {
     event.preventDefault();
     axios
@@ -216,7 +218,7 @@ const Profile = () => {
                       </span>
                       {isEditing ? (
                           <Dropzone
-                            onDrop={handleDrop}
+                            onDrop={handleDropEdit}
                             disabled={!isDropzoneEnabled}
                           >
                             {({ getRootProps, getInputProps }) => (

@@ -18,6 +18,7 @@ import RoofingOutlinedIcon from "@mui/icons-material/RoofingOutlined";
 import PriceChangeOutlinedIcon from "@mui/icons-material/PriceChangeOutlined";
 import toastr from "cogo-toast";
 import CropIcon from "@mui/icons-material/Crop";
+import LoadingOverlay from "react-loading-overlay";
 
 const StyledModal = styled(Modal)({
   display: "flex",
@@ -51,6 +52,9 @@ const PostComment = () => {
 
   const [comments, setComments] = React.useState([]);
 
+  const [loading, setLoading] = useState(false);
+
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     const selectedPostComment = selectedPost?._id;
@@ -60,6 +64,7 @@ const PostComment = () => {
     formData.append("posting", selectedPostComment);
     let isMounted = true;
     try {
+      setLoading(true);
       const response = await axios.post(
         "https://fhome-be.vercel.app/postAllPostingCommentByPost",
         formData,
@@ -80,6 +85,8 @@ const PostComment = () => {
       });
     } catch (error) {
       console.error(error);
+    }finally {
+      setLoading(false);
     }
     return () => {
       isMounted = false;
@@ -140,6 +147,11 @@ const PostComment = () => {
         aria-describedby="modal-modal-description"
       >
         <form onSubmit={handleSubmit}>
+        <LoadingOverlay
+            active={loading}
+            spinner
+            text="Loading your content..."
+          >
           <Box
             style={{ position: "relative", padding: "24px 24px 0 24px" }}
             width={700}
@@ -277,7 +289,7 @@ const PostComment = () => {
                           </span>
                           <img
                             src={commentss?.img}
-                            alt="err"
+                            alt=""
                             style={{ maxWidth: 200, borderRadius: 15 }}
                           />
                         </div>
@@ -382,6 +394,7 @@ const PostComment = () => {
                 </div>
             </div>
           </Box>
+          </LoadingOverlay>
         </form>
       </StyledModal>
       {success && setOpen(false)} {/* close the modal when success is true */}
