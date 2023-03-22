@@ -56,12 +56,15 @@ function Posting({ children, filePath }) {
         );
         setIsLiked(response.data?.data?.favourite);
 
-        const responsePost = await axios.get("https://fhome-be.vercel.app/posts/", {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${userPosting.data.accessToken}`,
-          },
-        });
+        const responsePost = await axios.get(
+          "https://fhome-be.vercel.app/posts/",
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${userPosting.data.accessToken}`,
+            },
+          }
+        );
         setPostingPush(responsePost?.data?.data);
 
         const responsePostComment = await axios.get(
@@ -96,6 +99,7 @@ function Posting({ children, filePath }) {
       (posting) => posting.status === "published"
     );
   }, [postingPush]);
+  console.log(arrPostPublish);
   const arrPostDarft = useMemo(() => {
     if (!postingPush) return [];
 
@@ -292,7 +296,9 @@ function Posting({ children, filePath }) {
                           </div>
                           <div className="col-md-11">
                             <div>
-                              
+                              <span className="posting-list__titleName">
+                                {post?.userPosting?.fullname}
+                              </span>
                               <span className="posting-list__titleName__date">
                                 {new Date(post?.updatedAt).toLocaleString()}
                               </span>
@@ -302,11 +308,13 @@ function Posting({ children, filePath }) {
                             </div>
                           </div>
                         </div>
-                        
+                        <span className="fs-6 posting-list__color-text mt-2  d-block fw-bolder">
+                          {post?.title}
+                        </span>
                         <div className="row text-dark">
                           <div className="col-md-4 text-center">
                             <CropIcon style={{ color: "#b48845" }} />{" "}
-                            {post?.rooms?.roomName}
+                            {post?.rooms?.size}
                           </div>
                           <div className="col-md-4 text-center">
                             {" "}
@@ -322,7 +330,14 @@ function Posting({ children, filePath }) {
                             {post?.rooms?.price}{" "}
                           </div>
                         </div>
-                       
+                        <span className="fs-6 posting-list__color-text my-2 d-block">
+                          {post?.description}
+                        </span>
+                        <img
+                          className="rounded-3 mt-3"
+                          src={post?.img}
+                          alt=""
+                        />
                         <div className=" mx-4 my-2 ">
                           <div className="float-start posting-list__feel">
                             {
