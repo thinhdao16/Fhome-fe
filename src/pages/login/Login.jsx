@@ -8,23 +8,24 @@ import clientId from "./client_secret_624291541261-vsnpuqvrn48tah5ju43l048ug23a3
 import axios from "axios";
 import { DataContext } from "../DataContext";
 import toastr from "cogo-toast";
-
+import Loading from "react-fullscreen-loading";
 const Login = () => {
   const navigate = useNavigate();
   const { googleSignIn, user, accessToken } = useContext(DataContext);
-  // console.log(user);
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleGoogleSignIn = async () => {
     try {
+      setIsLoading(true); // set loading to true before the API call
       await googleSignIn();
       if (accessToken !== undefined) {
         // Thêm điều kiện kiểm tra accessToken
         const user = auth.currentUser;
-        console.log(user);
         if (user) {
           const idToken = await user.getIdToken();
           const accessToken = await user.getIdToken(true);
           const response = await axios.post(
-            "http://localhost:3000/login",
+            "https://fhome-be.vercel.app/login",
             { accessToken: accessToken },
             {
               headers: {
@@ -44,18 +45,16 @@ const Login = () => {
                 "access_token",
                 JSON.stringify(response.data)
               );
-              console.log(response);
               const token = JSON.parse(localStorage.getItem("access_token"));
               const headers = {
                 Authorization: `Bearer ${token.data.accessToken}`,
               };
               axios
-                .get("http://localhost:3000/getRoomsByUserId", {
+                .get("https://fhome-be.vercel.app/getRoomsByUserId", {
                   headers,
                 })
                 .then((response) => {
                   const roomIds = response.data;
-                  console.log(roomIds);
                   if (roomIds) {
                     localStorage.setItem("roomIds", JSON.stringify(roomIds));
                   }
@@ -63,32 +62,43 @@ const Login = () => {
                 .catch((error) => {
                   console.error(error);
                 });
-              toastr.success("find successfully", {
+              toastr.success("Login successfully", {
                 position: "top-right",
                 heading: "Done",
               });
               navigate("/home");
               //         }
             } else {
-              // setTimeout(() => {
-              //   alert("Please you are admin please dont enter");
-              // }, 1000);
               toastr.error("Please you are admin please dont enter", {
                 position: "top-right",
                 heading: "Done",
               });
             }
           } else {
-            console.log("Response not OK");
+            toastr.error("Response not OK", {
+              position: "top-right",
+              heading: "Done",
+            });
           }
         } else {
-          console.log("User not found");
+          toastr.error("User not found", {
+            position: "top-right",
+            heading: "Done",
+          });
         }
       } else {
-        console.log("Access token not found");
+        toastr.error("Access token not found", {
+          position: "top-right",
+          heading: "Done",
+        });
       }
+      setIsLoading(false); // set loading to false after the API call
     } catch (error) {
-      console.log("error", error);
+      toastr.error(`error${error}`, {
+        position: "top-right",
+        heading: "Done",
+      });
+      setIsLoading(false); // set loading to false after the API call
     }
   };
 
@@ -114,6 +124,10 @@ const Login = () => {
 
   return (
     <div className="body">
+      <>
+        {isLoading && <Loading loading background="#fff" loaderColor="#ff9066" />}
+        {/* Your component JSX goes here */}
+      </>
       <h1 id="site-logo">
         <img
           src="https://fuidentity.edunext.vn/images/logo-login-new.png"

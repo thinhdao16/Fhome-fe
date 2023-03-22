@@ -18,11 +18,10 @@ export function AuthContextProvider({ children }) {
   const buildingsData = buildings.data;
   const [accountStart, setAccountStart] = useState([]);
   const [posting, setPosting] = useState([]);
-  const [searchPosting, setSearchPosting] = useState([]);
-  const [filterPosting, setFilterPosting] = useState([]);
-  const [ filterBuildingPosting, setFilterBuildingPosting] = useState([])
-  const [filterAreaPosting, setFilterAreaPosting] = useState([])
   const [imgPostDraft, setImgPostDraft] = useState(null)
+  const [allCmt, setAllCmt] = useState([])
+  const [isLiked, setIsLiked] = useState([]);
+  const [chooseWant, setChooseWant] = useState([])
   const googleSignIn = async () => {
     const provider = new GoogleAuthProvider();
     const result = await signInWithPopup(auth, provider);
@@ -34,6 +33,7 @@ export function AuthContextProvider({ children }) {
   const logOut = () => {
     signOut(auth);
     localStorage.clear();
+    window.location.reload();
   };
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -56,7 +56,7 @@ export function AuthContextProvider({ children }) {
       setBuildings(storedBuildings);
     } else {
       axios
-        .get("http://localhost:3000/getBuildings")
+        .get("https://fhome-be.vercel.app/getBuildings")
         .then((response) => {
           setBuildings(response.data);
           localStorage.setItem("buildings", JSON.stringify(response.data));
@@ -70,7 +70,7 @@ export function AuthContextProvider({ children }) {
       setAccountStart(storedApartments);
     } else {
       axios
-        .get("http://localhost:3000/getUser")
+        .get("https://fhome-be.vercel.app/getUser")
         .then((response) => {
           setAccountStart(response.data);
           localStorage.setItem("account_start", JSON.stringify(response.data));
@@ -91,16 +91,14 @@ export function AuthContextProvider({ children }) {
         buildingsData,
         posting,
         setPosting,
-        searchPosting,
-        setSearchPosting,
-        filterPosting,
-        setFilterPosting,
-        filterBuildingPosting,
-        setFilterBuildingPosting,
-        filterAreaPosting,
-        setFilterAreaPosting,
         imgPostDraft,
         setImgPostDraft,
+        allCmt,
+        setAllCmt,
+        isLiked,
+        setIsLiked,
+        chooseWant,
+        setChooseWant,
       }}
     >
       {children}

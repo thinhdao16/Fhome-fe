@@ -2,7 +2,6 @@ import "./assets/libs/boxicons-2.1.1/css/boxicons.min.css";
 import "./scss/App.scss";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import User from "./pages/Users/User";
-import Dashboard from "./pages/Dashboard";
 import MainLayout from "./layout/MainLayout";
 import Profile from "./pages/Profiles/Profile";
 import React from "react";
@@ -12,11 +11,8 @@ import Login from "./pages/login/Login";
 import Upload from "./pages/Uploads/Upload";
 import Posting from "./pages/Postings/Posting";
 import CreateRoom from "./pages/Rooms/CreateRoom";
-import { DataContext } from "./pages/DataContext";
 import SearchPost from "./pages/search/SearchPost";
-import FilterPost from "./pages/search/FilterPost";
-import FilterBuildingPost from "./pages/search/FilterBuildingPost";
-import FilterAreaPost from "./pages/search/FilterAreaPost";
+
 import PostingWait from "./pages/PostingStatus/PostingWait";
 function App() {
   return (
@@ -83,30 +79,7 @@ function App() {
                     </Protected>
                   }
                 />
-                     <Route
-                  path="filterPost"
-                  element={
-                    <Protected>
-                     <FilterPost/>
-                    </Protected>
-                  }
-                />
-                <Route
-                  path="filterBuildPost"
-                  element={
-                    <Protected>
-                     <FilterBuildingPost/>
-                    </Protected>
-                  }
-                />
-                   <Route
-                  path="filterAreaPost"
-                  element={
-                    <Protected>
-                     <FilterAreaPost/>
-                    </Protected>
-                  }
-                />
+                 
                 <Route
                   path="profiles"
                   element={

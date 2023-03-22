@@ -1,32 +1,69 @@
 import toastr from "cogo-toast";
 import { DataContext } from "../DataContext";
-import { useContext, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import Avatar from "react-avatar";
 import CropIcon from "@mui/icons-material/Crop";
 import RoofingOutlinedIcon from "@mui/icons-material/RoofingOutlined";
 import PriceChangeOutlinedIcon from "@mui/icons-material/PriceChangeOutlined";
-import { BottomNavigation, BottomNavigationAction, Box } from "@mui/material";
-import { Rating } from "react-simple-star-rating";
+import { BottomNavigation, BottomNavigationAction, Box, Button } from "@mui/material";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 import PostComment from "../Postings/PostComment";
-import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred";
+import DeleteIcon from "@mui/icons-material/Delete";
+import axios from "axios";
+
 
 const SearchPost = ({ children }) => {
   const [value, setValue] = useState(0);
-  const [rating, setRating] = useState(0); // initial rating value
 
-  const {  searchPosting ,filterPosting, posting} = useContext(DataContext);
-  console.log(filterPosting);
-  const handleRating = (rate) => {
-    setRating(rate);
-    // Some logic
-  };
+  const {chooseWant ,isLiked, allCmt} = useContext(DataContext);
+
   function handleCommentPost(event, id) {
     event.preventDefault();
-    const index = searchPosting.findIndex((item) => item._id === id);
-    const idDataPost = searchPosting[index];
+    const index = chooseWant.findIndex((item) => item._id === id);
+    const idDataPost = chooseWant[index];
     setSelectedPost(idDataPost);
   }
   const [selectedPost, setSelectedPost] = useState(null);
+  const userPosting = JSON.parse(localStorage.getItem("access_token"));
+
+  const handleLike = (event, id) => {
+    event.preventDefault();
+    axios
+      .post(
+        "https://fhome-be.vercel.app/createFavouritePost",
+        { postId: id },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${userPosting.data.accessToken}`,
+          },
+        }
+      )
+      .then((response) => {
+        console.log("Like added successfully");
+      })
+      .catch((error) => {
+        console.error("Failed to add like", error);
+      });
+  };
+  const handleDisLike = (event, id) => {
+    const idLike = isLiked?.filter((like) => like?.post?._id === id)?.[0]._id;
+    event.preventDefault();
+    axios
+      .delete(`https://fhome-be.vercel.app/deleteFavouritePost/${idLike}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userPosting.data.accessToken}`,
+        },
+      })
+      .then((response) => {
+        console.log("DisLike added successfully");
+      })
+      .catch((error) => {
+        console.error("Failed to add Dislike", error);
+      });
+  };
+  const postCommentRef = useRef(null);
 
   return (
     <DataContext.Provider
@@ -35,14 +72,13 @@ const SearchPost = ({ children }) => {
       {children}
       <div className="px-5">
         {" "}
-        {/* <div className="body-profile" style={{backgroundColor:"F3F4FA !important"}}> */}
           <div className="container" >
-            {Array.isArray(searchPosting) &&
-              searchPosting
+            {Array.isArray(chooseWant) &&
+              chooseWant
                 .sort((a, b) => {
                   return (
-                    new Date(b?.createdAt).getTime() -
-                    new Date(a?.createdAt).getTime()
+                    new Date(b?.updatedAt).getTime() -
+                    new Date(a?.updatedAt).getTime()
                   );
                 })
                 .map((post) => (
@@ -51,19 +87,19 @@ const SearchPost = ({ children }) => {
                       <div className="row">
                         <div className="col-md-1">
                           <Avatar
-                            name={post.fullname}
+                            name={post?.userPosting?.fullname}
                             size="40"
                             round={true}
-                            src={post?.userImg}
+                            src={post?.userPosting?.img}
                           />
                         </div>
                         <div className="col-md-11">
                           <div>
                             <span className="posting-list__titleName">
-                              {post?.userFullName}
+                              {post?.userPosting?.fullname}
                             </span>
                             <span className="posting-list__titleName__date">
-                              {new Date(post?.createdAt).toLocaleString()}
+                              {new Date(post?.updatedAt).toLocaleString()}
                             </span>
                           </div>
                         </div>
@@ -73,15 +109,15 @@ const SearchPost = ({ children }) => {
                       </span>
                       <div className="row">
                         <div className="col-md-4 text-center">
-                          <CropIcon /> {post?.roomSize}
+                          <CropIcon /> {post?.rooms?.size}
                         </div>
                         <div className="col-md-4 text-center">
                           {" "}
-                          <RoofingOutlinedIcon /> {post?.buildingName}
+                          <RoofingOutlinedIcon /> {post?.buildings?.buildingName}
                         </div>
                         <div className="col-md-4 text-center">
                           <PriceChangeOutlinedIcon />
-                          {post?.roomPrice}{" "}
+                          {post?.rooms?.price}{" "}
                         </div>
                       </div>
                       <span className="fs-6 posting-list__color-text my-2 d-block">
@@ -89,58 +125,65 @@ const SearchPost = ({ children }) => {
                       </span>
                       <img className="rounded-3 mt-3" src={post?.img} alt="" />
                       <div className=" mx-4 my-2 ">
-                        <div className="float-start posting-list__feel">
-                          4.9rating
+                          <div className="float-start posting-list__feel">
+                            {
+                              isLiked?.filter?.(
+                                (like) => like?.post?._id === post?._id
+                              )?.length
+                            }{" "}
+                            like
+                          </div>
+                          <div className="float-end">
+                            <a href="" className="posting-list__feel">
+                              {" "}
+                              {
+                                allCmt?.filter?.(
+                                  (cmt) => cmt?.posting?._id === post?._id
+                                )?.length
+                              }{" "}
+                              bình luận
+                            </a>
+                          </div>
                         </div>
-                        <div className="float-end">
-                          <a href="" className="posting-list__feel">
-                            {" "}
-                            {post?.userFullName}
-                          </a>
-                        </div>
-                      </div>
                       <hr className="posting-list__hr" />
                       <Box sx={{}}>
-                        <BottomNavigation
-                          showLabels
-                          value={value}
-                          onChange={(event, newValue) => {
-                            setValue(newValue);
-                          }}
-                        >
-                          <BottomNavigationAction
-                            label={rating}
-                            icon={
-                              <Rating
-                                onClick={handleRating}
-                                ratingValue={rating}
-                                size={30}
-                                label
-                                transition
-                                fillColor="orange"
-                                emptyColor="gray"
-                                className="foo d-block"
-                              />
-                            }
-                          />
-                          <BottomNavigationAction
-                            label="Bình luận"
-                            icon={<PostComment />}
-                          />
-                          <button
-                            onClick={(event) =>
-                              handleCommentPost(event, post._id)
-                            }
+                          <BottomNavigation
+                            showLabels
+                            value={value}
+                            onChange={(event, newValue) => {
+                              setValue(newValue);
+                            }}
                           >
-                            submit
-                          </button>
-                          {/* </button> */}
-                          <BottomNavigationAction
-                            label="Báo cáo"
-                            icon={<ReportGmailerrorredIcon />}
-                          />
-                        </BottomNavigation>
-                      </Box>
+                            <BottomNavigationAction
+                              icon={
+                                isLiked?.filter(
+                                  (f) => f?.post?._id === post?._id
+                                )?.length > 0 ? (
+                                  <FavoriteIcon sx={{ color: "#ec2d4d" }} />
+                                ) : (
+                                  <FavoriteIcon sx={{ color: "black" }} />
+                                )
+                              }
+                              onClick={(event) => handleLike(event, post?._id)}
+                            />
+                            <BottomNavigationAction
+                              icon={<DeleteIcon sx={{ color: "black  " }} />}
+                              onClick={(event) =>
+                                handleDisLike(event, post?._id)
+                              }
+                            />
+                            <div style={{ display: "flex" }}>
+                              <Button
+                                onClick={(event) =>
+                                  handleCommentPost(event, post._id)
+                                }
+                              >
+                                CMT
+                              </Button>
+                              <PostComment ref={postCommentRef} />
+                            </div>
+                          </BottomNavigation>
+                        </Box>
                     </div>
                   </form>
                 ))}

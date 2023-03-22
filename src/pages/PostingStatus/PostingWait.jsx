@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import React from "react";
 import toastr from "cogo-toast";
 import DashboardWrapper, {
@@ -17,6 +17,7 @@ import ThumbDownAltOutlinedIcon from "@mui/icons-material/ThumbDownAltOutlined";
 import CropIcon from "@mui/icons-material/Crop";
 import RoofingOutlinedIcon from "@mui/icons-material/RoofingOutlined";
 import PriceChangeOutlinedIcon from "@mui/icons-material/PriceChangeOutlined";
+import { DataContext } from "../DataContext";
 function PostingWait() {
   const styleStatus = {
     display: "inline-block",
@@ -31,102 +32,31 @@ function PostingWait() {
     boxShadow: "0px 7px 29px 0px rgba(100, 100, 111, 0.2)",
     marginLeft: 13,
   };
-  const PostingDraft = <DraftsIcon style={{ color: "brown" }} />;
   const PostingPending = <PendingIcon style={{ color: "blue" }} />;
   const PostingAprove = (
     <CheckCircleOutlineOutlinedIcon style={{ color: "violet" }} />
   );
-  const PostingPublic = <PublicOutlinedIcon style={{ color: "green" }} />;
-  const PostingReject = <ThumbDownAltOutlinedIcon style={{ color: "red" }} />;
-  const [dataPosting, setDataPosting] = useState({
-    buildings: [],
-    postings: [],
-    rooms: [],
-    users: [],
-  });
+  const { posting } = useContext(DataContext);
+
+
   const userPosting = JSON.parse(localStorage.getItem("access_token"));
   const userPostings = userPosting?.data?.user;
   const arrPostPeding = useMemo(() => {
-    if (!dataPosting) return [];
+    if (!posting) return [];
 
-    return dataPosting.postings.filter(
-      (posting) => posting.status === "pending"
+    return posting?.filter(
+      (posting) => posting?.status === "pending"
     );
-  }, [dataPosting]);
+  }, [posting]);
   const arrPostApprove = useMemo(() => {
-    if (!dataPosting) return [];
+    if (!posting) return [];
 
-    return dataPosting.postings.filter(
-      (posting) => posting.status === "approved"
+    return posting?.filter(
+      (posting) => posting?.status === "approved"
     );
-  }, [dataPosting]);
+  }, [posting]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const responses = await Promise.all([
-          axios.get("http://localhost:3000/getBuildings"),
-          axios.get("http://localhost:3000/getAllStatus"),
-          axios.get("http://localhost:3000/getRooms"),
-          axios.get("http://localhost:3000/getAllUsers"),
-        ]);
-        const buildings = responses[0].data.data.buildings;
-        const postings = responses[1].data.data.postings;
-        const rooms = responses[2].data.data.rooms;
-        const users = responses[3].data;
-        const newData = postings.map((post) => {
-          const building = buildings.find((b) => b._id === post.buildings);
-          const buildingName = building ? building.buildingName : "";
-
-          const room = rooms.find((r) => r._id === post.rooms);
-          const roomPrice = room ? room?.price : "";
-          const roomSize = room ? room?.size : "";
-          const roomName = room ? room?.roomName : "";
-
-          const user = users.find((u) => u._id === post.userPosting);
-          const userEmail = user ? user.email : "";
-          const userFullName = user ? user.fullname : "";
-          const userImg = user ? user.img : "";
-
-          return {
-            ...post,
-            buildingName,
-            roomName,
-            roomPrice,
-            roomSize,
-            userEmail,
-            userFullName,
-            userImg,
-          };
-        });
-
-        const buildingIds = newData.map((post) => post?.buildings);
-        const filteredBuildingIds = buildings
-          .filter((b) => buildingIds.includes(b?._id))
-          .map((b) => b?._id);
-
-        setDataPosting({
-          users,
-          rooms,
-          buildings,
-          postings: newData,
-          buildingIds: filteredBuildingIds,
-        });
-      } catch (error) {
-        toastr.error("Can not find statusPost", {
-          position: "top-right",
-          heading: "Done",
-        });
-        console.log(error);
-      }
-    };
-    const intervalId = setInterval(fetchData, 5000); // Gọi fetchData sau mỗi 5 giây
-    toastr.info("This is Status", {
-      position: "top-right",
-      heading: "Done",
-    });
-    return () => clearInterval(intervalId);
-  }, []);
+console.log(posting)
   return (
     <div className="posting-list">
       <DashboardWrapper>
@@ -159,8 +89,9 @@ function PostingWait() {
                           <span className="posting-list__titleName__date">
                             {new Date(post?.createdAt).toLocaleString()}
                           </span>
-                          <span className="ms-2">{ post.status === "approved" && PostingAprove  }</span>
-                          
+                          <span className="ms-2">
+                            {post.status === "approved" && PostingAprove}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -263,24 +194,10 @@ function PostingWait() {
                       {post?.description}
                     </Typography>
                   </CardContent>
-                  {/* <CardActions>
-                  <Button size="small">
-                    <DoneOutlinedIcon sx={{ color: "green" }}  onClick={(event) =>
-                            handlePostPending(event, post._id)
-                          }/>
-                  </Button>
-                  <Button size="small">
-                    {" "}
-                    <DeleteOutlinedIcon sx={{ color: "red" }}  onClick={(event) =>
-                            handlePostRejct(event, post._id)} />
-                  </Button>
-                </CardActions> */}
                 </Card>
               ))}
         </DashboardWrapperRight>
       </DashboardWrapper>
-      {/* modal */}
-      {/* modal */}
     </div>
   );
 }

@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import "./profile.scss";
 import toastr from "cogo-toast";
 import { DataContext } from "../DataContext";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import DashboardWrapper, {
   DashboardWrapperMain,
   DashboardWrapperRight,
@@ -12,7 +12,11 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import Avatar from "react-avatar";
 import { Box } from "@mui/system";
-import { BottomNavigation, BottomNavigationAction, Button } from "@mui/material";
+import {
+  BottomNavigation,
+  BottomNavigationAction,
+  Button,
+} from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 
 import PostComment from "../Postings/PostComment";
@@ -21,11 +25,7 @@ import RoofingOutlinedIcon from "@mui/icons-material/RoofingOutlined";
 import PriceChangeOutlinedIcon from "@mui/icons-material/PriceChangeOutlined";
 import Dropzone from "react-dropzone";
 
-import DraftsIcon from "@mui/icons-material/Drafts";
-import PendingIcon from "@mui/icons-material/Pending";
-import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
 import PublicOutlinedIcon from "@mui/icons-material/PublicOutlined";
-import ThumbDownAltOutlinedIcon from "@mui/icons-material/ThumbDownAltOutlined";
 
 const Profile = () => {
   const userProfile = JSON.parse(localStorage.getItem("access_token"));
@@ -34,45 +34,36 @@ const Profile = () => {
   const arrayProfilePost = profilePost?.data?.postings;
   const [value, setValue] = useState(0);
   const [selectedPost, setSelectedPost] = useState(null);
-  const [isLiked, setIsLiked] = useState(false);
-  const likePostFavourite = isLiked?.data?.favourite;
 
-  const [dataProfile, setDataProfile] = useState([]);
+  const [dataProfile, setDataProfile] = useState(userProfiles?.user);
   const [fullName, setFullName] = useState(userProfiles?.user?.fullname);
   const [email, setEmail] = useState(userProfiles?.user?.email);
   const [phone, setPhone] = useState(userProfiles?.user?.phoneNumber);
   const [newImage, setNewImage] = useState(null);
 
+  const [isEditing, setIsEditing] = useState(false);
+  const [isDropzoneEnabled, setIsDropzoneEnabled] = useState(false);
+  const [posts, setPost] = useState("");
+  const [newImageEdit, setNewImageEdit] = useState(null);
+
+
+  const { posting, allCmt, isLiked } = useContext(DataContext);
+
+  const arrPostPublish = useMemo(() => {
+    if (!posting) return [];
+    return posting.filter(
+      (posting) =>
+        posting.status === "published" &&
+        posting.userPosting?._id === userProfiles?.user?.id
+    );
+  }, [posting]);
+  console.log(arrPostPublish)
   function handleCommentPost(event, id) {
     event.preventDefault();
-    const index = arrayProfilePost.findIndex((item) => item._id === id);
-    const idDataPost = arrayProfilePost[index];
+    const index = arrPostPublish.findIndex((item) => item._id === id);
+    const idDataPost = arrPostPublish[index];
     setSelectedPost(idDataPost);
   }
-
-  useEffect(() => {
-    Promise.all([
-      axios.get("http://localhost:3000/getAllStatus"),
-      axios.get(`http://localhost:3000/userProfile/${userProfiles.user.id}`),
-      axios.get("http://localhost:3000/getFavouriteByUser", {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${userProfiles.accessToken}`,
-        },
-      }),
-    ])
-      .then((responses) => {
-        const [profilePostResponse, dataProfileResponse, isLikedResponse] =
-          responses;
-        setProfilePost(profilePostResponse.data);
-        setDataProfile(dataProfileResponse.data);
-        setIsLiked(isLikedResponse.data);
-        toast.success("Successfully!");
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, []);
 
   const handleSubmitFormProfile = async (e) => {
     e.preventDefault();
@@ -83,7 +74,7 @@ const Profile = () => {
     formData.append("img", newImage);
     try {
       const response = await axios.put(
-        `http://localhost:3000/userProfile/${userProfiles.user.id}`,
+        `https://fhome-be.vercel.app/userProfile/${userProfiles.user.id}`,
         formData,
         {
           headers: {
@@ -92,6 +83,13 @@ const Profile = () => {
           },
         }
       );
+
+      // Cập nhật localStorage
+      const newData = response.data;
+      console.log(newData);
+      setFullName(newData?.fullname);
+      setEmail(newData?.email);
+      setPhone(newData?.phoneNumber)
       toastr.success("Update successfully", {
         position: "top-right",
         heading: "Done",
@@ -104,15 +102,16 @@ const Profile = () => {
       console.error(error);
     }
   };
+
   const handleDrop = (acceptedFiles) => {
-    setNewImage(acceptedFiles[0]);
+    setNewImageEdit(acceptedFiles[0]);
   };
 
   const handleLike = (event, id) => {
     event.preventDefault();
     axios
       .post(
-        "http://localhost:3000/createFavouritePost",
+        "https://fhome-be.vercel.app/createFavouritePost",
         { postId: id },
         {
           headers: {
@@ -122,30 +121,29 @@ const Profile = () => {
         }
       )
       .then((response) => {
-        console.log("Like added successfully");
+        // console.log("Like added successfully");
+        console.log(response);
       })
       .catch((error) => {
         console.error("Failed to add like", error);
       });
   };
-  const PostingDraft = <DraftsIcon style={{ color: "brown" }} />;
-  const PostingPending = <PendingIcon style={{ color: "blue" }} />;
-  const PostingAprove = (
-    <CheckCircleOutlineOutlinedIcon style={{ color: "violet" }} />
-  );
+  const handleEdit = () => {
+    setIsDropzoneEnabled(!isDropzoneEnabled);
+    setIsEditing(!isEditing);
+  };
   const PostingPublic = <PublicOutlinedIcon style={{ color: "green" }} />;
-  const PostingReject = <ThumbDownAltOutlinedIcon style={{ color: "red" }} />;
   return (
     <DataContext.Provider value={{ selectedPost }}>
       <div className="posting-list">
         <DashboardWrapper>
           <DashboardWrapperMain>
-            {Array.isArray(arrayProfilePost) &&
-              arrayProfilePost
+            {Array.isArray(arrPostPublish) &&
+              arrPostPublish
                 .sort((a, b) => {
                   return (
-                    new Date(b?.createdAt).getTime() -
-                    new Date(a?.createdAt).getTime()
+                    new Date(b?.updatedAt).getTime() -
+                    new Date(a?.updatedAt).getTime()
                   );
                 })
                 .map((post) => (
@@ -154,35 +152,45 @@ const Profile = () => {
                       <div className="row">
                         <div className="col-md-1">
                           <Avatar
-                            name={post.fullname}
+                            name={post?.userPosting?.fullname}
                             size="40"
                             round={true}
-                            src={post?.userImg}
+                            src={post?.userPosting?.img}
                           />
                         </div>
+                      
                         <div className="col-md-11">
                           <div>
-                            <span className="posting-list__titleName">
-                              {post?.userFullName}
-                            </span>
+                          {isEditing ? (
+                                <div>
+                                  <input
+                                    type="text"
+                                    className="posting-list__titleName border-0 shadow rounded-3 p-2 mb-2"
+                                    style={{ outline: "none" }}
+                                    value={post.userPosting.fullname}
+                                    onChange={(e) =>
+                                      setPost({
+                                        ...post,
+                                        userPosting: {
+                                          ...post.userPosting,
+                                          fullname: e.target.value,
+                                        },
+                                      })
+                                    }
+                                  />
+                                </div>
+                              ) : (
+                                <span className="posting-list__titleName">
+                                  {post?.userPosting?.fullname}
+                                </span>
+                              )}
                             <span className="posting-list__titleName__date">
-                              {new Date(post?.createdAt).toLocaleString()}
+                              {new Date(post?.updatedAt).toLocaleString()}
                             </span>
                             <span className="ms-2">
-                              {post.status === "approved" && PostingAprove}
+                              {post?.status === "published" && PostingPublic}
                             </span>
-                            <span className="ms-2">
-                              {post.status === "draft" && PostingDraft}
-                            </span>
-                            <span className="ms-2">
-                              {post.status === "pending" && PostingPending}
-                            </span>
-                            <span className="ms-2">
-                              {post.status === "rejected" && PostingReject}
-                            </span>
-                            <span className="ms-2">
-                              {post.status === "pulished" && PostingPublic}
-                            </span>
+                            <Button onClick={handleEdit}>click</Button>
                           </div>
                         </div>
                       </div>
@@ -191,25 +199,52 @@ const Profile = () => {
                       </span>
                       <div className="row text-dark">
                         <div className="col-md-4 text-center">
-                          <CropIcon /> {post?.roomSize}
+                          <CropIcon /> {post?.rooms?.size}
                         </div>
                         <div className="col-md-4 text-center">
                           {" "}
-                          <RoofingOutlinedIcon /> {post?.buildingName}
+                          <RoofingOutlinedIcon />{" "}
+                          {post?.buildings?.buildingName}
                         </div>
                         <div className="col-md-4 text-center">
                           <PriceChangeOutlinedIcon />
-                          {post?.roomPrice}{" "}
+                          {post?.rooms?.price}{" "}
                         </div>
                       </div>
                       <span className="fs-6 posting-list__color-text my-2 ms-2 d-block">
                         {post?.description}
                       </span>
-                      <img className="rounded-3 mt-3" src={post?.img} alt="" />
+                      {isEditing ? (
+                          <Dropzone
+                            onDrop={handleDrop}
+                            disabled={!isDropzoneEnabled}
+                          >
+                            {({ getRootProps, getInputProps }) => (
+                              <div {...getRootProps()}>
+                                <input {...getInputProps()} />
+                                <img
+                                  className="rounded-3 mt-3"
+                                  src={
+                                    newImageEdit
+                                      ? URL.createObjectURL(newImageEdit)
+                                      : post?.img
+                                  }
+                                  alt=""
+                                />
+                              </div>
+                            )}
+                          </Dropzone>
+                        ) : (
+                          <img
+                            className="rounded-3 mt-3"
+                            src={post?.img}
+                            alt=""
+                          />
+                        )}
                       <div className=" mx-4 my-2 ">
                         <div className="float-start posting-list__feel">
-                        {
-                            likePostFavourite?.filter?.(
+                          {
+                            isLiked?.filter?.(
                               (like) => like?.post?._id === post?._id
                             )?.length
                           }{" "}
@@ -218,7 +253,12 @@ const Profile = () => {
                         <div className="float-end">
                           <a href="" className="posting-list__feel">
                             {" "}
-                            {post?.userFullName}
+                            {
+                              allCmt?.filter?.(
+                                (like) => like?.post?._id === post?._id
+                              )?.length
+                            }{" "}
+                            bình luận
                           </a>
                         </div>
                       </div>
@@ -233,9 +273,8 @@ const Profile = () => {
                         >
                           <BottomNavigationAction
                             icon={
-                              likePostFavourite?.filter(
-                                (f) => f?.post?._id === post?._id
-                              )?.length > 0 ? (
+                              isLiked?.filter((f) => f?.post?._id === post?._id)
+                                ?.length > 0 ? (
                                 <FavoriteIcon sx={{ color: "#ec2d4d" }} />
                               ) : (
                                 <FavoriteIcon sx={{ color: "black" }} />

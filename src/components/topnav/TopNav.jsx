@@ -1,6 +1,4 @@
 import "./topnav.scss";
-import UserInfo from "../user-info/UserInfo";
-import { data } from "../../constants";
 import { useContext, useState, useEffect } from "react";
 import { DataContext } from "../../pages/DataContext";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
@@ -38,25 +36,27 @@ const TopNav = () => {
     setSearchTerm(event.target.value);
   };
   const {
-    searchPosting,
-    setSearchPosting,
-    filterPosting,
-    setFilterPosting,
     posting,
     setPosting,
-    filterBuildingPosting,
-    setFilterBuildingPosting,
-    filterAreaPosting,
-    setFilterAreaPosting,
+    chooseWant,
+    setChooseWant,
   } = useContext(DataContext);
   const handleSubmit = (event) => {
     event.preventDefault();
 
     const data = posting.filter((post) => {
-      const values = Object.values(post).join(" ").toLowerCase();
+      const posBuildings = post?.buildings;
+      const postRooms = post?.rooms;
+      const values =
+        post && posBuildings && postRooms
+          ? Object.values(post)
+              .concat(Object.values(posBuildings))
+              .concat(Object.values(postRooms))
+              .join(" ")
+              .toLowerCase()
+          : "";
       return values.includes(searchTerm.toLowerCase());
     });
-
     if (data.length === 0) {
       toastr.error("Can not find", {
         position: "top-right",
@@ -67,7 +67,7 @@ const TopNav = () => {
         position: "top-right",
         heading: "Done",
       });
-      setSearchPosting(data);
+      setChooseWant(data);
       navigate("searchPost");
     }
   };
@@ -75,7 +75,7 @@ const TopNav = () => {
     event.preventDefault();
     let filteredPrice = posting.filter((post) => {
       const [min, max] = selectedPriceRange.split("-");
-      return post.roomPrice >= min && post.roomPrice <= max;
+      return post?.rooms?.price >= min && post?.rooms?.price <= max;
     });
     if (filteredPrice.length === 0) {
       toastr.error("Can not filter", {
@@ -87,17 +87,16 @@ const TopNav = () => {
         position: "top-right",
         heading: "Done",
       });
-      setFilterPosting(filteredPrice);
-      navigate("filterPost");
+      setChooseWant(filteredPrice);
+      navigate("searchPost");
     }
   };
   const handleFilterBuilding = (event) => {
     event.preventDefault();
-    const building = posting.filter((post) => {
-      const values = Object.values(post).join(" ").toLowerCase();
-      return values.includes(buildings.toLowerCase());
+    const building = posting?.filter((post) => {
+      return post?.buildings?.buildingName == buildings;
     });
-    console.log(building);
+    console.log(data);
     if (building.length === 0) {
       toastr.error("Can not find", {
         position: "top-right",
@@ -108,15 +107,15 @@ const TopNav = () => {
         position: "top-right",
         heading: "Done",
       });
-      setFilterBuildingPosting(building);
-      navigate("filterBuildPost");
+      setChooseWant(building);
+      navigate("searchPost");
     }
   };
   const handleAreaFilter = (event) => {
     event.preventDefault();
     let filteredArea = posting.filter((post) => {
       const [min, max] = selectedArePost.split("-");
-      return post.roomSize >= min && post.roomSize <= max;
+      return post?.rooms?.size >= min && post.rooms?.size <= max;
     });
     if (filteredArea.length === 0) {
       toastr.error("Can not area", {
@@ -128,8 +127,8 @@ const TopNav = () => {
         position: "top-right",
         heading: "Done",
       });
-      setFilterAreaPosting(filteredArea);
-      navigate("filterAreaPost");
+      setChooseWant(filteredArea);
+      navigate("searchPost");
     }
   };
   return (
@@ -182,6 +181,9 @@ const TopNav = () => {
                   <MenuItem value="0-2000">0-2000</MenuItem>
                   <MenuItem value="2000-4000">2000-4000</MenuItem>
                   <MenuItem value="4000-6000">4000-6000</MenuItem>
+                  <MenuItem value="6000-9000">6000-9000</MenuItem>
+                  <MenuItem value="9000-12000">9000-12000</MenuItem>
+                  <MenuItem value="12000-99999999"> ^12000</MenuItem>
                 </Select>
               </FormControl>
               <Button color="secondary" type="submit">

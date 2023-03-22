@@ -41,12 +41,11 @@ const PostModal = () => {
   const dataOfBuildings = data?.data?.buildings;
   const roomUserId = roomIds?.data?.rooms;
   const userPosting = JSON.parse(localStorage.getItem("access_token"));
-  const userPostings = userPosting.data.user;
+  const userPostings = userPosting?.data?.user;
 
   const [title, setTitle] = React.useState("");
   const [description, setDescription] = React.useState("");
   const [room, setRoom] = React.useState("");
-  const [building, setBuilding] = React.useState("");
   const [selectedFile, setSelectedFile] = React.useState(null);
   const [showDeleteButton, setShowDeleteButton] = useState(false);
 
@@ -60,7 +59,6 @@ const PostModal = () => {
       console.log("No access token found.");
       return;
     }
-    console.log(token.data.accessToken);
     var formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
@@ -71,7 +69,7 @@ const PostModal = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/createPosting",
+        "https://fhome-be.vercel.app/posts/create",
         formData,
         {
           headers: {
@@ -110,9 +108,8 @@ const PostModal = () => {
     setOpen(true);
     const token = JSON.parse(localStorage.getItem("access_token"));
     const headers = { Authorization: `Bearer ${token.data.accessToken}` };
-    console.log(headers);
     axios
-      .get("http://localhost:3000/getRoomsByUserId", { headers })
+      .get("https://fhome-be.vercel.app/getRoomsByUserId", { headers })
       .then((response) => {
         const roomIds = response.data;
         if (roomIds) {

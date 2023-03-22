@@ -6,7 +6,7 @@ const sidebarNav = [
         text: 'Home'
     },
     {
-        link: 'users',
+        link: '',
         section: 'users',
         icon: <i className='bx bx-receipt' ></i>,
         text: 'Users'

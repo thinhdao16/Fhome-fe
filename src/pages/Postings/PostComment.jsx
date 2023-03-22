@@ -17,6 +17,7 @@ import ForwardOutlinedIcon from "@mui/icons-material/ForwardOutlined";
 import RoofingOutlinedIcon from "@mui/icons-material/RoofingOutlined";
 import PriceChangeOutlinedIcon from "@mui/icons-material/PriceChangeOutlined";
 import toastr from "cogo-toast";
+import CropIcon from "@mui/icons-material/Crop";
 
 const StyledModal = styled(Modal)({
   display: "flex",
@@ -39,9 +40,9 @@ const PostComment = () => {
   const [success, setSuccess] = useState(false);
 
   const userPosting = JSON.parse(localStorage.getItem("access_token"));
-  const userPostings = userPosting.data.user;
+  const userPostings = userPosting?.data?.user;
 
-  const { selectedPost, arrPost } = useContext(DataContext);
+  const { selectedPost } = useContext(DataContext);
   const [description, setDescription] = React.useState("");
   const [selectedFile, setSelectedFile] = React.useState(null);
   const [showDeleteButton, setShowDeleteButton] = useState(false);
@@ -52,7 +53,6 @@ const PostComment = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log(event)
     const selectedPostComment = selectedPost?._id;
     var formData = new FormData();
     formData.append("description", description);
@@ -61,7 +61,7 @@ const PostComment = () => {
     let isMounted = true;
     try {
       const response = await axios.post(
-        "http://localhost:3000/postAllPostingCommentByPost",
+        "https://fhome-be.vercel.app/postAllPostingCommentByPost",
         formData,
         {
           headers: {
@@ -72,7 +72,6 @@ const PostComment = () => {
       );
 
       if (isMounted) {
-        console.log(response.data);
         setOpen(false);
       }
       toastr.success("Comment successfully", {
@@ -93,7 +92,7 @@ const PostComment = () => {
       try {
         const selectedPostComment = selectedPost._id;
         const response = await axios.get(
-          `http://localhost:3000/getAllPostingCommentByPost/${selectedPostComment}`,
+          `https://fhome-be.vercel.app/getAllPostingCommentByPost/${selectedPostComment}`,
           {
             headers: {
               Authorization: `Bearer ${token.data.accessToken}`,
@@ -108,8 +107,6 @@ const PostComment = () => {
     fetchComments();
   }, [selectedPost]);
 
-  // const roomUserId = JSON.parse(localStorage.getItem("roomIds")).data.rooms;
-
   const handleDelete = () => {
     setSelectedFile(null);
     setShowDeleteButton(false);
@@ -123,6 +120,7 @@ const PostComment = () => {
   if (!selectedPost) {
     return null;
   }
+
 
   return (
     <>
@@ -197,16 +195,16 @@ const PostComment = () => {
                 <div className="row">
                   <div className="col-md-1">
                     <Avatar
-                      name={selectedPost?.userFullName}
+                      name={selectedPost?.userPosting?.fullname}
                       size="40"
                       round={true}
-                      src={selectedPost?.userImg}
+                      src={selectedPost?.userPosting?.img}
                     />
                   </div>
                   <div className="col-md-11">
                     <div>
                       <span className="posting-list__titleName">
-                        {selectedPost?.userFullName}
+                        {selectedPost?.userPosting?.fullname}
                       </span>
                       <span className="posting-list__titleName__date">
                         {new Date(selectedPost?.updatedAt).toLocaleString()}
@@ -219,14 +217,16 @@ const PostComment = () => {
                 </span>
                 <div className="row">
                   <div className="col-md-4 text-center">
+                  <CropIcon style={{ color: "#b48845" }} />{" "}
+                          {selectedPost?.rooms?.roomName}
                   </div>
                   <div className="col-md-4 text-center">
                     {" "}
-                    <RoofingOutlinedIcon /> {selectedPost?.buildingName}
+                    <RoofingOutlinedIcon /> {selectedPost?.buildings?.buildingName}
                   </div>
                   <div className="col-md-4 text-center">
                     <PriceChangeOutlinedIcon />
-                    {selectedPost?.roomPrice}{" "}
+                    {selectedPost?.rooms?.price}{" "}
                   </div>
                 </div>
                 <span className="fs-6 posting-list__color-text my-2 d-block">
@@ -238,7 +238,6 @@ const PostComment = () => {
                   alt=""
                   style={{ maxWidth: 600 }}
                 />
-                <hr className="posting-list__hr" />
               </div>
               {Array.isArray(comments) &&
                 comments
@@ -254,10 +253,10 @@ const PostComment = () => {
                         <div className="col-md-1">
                           {" "}
                           <Avatar
-                            name={commentss.userPostingComment.fullname}
+                            name={commentss?.userPostingComment.fullname}
                             size="10"
                             round={true}
-                            src={commentss.userPostingComment?.img}
+                            src={commentss?.userPostingComment?.img}
                           />
                         </div>
                         <div className="col-md-11 rounded-3">
@@ -267,13 +266,13 @@ const PostComment = () => {
                           >
                             {" "}
                             <span className="fw-bolder fs-6 text-dark">
-                              {commentss.userPostingComment.fullname}
+                              {commentss?.userPostingComment?.fullname}
                             </span>
                             <span className="d-block fs-6 text-dark">
-                              {commentss.description}
+                              {commentss?.description}
                             </span>
                           </div>
-                          <span className="d-block fs-6 text-dark">
+                          <span className="d-block text-dark" style={{fontSize:12, marginLeft:15}}>
                             {new Date(commentss?.updatedAt).toLocaleString()}
                           </span>
                           <img
