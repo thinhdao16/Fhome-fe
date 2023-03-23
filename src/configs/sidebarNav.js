@@ -15,7 +15,7 @@ const sidebarNav = [
         link: 'wait',
         section: 'wait',
         icon: <i className='bx bx-cube'></i>,
-        text: 'wait'
+        text: 'Wait'
     },
     {
         link: 'postings',
