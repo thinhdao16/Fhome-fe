@@ -69,7 +69,7 @@ const Login = () => {
               navigate("/home");
               //         }
             } else {
-              toastr.error("please wait for admin to confirm", {
+              toastr.warn("please you are admin dont go", {
                 position: "top-right",
                 heading: "Done",
               });
@@ -128,15 +128,15 @@ const Login = () => {
         {isLoading && <Loading loading background="#fff" loaderColor="#ff9066" />}
         {/* Your component JSX goes here */}
       </>
-      <h1 id="site-logo">
+      {/* <h1 id="site-logo">
         <img
           src="https://fuidentity.edunext.vn/images/logo-login-new.png"
           alt="f-home"
         />
-      </h1>
+      </h1> */}
       <div id="wrap-main-content">
         <div className="identity-tabs">
-          <a href="/vi/Account/Login">Login</a>
+          <a href="">Login</a>
         </div>
         <ul className="list-social-login">
           <li className="social-login-item">
