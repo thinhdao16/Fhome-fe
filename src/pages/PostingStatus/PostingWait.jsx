@@ -42,7 +42,7 @@ function PostingWait() {
 
   const fetchPosts = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/posts/", {
+      const response = await axios.get("https://fhome-be.vercel.app/posts/", {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${userPosting.data.accessToken}`,

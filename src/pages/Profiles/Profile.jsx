@@ -74,7 +74,7 @@ const Profile = () => {
     formData.append("img", newImage);
     try {
       const response = await axios.put(
-        `http://localhost:3000/userProfile/${userProfiles.user.id}`,
+        `https://fhome-be.vercel.app/userProfile/${userProfiles.user.id}`,
         formData,
         {
           headers: {
@@ -113,7 +113,7 @@ const Profile = () => {
     event.preventDefault();
     axios
       .post(
-        "http://localhost:3000/createFavouritePost",
+        "https://fhome-be.vercel.app/createFavouritePost",
         { postId: id },
         {
           headers: {

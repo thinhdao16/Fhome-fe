@@ -66,7 +66,7 @@ const PostComment = () => {
     try {
       setLoading(true);
       const response = await axios.post(
-        "http://localhost:3000/postAllPostingCommentByPost",
+        "https://fhome-be.vercel.app/postAllPostingCommentByPost",
         formData,
         {
           headers: {
@@ -99,7 +99,7 @@ const PostComment = () => {
       try {
         const selectedPostComment = selectedPost._id;
         const response = await axios.get(
-          `http://localhost:3000/getAllPostingCommentByPost/${selectedPostComment}`,
+          `https://fhome-be.vercel.app/getAllPostingCommentByPost/${selectedPostComment}`,
           {
             headers: {
               Authorization: `Bearer ${token.data.accessToken}`,
