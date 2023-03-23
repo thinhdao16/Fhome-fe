@@ -58,7 +58,7 @@ export default function Upload() {
     formData.append("img", selectedFile);
 
     axios
-      .post("https://fhome-be.vercel.app/createPosting",formData, {
+      .post("https://fhome2-be.vercel.app/createPosting",formData, {
         headers: {
           Authorization: `Bearer ${token.data.accessToken}`,
           "Content-Type": "multipart/form-data",

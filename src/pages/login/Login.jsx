@@ -25,7 +25,7 @@ const Login = () => {
           const idToken = await user.getIdToken();
           const accessToken = await user.getIdToken(true);
           const response = await axios.post(
-            "https://fhome-be.vercel.app/login",
+            "https://fhome2-be.vercel.app/login",
             { accessToken: accessToken },
             {
               headers: {
@@ -50,7 +50,7 @@ const Login = () => {
                 Authorization: `Bearer ${token.data.accessToken}`,
               };
               axios
-                .get("https://fhome-be.vercel.app/getRoomsByUserId", {
+                .get("https://fhome2-be.vercel.app/getRoomsByUserId", {
                   headers,
                 })
                 .then((response) => {

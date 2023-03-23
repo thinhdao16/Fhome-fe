@@ -12,7 +12,7 @@ const User = () => {
         Authorization: `Bearer ${token.accessToken}`,
       },
     };
-    return axios.get("https://fhome-be.vercel.app/getUser", config)
+    return axios.get("https://fhome2-be.vercel.app/getUser", config)
       .then((response) => {
         return response.data;
       })
