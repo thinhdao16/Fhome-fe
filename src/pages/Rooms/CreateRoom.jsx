@@ -59,7 +59,7 @@ function CreateRoom() {
     formData.append("img", selectedFile);
 
     axios
-      .post("https://fhome2-be.vercel.app/createRoom", formData, {
+      .post("https://fhome-be.vercel.app/createRoom", formData, {
         headers: {
           Authorization: `Bearer ${token.data.accessToken}`,
           "Content-Type": "multipart/form-data",
@@ -104,9 +104,9 @@ function CreateRoom() {
         }
         const headers = { Authorization: `Bearer ${token.data.accessToken}` };
         const responses = await Promise.all([
-          axios.get("https://fhome2-be.vercel.app/getBuildings"),
-          axios.get("https://fhome2-be.vercel.app/getRoomsByUserId", { headers }),
-          axios.get("https://fhome2-be.vercel.app/getAllUsers"),
+          axios.get("https://fhome-be.vercel.app/getBuildings"),
+          axios.get("https://fhome-be.vercel.app/getRoomsByUserId", { headers }),
+          axios.get("https://fhome-be.vercel.app/getAllUsers"),
         ]);
         const buildings = responses[0].data.data.buildings;
         const rooms = responses[1].data.data.rooms;

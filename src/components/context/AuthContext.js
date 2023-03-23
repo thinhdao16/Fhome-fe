@@ -56,7 +56,7 @@ export function AuthContextProvider({ children }) {
       setBuildings(storedBuildings);
     } else {
       axios
-        .get("https://fhome2-be.vercel.app/getBuildings")
+        .get("https://fhome-be.vercel.app/getBuildings")
         .then((response) => {
           setBuildings(response.data);
           localStorage.setItem("buildings", JSON.stringify(response.data));
@@ -70,7 +70,7 @@ export function AuthContextProvider({ children }) {
       setAccountStart(storedApartments);
     } else {
       axios
-        .get("https://fhome2-be.vercel.app/getUser")
+        .get("https://fhome-be.vercel.app/getUser")
         .then((response) => {
           setAccountStart(response.data);
           localStorage.setItem("account_start", JSON.stringify(response.data));

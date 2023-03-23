@@ -30,7 +30,7 @@ const SearchPost = ({ children }) => {
     event.preventDefault();
     axios
       .post(
-        "https://fhome2-be.vercel.app/createFavouritePost",
+        "https://fhome-be.vercel.app/createFavouritePost",
         { postId: id },
         {
           headers: {
@@ -50,7 +50,7 @@ const SearchPost = ({ children }) => {
     const idLike = isLiked?.filter((like) => like?.post?._id === id)?.[0]._id;
     event.preventDefault();
     axios
-      .delete(`https://fhome2-be.vercel.app/deleteFavouritePost/${idLike}`, {
+      .delete(`https://fhome-be.vercel.app/deleteFavouritePost/${idLike}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${userPosting.data.accessToken}`,

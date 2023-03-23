@@ -74,7 +74,7 @@ const PostModal = () => {
     try {
       setLoading(true);
       const response = await axios.post(
-        "https://fhome2-be.vercel.app/posts/create",
+        "https://fhome-be.vercel.app/posts/create",
         formData,
         {
           headers: {
@@ -116,7 +116,7 @@ const PostModal = () => {
     const token = JSON.parse(localStorage.getItem("access_token"));
     const headers = { Authorization: `Bearer ${token.data.accessToken}` };
     axios
-      .get("https://fhome2-be.vercel.app/getRoomsByUserId", { headers })
+      .get("https://fhome-be.vercel.app/getRoomsByUserId", { headers })
       .then((response) => {
         const roomIds = response.data;
         if (roomIds) {
